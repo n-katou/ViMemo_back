@@ -29,7 +29,7 @@ default: &default
   encoding: unicode
   # 以下はDockerのPostgreSQLサービスと接続するための設定例です
   host: db
-  username: postgres
+  username: katounaoto
   password: <%= ENV['POSTGRES_PASSWORD'] %>
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   timeout: 5000
@@ -49,4 +49,4 @@ production:
   <<: *default
   database: vimemo_production
   username: katounaoto
-  password: <%= ENV['MYAPP_DATABASE_PASSWORD'] %>
+  password: <%= ENV['POSTGRES_PASSWORD'] %>
