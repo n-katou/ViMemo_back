@@ -63,3 +63,6 @@ end
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem "dockerfile-rails", ">= 1.6", :group => :development
+
+gem 'sorcery', "0.16.3"
+gem 'rails-i18n', '~> 7.0.0'
