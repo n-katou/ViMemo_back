@@ -15,6 +15,7 @@ RUN apt-get update -qq && apt-get install -y nodejs postgresql-client
 # 作業ディレクトリの設定
 WORKDIR /app
 
+
 # 依存関係ファイルのコピー
 # COPY Gemfile Gemfile.lock ./
 COPY Gemfile /app/Gemfile
