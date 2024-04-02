@@ -2,10 +2,9 @@
   "name": "vi-memo",
   "private": true,
   "dependencies": {
-    "@hotwired/turbo-rails": "^8.0.4",
     "@rails/actioncable": "^6.0.0",
     "@rails/activestorage": "^6.0.0",
-    "@rails/ujs": "^7.1.3-2",
+    "@rails/ujs": "^6.0.0",
     "@rails/webpacker": "5.4.4",
     "turbolinks": "^5.2.0",
     "webpack": "^5.91.0",

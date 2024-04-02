@@ -105,10 +105,6 @@ GEM
     hashie (5.0.0)
     i18n (1.14.4)
       concurrent-ruby (~> 1.0)
-    importmap-rails (2.0.1)
-      actionpack (>= 6.0.0)
-      activesupport (>= 6.0.0)
-      railties (>= 6.0.0)
     jbuilder (2.11.5)
       actionview (>= 5.0.0)
       activesupport (>= 5.0.0)
@@ -242,10 +238,9 @@ GEM
     thor (1.3.1)
     tilt (2.3.0)
     timeout (0.4.1)
-    turbo-rails (2.0.5)
-      actionpack (>= 6.0.0)
-      activejob (>= 6.0.0)
-      railties (>= 6.0.0)
+    turbolinks (5.2.1)
+      turbolinks-source (~> 5.2)
+    turbolinks-source (5.2.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     uri (0.13.0)
@@ -282,7 +277,6 @@ DEPENDENCIES
   capybara (>= 3.26)
   dockerfile-rails (>= 1.6)
   dotenv-rails
-  importmap-rails
   jbuilder (~> 2.7)
   listen (~> 3.3)
   pg (~> 1.4)
@@ -294,9 +288,8 @@ DEPENDENCIES
   selenium-webdriver (>= 4.0.0.rc1)
   sorcery (= 0.16.3)
   spring
-  sprockets-rails
   sqlite3 (~> 1.4)
-  turbo-rails
+  turbolinks (~> 5)
   tzinfo-data
   web-console (>= 4.1.0)
   webdrivers
