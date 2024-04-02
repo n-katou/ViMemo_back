@@ -21,6 +21,9 @@ jobs:
 
       - name: Precompile assets
         run: RAILS_ENV=production rails assets:precompile
+        env:
+          RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
 
       - uses: superfly/flyctl-actions/setup-flyctl@master
 
