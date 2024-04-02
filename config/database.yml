@@ -39,6 +39,7 @@ development:
   database: vimemo_development
   username: katounaoto
   password: <%= ENV['POSTGRES_PASSWORD'] %>
+  host: db
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
