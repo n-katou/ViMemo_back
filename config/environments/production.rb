@@ -2,7 +2,7 @@ require "active_support/core_ext/integer/time"
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
-  config.hosts << "vimemo.onrender.com"
+  config.hosts << "vimemoback.fly.dev"
 
   # Code is not reloaded between requests.
   config.cache_classes = true

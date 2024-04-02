@@ -86,6 +86,8 @@ GEM
     concurrent-ruby (1.2.3)
     crass (1.0.6)
     date (3.3.4)
+    dockerfile-rails (1.6.7)
+      rails (>= 3.0.0)
     dotenv (3.1.0)
     dotenv-rails (3.1.0)
       dotenv (= 3.1.0)
@@ -239,6 +241,7 @@ DEPENDENCIES
   bootsnap (>= 1.4.4)
   byebug
   capybara (>= 3.26)
+  dockerfile-rails (>= 1.6)
   dotenv-rails
   jbuilder (~> 2.7)
   listen (~> 3.3)
