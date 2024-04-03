@@ -1,29 +1,32 @@
 # ベースイメージの指定
 FROM ruby:3.1.4
 
-# # Node.jsのインストール
-# RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
-#     apt-get install -y nodejs
+ENV LANG C.UTF-8
+ENV TZ Asia/Tokyo
 
-# # # Yarnのインストール
-# RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
-#     echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
-#     apt-get update && apt-get install -y yarn
-
-RUN apt-get update -qq && apt-get install -y nodejs postgresql-client
+# Node.js と Yarn のインストール
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - && \
+    apt-get update -qq && \
+    apt-get install -y nodejs && \
+    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
+    apt-get update && apt-get install -y yarn
 
 # 作業ディレクトリの設定
 WORKDIR /app
 
+# 依存関係のインストール
+RUN gem install bundler:2.3.17
 
 # 依存関係ファイルのコピー
 # COPY Gemfile Gemfile.lock ./
+
 COPY Gemfile /app/Gemfile
 COPY Gemfile.lock /app/Gemfile.lock
+COPY yarn.lock /app/yarn.lock
 
-# 依存関係のインストール
-RUN gem install bundler
 RUN bundle install
+RUN yarn install
 
 # アプリケーションのコピー
 COPY . /app
