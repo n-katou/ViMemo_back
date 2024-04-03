@@ -1,5 +1,7 @@
 # ベースイメージの指定
 FROM ruby:3.1.4
+ENV LANG C.UTF-8
+ENV TZ Asia/Tokyo
 
 # # Node.jsのインストール
 # RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
@@ -15,14 +17,17 @@ RUN apt-get update -qq && apt-get install -y nodejs postgresql-client
 # 作業ディレクトリの設定
 WORKDIR /app
 
+RUN gem install bundler
+
 # 依存関係ファイルのコピー
 # COPY Gemfile Gemfile.lock ./
 COPY Gemfile /app/Gemfile
 COPY Gemfile.lock /app/Gemfile.lock
+COPY yarn.lock /app/yarn.lock
 
 # 依存関係のインストール
-RUN gem install bundler
 RUN bundle install
+RUN yarn install
 
 # アプリケーションのコピー
 COPY . /app

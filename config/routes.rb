@@ -5,5 +5,5 @@ Rails.application.routes.draw do
   # セッション管理用のルーティング
   get 'login', to: 'user_sessions#new'
   post 'login', to: 'user_sessions#create'
-  delete '/logout', to: 'user_sessions#destroy'
+  post '/logout', to: 'user_sessions#destroy'
 end
