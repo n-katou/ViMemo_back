@@ -19,25 +19,30 @@ WORKDIR /app
 
 RUN gem install bundler
 
+COPY package.json /app/package.json
+COPY yarn.lock /app/yarn.lock
+RUN yarn install --frozen-lockfile --network-timeout 600000
+
 # 依存関係ファイルのコピー
 # COPY Gemfile Gemfile.lock ./
 COPY Gemfile /app/Gemfile
 COPY Gemfile.lock /app/Gemfile.lock
-COPY yarn.lock /app/yarn.lock
 
 # 依存関係のインストール
 RUN bundle install
-RUN yarn install
 
 # アプリケーションのコピー
 COPY . /app
 
 COPY entrypoint.sh /usr/bin/
 RUN chmod +x /usr/bin/entrypoint.sh
+
+RUN yarn build
+
 ENTRYPOINT ["entrypoint.sh"]
 
 # ポートの公開
-EXPOSE 3002
+EXPOSE 3000
 
 
 # Railsサーバーの起動コマンド
