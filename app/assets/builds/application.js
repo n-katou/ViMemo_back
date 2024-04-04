@@ -1,598 +1,619 @@
-var __defProp = Object.defineProperty;
-var __getOwnPropNames = Object.getOwnPropertyNames;
-var __esm = (fn, res) => function __init() {
-  return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+// node_modules/@rails/ujs/app/assets/javascripts/rails-ujs.esm.js
+var linkClickSelector = "a[data-confirm], a[data-method], a[data-remote]:not([disabled]), a[data-disable-with], a[data-disable]";
+var buttonClickSelector = {
+  selector: "button[data-remote]:not([form]), button[data-confirm]:not([form])",
+  exclude: "form button"
 };
-var __export = (target, all) => {
-  for (var name in all)
-    __defProp(target, name, { get: all[name], enumerable: true });
+var inputChangeSelector = "select[data-remote], input[data-remote], textarea[data-remote]";
+var formSubmitSelector = "form:not([data-turbo=true])";
+var formInputClickSelector = "form:not([data-turbo=true]) input[type=submit], form:not([data-turbo=true]) input[type=image], form:not([data-turbo=true]) button[type=submit], form:not([data-turbo=true]) button:not([type]), input[type=submit][form], input[type=image][form], button[type=submit][form], button[form]:not([type])";
+var formDisableSelector = "input[data-disable-with]:enabled, button[data-disable-with]:enabled, textarea[data-disable-with]:enabled, input[data-disable]:enabled, button[data-disable]:enabled, textarea[data-disable]:enabled";
+var formEnableSelector = "input[data-disable-with]:disabled, button[data-disable-with]:disabled, textarea[data-disable-with]:disabled, input[data-disable]:disabled, button[data-disable]:disabled, textarea[data-disable]:disabled";
+var fileInputSelector = "input[name][type=file]:not([disabled])";
+var linkDisableSelector = "a[data-disable-with], a[data-disable]";
+var buttonDisableSelector = "button[data-remote][data-disable-with], button[data-remote][data-disable]";
+var nonce = null;
+var loadCSPNonce = () => {
+  const metaTag = document.querySelector("meta[name=csp-nonce]");
+  return nonce = metaTag && metaTag.content;
 };
-
-// node_modules/@rails/actioncable/src/adapters.js
-var adapters_default;
-var init_adapters = __esm({
-  "node_modules/@rails/actioncable/src/adapters.js"() {
-    adapters_default = {
-      logger: typeof console !== "undefined" ? console : void 0,
-      WebSocket: typeof WebSocket !== "undefined" ? WebSocket : void 0
-    };
-  }
-});
-
-// node_modules/@rails/actioncable/src/logger.js
-var logger_default;
-var init_logger = __esm({
-  "node_modules/@rails/actioncable/src/logger.js"() {
-    init_adapters();
-    logger_default = {
-      log(...messages) {
-        if (this.enabled) {
-          messages.push(Date.now());
-          adapters_default.logger.log("[ActionCable]", ...messages);
-        }
-      }
-    };
-  }
-});
-
-// node_modules/@rails/actioncable/src/connection_monitor.js
-var now, secondsSince, ConnectionMonitor, connection_monitor_default;
-var init_connection_monitor = __esm({
-  "node_modules/@rails/actioncable/src/connection_monitor.js"() {
-    init_logger();
-    now = () => (/* @__PURE__ */ new Date()).getTime();
-    secondsSince = (time) => (now() - time) / 1e3;
-    ConnectionMonitor = class {
-      constructor(connection) {
-        this.visibilityDidChange = this.visibilityDidChange.bind(this);
-        this.connection = connection;
-        this.reconnectAttempts = 0;
-      }
-      start() {
-        if (!this.isRunning()) {
-          this.startedAt = now();
-          delete this.stoppedAt;
-          this.startPolling();
-          addEventListener("visibilitychange", this.visibilityDidChange);
-          logger_default.log(`ConnectionMonitor started. stale threshold = ${this.constructor.staleThreshold} s`);
-        }
-      }
-      stop() {
-        if (this.isRunning()) {
-          this.stoppedAt = now();
-          this.stopPolling();
-          removeEventListener("visibilitychange", this.visibilityDidChange);
-          logger_default.log("ConnectionMonitor stopped");
-        }
-      }
-      isRunning() {
-        return this.startedAt && !this.stoppedAt;
-      }
-      recordPing() {
-        this.pingedAt = now();
-      }
-      recordConnect() {
-        this.reconnectAttempts = 0;
-        this.recordPing();
-        delete this.disconnectedAt;
-        logger_default.log("ConnectionMonitor recorded connect");
-      }
-      recordDisconnect() {
-        this.disconnectedAt = now();
-        logger_default.log("ConnectionMonitor recorded disconnect");
-      }
-      // Private
-      startPolling() {
-        this.stopPolling();
-        this.poll();
-      }
-      stopPolling() {
-        clearTimeout(this.pollTimeout);
-      }
-      poll() {
-        this.pollTimeout = setTimeout(
-          () => {
-            this.reconnectIfStale();
-            this.poll();
-          },
-          this.getPollInterval()
-        );
-      }
-      getPollInterval() {
-        const { staleThreshold, reconnectionBackoffRate } = this.constructor;
-        const backoff = Math.pow(1 + reconnectionBackoffRate, Math.min(this.reconnectAttempts, 10));
-        const jitterMax = this.reconnectAttempts === 0 ? 1 : reconnectionBackoffRate;
-        const jitter = jitterMax * Math.random();
-        return staleThreshold * 1e3 * backoff * (1 + jitter);
-      }
-      reconnectIfStale() {
-        if (this.connectionIsStale()) {
-          logger_default.log(`ConnectionMonitor detected stale connection. reconnectAttempts = ${this.reconnectAttempts}, time stale = ${secondsSince(this.refreshedAt)} s, stale threshold = ${this.constructor.staleThreshold} s`);
-          this.reconnectAttempts++;
-          if (this.disconnectedRecently()) {
-            logger_default.log(`ConnectionMonitor skipping reopening recent disconnect. time disconnected = ${secondsSince(this.disconnectedAt)} s`);
-          } else {
-            logger_default.log("ConnectionMonitor reopening");
-            this.connection.reopen();
-          }
-        }
-      }
-      get refreshedAt() {
-        return this.pingedAt ? this.pingedAt : this.startedAt;
-      }
-      connectionIsStale() {
-        return secondsSince(this.refreshedAt) > this.constructor.staleThreshold;
-      }
-      disconnectedRecently() {
-        return this.disconnectedAt && secondsSince(this.disconnectedAt) < this.constructor.staleThreshold;
-      }
-      visibilityDidChange() {
-        if (document.visibilityState === "visible") {
-          setTimeout(
-            () => {
-              if (this.connectionIsStale() || !this.connection.isOpen()) {
-                logger_default.log(`ConnectionMonitor reopening stale connection on visibilitychange. visibilityState = ${document.visibilityState}`);
-                this.connection.reopen();
-              }
-            },
-            200
-          );
-        }
-      }
-    };
-    ConnectionMonitor.staleThreshold = 6;
-    ConnectionMonitor.reconnectionBackoffRate = 0.15;
-    connection_monitor_default = ConnectionMonitor;
-  }
-});
-
-// node_modules/@rails/actioncable/src/internal.js
-var internal_default;
-var init_internal = __esm({
-  "node_modules/@rails/actioncable/src/internal.js"() {
-    internal_default = {
-      "message_types": {
-        "welcome": "welcome",
-        "disconnect": "disconnect",
-        "ping": "ping",
-        "confirmation": "confirm_subscription",
-        "rejection": "reject_subscription"
-      },
-      "disconnect_reasons": {
-        "unauthorized": "unauthorized",
-        "invalid_request": "invalid_request",
-        "server_restart": "server_restart",
-        "remote": "remote"
-      },
-      "default_mount_path": "/cable",
-      "protocols": [
-        "actioncable-v1-json",
-        "actioncable-unsupported"
-      ]
-    };
-  }
-});
-
-// node_modules/@rails/actioncable/src/connection.js
-var message_types, protocols, supportedProtocols, indexOf, Connection, connection_default;
-var init_connection = __esm({
-  "node_modules/@rails/actioncable/src/connection.js"() {
-    init_adapters();
-    init_connection_monitor();
-    init_internal();
-    init_logger();
-    ({ message_types, protocols } = internal_default);
-    supportedProtocols = protocols.slice(0, protocols.length - 1);
-    indexOf = [].indexOf;
-    Connection = class {
-      constructor(consumer2) {
-        this.open = this.open.bind(this);
-        this.consumer = consumer2;
-        this.subscriptions = this.consumer.subscriptions;
-        this.monitor = new connection_monitor_default(this);
-        this.disconnected = true;
-      }
-      send(data) {
-        if (this.isOpen()) {
-          this.webSocket.send(JSON.stringify(data));
-          return true;
-        } else {
-          return false;
-        }
-      }
-      open() {
-        if (this.isActive()) {
-          logger_default.log(`Attempted to open WebSocket, but existing socket is ${this.getState()}`);
-          return false;
-        } else {
-          const socketProtocols = [...protocols, ...this.consumer.subprotocols || []];
-          logger_default.log(`Opening WebSocket, current state is ${this.getState()}, subprotocols: ${socketProtocols}`);
-          if (this.webSocket) {
-            this.uninstallEventHandlers();
-          }
-          this.webSocket = new adapters_default.WebSocket(this.consumer.url, socketProtocols);
-          this.installEventHandlers();
-          this.monitor.start();
-          return true;
-        }
-      }
-      close({ allowReconnect } = { allowReconnect: true }) {
-        if (!allowReconnect) {
-          this.monitor.stop();
-        }
-        if (this.isOpen()) {
-          return this.webSocket.close();
-        }
-      }
-      reopen() {
-        logger_default.log(`Reopening WebSocket, current state is ${this.getState()}`);
-        if (this.isActive()) {
-          try {
-            return this.close();
-          } catch (error) {
-            logger_default.log("Failed to reopen WebSocket", error);
-          } finally {
-            logger_default.log(`Reopening WebSocket in ${this.constructor.reopenDelay}ms`);
-            setTimeout(this.open, this.constructor.reopenDelay);
-          }
-        } else {
-          return this.open();
-        }
-      }
-      getProtocol() {
-        if (this.webSocket) {
-          return this.webSocket.protocol;
-        }
-      }
-      isOpen() {
-        return this.isState("open");
-      }
-      isActive() {
-        return this.isState("open", "connecting");
-      }
-      triedToReconnect() {
-        return this.monitor.reconnectAttempts > 0;
-      }
-      // Private
-      isProtocolSupported() {
-        return indexOf.call(supportedProtocols, this.getProtocol()) >= 0;
-      }
-      isState(...states) {
-        return indexOf.call(states, this.getState()) >= 0;
-      }
-      getState() {
-        if (this.webSocket) {
-          for (let state in adapters_default.WebSocket) {
-            if (adapters_default.WebSocket[state] === this.webSocket.readyState) {
-              return state.toLowerCase();
-            }
-          }
-        }
-        return null;
-      }
-      installEventHandlers() {
-        for (let eventName in this.events) {
-          const handler = this.events[eventName].bind(this);
-          this.webSocket[`on${eventName}`] = handler;
-        }
-      }
-      uninstallEventHandlers() {
-        for (let eventName in this.events) {
-          this.webSocket[`on${eventName}`] = function() {
-          };
-        }
-      }
-    };
-    Connection.reopenDelay = 500;
-    Connection.prototype.events = {
-      message(event) {
-        if (!this.isProtocolSupported()) {
-          return;
-        }
-        const { identifier, message, reason, reconnect, type } = JSON.parse(event.data);
-        switch (type) {
-          case message_types.welcome:
-            if (this.triedToReconnect()) {
-              this.reconnectAttempted = true;
-            }
-            this.monitor.recordConnect();
-            return this.subscriptions.reload();
-          case message_types.disconnect:
-            logger_default.log(`Disconnecting. Reason: ${reason}`);
-            return this.close({ allowReconnect: reconnect });
-          case message_types.ping:
-            return this.monitor.recordPing();
-          case message_types.confirmation:
-            this.subscriptions.confirmSubscription(identifier);
-            if (this.reconnectAttempted) {
-              this.reconnectAttempted = false;
-              return this.subscriptions.notify(identifier, "connected", { reconnected: true });
-            } else {
-              return this.subscriptions.notify(identifier, "connected", { reconnected: false });
-            }
-          case message_types.rejection:
-            return this.subscriptions.reject(identifier);
-          default:
-            return this.subscriptions.notify(identifier, "received", message);
-        }
-      },
-      open() {
-        logger_default.log(`WebSocket onopen event, using '${this.getProtocol()}' subprotocol`);
-        this.disconnected = false;
-        if (!this.isProtocolSupported()) {
-          logger_default.log("Protocol is unsupported. Stopping monitor and disconnecting.");
-          return this.close({ allowReconnect: false });
-        }
-      },
-      close(event) {
-        logger_default.log("WebSocket onclose event");
-        if (this.disconnected) {
-          return;
-        }
-        this.disconnected = true;
-        this.monitor.recordDisconnect();
-        return this.subscriptions.notifyAll("disconnected", { willAttemptReconnect: this.monitor.isRunning() });
-      },
-      error() {
-        logger_default.log("WebSocket onerror event");
-      }
-    };
-    connection_default = Connection;
-  }
-});
-
-// node_modules/@rails/actioncable/src/subscription.js
-var extend, Subscription;
-var init_subscription = __esm({
-  "node_modules/@rails/actioncable/src/subscription.js"() {
-    extend = function(object, properties) {
-      if (properties != null) {
-        for (let key in properties) {
-          const value = properties[key];
-          object[key] = value;
-        }
-      }
-      return object;
-    };
-    Subscription = class {
-      constructor(consumer2, params = {}, mixin) {
-        this.consumer = consumer2;
-        this.identifier = JSON.stringify(params);
-        extend(this, mixin);
-      }
-      // Perform a channel action with the optional data passed as an attribute
-      perform(action, data = {}) {
-        data.action = action;
-        return this.send(data);
-      }
-      send(data) {
-        return this.consumer.send({ command: "message", identifier: this.identifier, data: JSON.stringify(data) });
-      }
-      unsubscribe() {
-        return this.consumer.subscriptions.remove(this);
-      }
-    };
-  }
-});
-
-// node_modules/@rails/actioncable/src/subscription_guarantor.js
-var SubscriptionGuarantor, subscription_guarantor_default;
-var init_subscription_guarantor = __esm({
-  "node_modules/@rails/actioncable/src/subscription_guarantor.js"() {
-    init_logger();
-    SubscriptionGuarantor = class {
-      constructor(subscriptions) {
-        this.subscriptions = subscriptions;
-        this.pendingSubscriptions = [];
-      }
-      guarantee(subscription) {
-        if (this.pendingSubscriptions.indexOf(subscription) == -1) {
-          logger_default.log(`SubscriptionGuarantor guaranteeing ${subscription.identifier}`);
-          this.pendingSubscriptions.push(subscription);
-        } else {
-          logger_default.log(`SubscriptionGuarantor already guaranteeing ${subscription.identifier}`);
-        }
-        this.startGuaranteeing();
-      }
-      forget(subscription) {
-        logger_default.log(`SubscriptionGuarantor forgetting ${subscription.identifier}`);
-        this.pendingSubscriptions = this.pendingSubscriptions.filter((s) => s !== subscription);
-      }
-      startGuaranteeing() {
-        this.stopGuaranteeing();
-        this.retrySubscribing();
-      }
-      stopGuaranteeing() {
-        clearTimeout(this.retryTimeout);
-      }
-      retrySubscribing() {
-        this.retryTimeout = setTimeout(
-          () => {
-            if (this.subscriptions && typeof this.subscriptions.subscribe === "function") {
-              this.pendingSubscriptions.map((subscription) => {
-                logger_default.log(`SubscriptionGuarantor resubscribing ${subscription.identifier}`);
-                this.subscriptions.subscribe(subscription);
-              });
-            }
-          },
-          500
-        );
-      }
-    };
-    subscription_guarantor_default = SubscriptionGuarantor;
-  }
-});
-
-// node_modules/@rails/actioncable/src/subscriptions.js
-var Subscriptions;
-var init_subscriptions = __esm({
-  "node_modules/@rails/actioncable/src/subscriptions.js"() {
-    init_subscription();
-    init_subscription_guarantor();
-    init_logger();
-    Subscriptions = class {
-      constructor(consumer2) {
-        this.consumer = consumer2;
-        this.guarantor = new subscription_guarantor_default(this);
-        this.subscriptions = [];
-      }
-      create(channelName, mixin) {
-        const channel = channelName;
-        const params = typeof channel === "object" ? channel : { channel };
-        const subscription = new Subscription(this.consumer, params, mixin);
-        return this.add(subscription);
-      }
-      // Private
-      add(subscription) {
-        this.subscriptions.push(subscription);
-        this.consumer.ensureActiveConnection();
-        this.notify(subscription, "initialized");
-        this.subscribe(subscription);
-        return subscription;
-      }
-      remove(subscription) {
-        this.forget(subscription);
-        if (!this.findAll(subscription.identifier).length) {
-          this.sendCommand(subscription, "unsubscribe");
-        }
-        return subscription;
-      }
-      reject(identifier) {
-        return this.findAll(identifier).map((subscription) => {
-          this.forget(subscription);
-          this.notify(subscription, "rejected");
-          return subscription;
-        });
-      }
-      forget(subscription) {
-        this.guarantor.forget(subscription);
-        this.subscriptions = this.subscriptions.filter((s) => s !== subscription);
-        return subscription;
-      }
-      findAll(identifier) {
-        return this.subscriptions.filter((s) => s.identifier === identifier);
-      }
-      reload() {
-        return this.subscriptions.map((subscription) => this.subscribe(subscription));
-      }
-      notifyAll(callbackName, ...args) {
-        return this.subscriptions.map((subscription) => this.notify(subscription, callbackName, ...args));
-      }
-      notify(subscription, callbackName, ...args) {
-        let subscriptions;
-        if (typeof subscription === "string") {
-          subscriptions = this.findAll(subscription);
-        } else {
-          subscriptions = [subscription];
-        }
-        return subscriptions.map((subscription2) => typeof subscription2[callbackName] === "function" ? subscription2[callbackName](...args) : void 0);
-      }
-      subscribe(subscription) {
-        if (this.sendCommand(subscription, "subscribe")) {
-          this.guarantor.guarantee(subscription);
-        }
-      }
-      confirmSubscription(identifier) {
-        logger_default.log(`Subscription confirmed ${identifier}`);
-        this.findAll(identifier).map((subscription) => this.guarantor.forget(subscription));
-      }
-      sendCommand(subscription, command) {
-        const { identifier } = subscription;
-        return this.consumer.send({ command, identifier });
-      }
-    };
-  }
-});
-
-// node_modules/@rails/actioncable/src/consumer.js
-function createWebSocketURL(url) {
-  if (typeof url === "function") {
-    url = url();
-  }
-  if (url && !/^wss?:/i.test(url)) {
-    const a = document.createElement("a");
-    a.href = url;
-    a.href = a.href;
-    a.protocol = a.protocol.replace("http", "ws");
-    return a.href;
+var cspNonce = () => nonce || loadCSPNonce();
+var m = Element.prototype.matches || Element.prototype.matchesSelector || Element.prototype.mozMatchesSelector || Element.prototype.msMatchesSelector || Element.prototype.oMatchesSelector || Element.prototype.webkitMatchesSelector;
+var matches = function(element, selector) {
+  if (selector.exclude) {
+    return m.call(element, selector.selector) && !m.call(element, selector.exclude);
   } else {
-    return url;
+    return m.call(element, selector);
   }
-}
-var Consumer;
-var init_consumer = __esm({
-  "node_modules/@rails/actioncable/src/consumer.js"() {
-    init_connection();
-    init_subscriptions();
-    Consumer = class {
-      constructor(url) {
-        this._url = url;
-        this.subscriptions = new Subscriptions(this);
-        this.connection = new connection_default(this);
-        this.subprotocols = [];
+};
+var EXPANDO = "_ujsData";
+var getData = (element, key) => element[EXPANDO] ? element[EXPANDO][key] : void 0;
+var setData = function(element, key, value) {
+  if (!element[EXPANDO]) {
+    element[EXPANDO] = {};
+  }
+  return element[EXPANDO][key] = value;
+};
+var $ = (selector) => Array.prototype.slice.call(document.querySelectorAll(selector));
+var isContentEditable = function(element) {
+  var isEditable = false;
+  do {
+    if (element.isContentEditable) {
+      isEditable = true;
+      break;
+    }
+    element = element.parentElement;
+  } while (element);
+  return isEditable;
+};
+var csrfToken = () => {
+  const meta = document.querySelector("meta[name=csrf-token]");
+  return meta && meta.content;
+};
+var csrfParam = () => {
+  const meta = document.querySelector("meta[name=csrf-param]");
+  return meta && meta.content;
+};
+var CSRFProtection = (xhr) => {
+  const token = csrfToken();
+  if (token) {
+    return xhr.setRequestHeader("X-CSRF-Token", token);
+  }
+};
+var refreshCSRFTokens = () => {
+  const token = csrfToken();
+  const param = csrfParam();
+  if (token && param) {
+    return $('form input[name="' + param + '"]').forEach((input) => input.value = token);
+  }
+};
+var AcceptHeaders = {
+  "*": "*/*",
+  text: "text/plain",
+  html: "text/html",
+  xml: "application/xml, text/xml",
+  json: "application/json, text/javascript",
+  script: "text/javascript, application/javascript, application/ecmascript, application/x-ecmascript"
+};
+var ajax = (options) => {
+  options = prepareOptions(options);
+  var xhr = createXHR(options, function() {
+    const response = processResponse(xhr.response != null ? xhr.response : xhr.responseText, xhr.getResponseHeader("Content-Type"));
+    if (Math.floor(xhr.status / 100) === 2) {
+      if (typeof options.success === "function") {
+        options.success(response, xhr.statusText, xhr);
       }
-      get url() {
-        return createWebSocketURL(this._url);
+    } else {
+      if (typeof options.error === "function") {
+        options.error(response, xhr.statusText, xhr);
       }
-      send(data) {
-        return this.connection.send(data);
+    }
+    return typeof options.complete === "function" ? options.complete(xhr, xhr.statusText) : void 0;
+  });
+  if (options.beforeSend && !options.beforeSend(xhr, options)) {
+    return false;
+  }
+  if (xhr.readyState === XMLHttpRequest.OPENED) {
+    return xhr.send(options.data);
+  }
+};
+var prepareOptions = function(options) {
+  options.url = options.url || location.href;
+  options.type = options.type.toUpperCase();
+  if (options.type === "GET" && options.data) {
+    if (options.url.indexOf("?") < 0) {
+      options.url += "?" + options.data;
+    } else {
+      options.url += "&" + options.data;
+    }
+  }
+  if (!(options.dataType in AcceptHeaders)) {
+    options.dataType = "*";
+  }
+  options.accept = AcceptHeaders[options.dataType];
+  if (options.dataType !== "*") {
+    options.accept += ", */*; q=0.01";
+  }
+  return options;
+};
+var createXHR = function(options, done) {
+  const xhr = new XMLHttpRequest();
+  xhr.open(options.type, options.url, true);
+  xhr.setRequestHeader("Accept", options.accept);
+  if (typeof options.data === "string") {
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+  }
+  if (!options.crossDomain) {
+    xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+    CSRFProtection(xhr);
+  }
+  xhr.withCredentials = !!options.withCredentials;
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState === XMLHttpRequest.DONE) {
+      return done(xhr);
+    }
+  };
+  return xhr;
+};
+var processResponse = function(response, type) {
+  if (typeof response === "string" && typeof type === "string") {
+    if (type.match(/\bjson\b/)) {
+      try {
+        response = JSON.parse(response);
+      } catch (error) {
       }
-      connect() {
-        return this.connection.open();
+    } else if (type.match(/\b(?:java|ecma)script\b/)) {
+      const script = document.createElement("script");
+      script.setAttribute("nonce", cspNonce());
+      script.text = response;
+      document.head.appendChild(script).parentNode.removeChild(script);
+    } else if (type.match(/\b(xml|html|svg)\b/)) {
+      const parser = new DOMParser();
+      type = type.replace(/;.+/, "");
+      try {
+        response = parser.parseFromString(response, type);
+      } catch (error1) {
       }
-      disconnect() {
-        return this.connection.close({ allowReconnect: false });
-      }
-      ensureActiveConnection() {
-        if (!this.connection.isActive()) {
-          return this.connection.open();
+    }
+  }
+  return response;
+};
+var href = (element) => element.href;
+var isCrossDomain = function(url) {
+  const originAnchor = document.createElement("a");
+  originAnchor.href = location.href;
+  const urlAnchor = document.createElement("a");
+  try {
+    urlAnchor.href = url;
+    return !((!urlAnchor.protocol || urlAnchor.protocol === ":") && !urlAnchor.host || originAnchor.protocol + "//" + originAnchor.host === urlAnchor.protocol + "//" + urlAnchor.host);
+  } catch (e) {
+    return true;
+  }
+};
+var preventDefault;
+var { CustomEvent: CustomEvent2 } = window;
+if (typeof CustomEvent2 !== "function") {
+  CustomEvent2 = function(event, params) {
+    const evt = document.createEvent("CustomEvent");
+    evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+    return evt;
+  };
+  CustomEvent2.prototype = window.Event.prototype;
+  ({ preventDefault } = CustomEvent2.prototype);
+  CustomEvent2.prototype.preventDefault = function() {
+    const result = preventDefault.call(this);
+    if (this.cancelable && !this.defaultPrevented) {
+      Object.defineProperty(this, "defaultPrevented", {
+        get() {
+          return true;
         }
-      }
-      addSubProtocol(subprotocol) {
-        this.subprotocols = [...this.subprotocols, subprotocol];
-      }
-    };
-  }
-});
-
-// node_modules/@rails/actioncable/src/index.js
-var src_exports = {};
-__export(src_exports, {
-  Connection: () => connection_default,
-  ConnectionMonitor: () => connection_monitor_default,
-  Consumer: () => Consumer,
-  INTERNAL: () => internal_default,
-  Subscription: () => Subscription,
-  SubscriptionGuarantor: () => subscription_guarantor_default,
-  Subscriptions: () => Subscriptions,
-  adapters: () => adapters_default,
-  createConsumer: () => createConsumer,
-  createWebSocketURL: () => createWebSocketURL,
-  getConfig: () => getConfig,
-  logger: () => logger_default
-});
-function createConsumer(url = getConfig("url") || internal_default.default_mount_path) {
-  return new Consumer(url);
+      });
+    }
+    return result;
+  };
 }
-function getConfig(name) {
-  const element = document.head.querySelector(`meta[name='action-cable-${name}']`);
-  if (element) {
-    return element.getAttribute("content");
+var fire = (obj, name, data) => {
+  const event = new CustomEvent2(name, {
+    bubbles: true,
+    cancelable: true,
+    detail: data
+  });
+  obj.dispatchEvent(event);
+  return !event.defaultPrevented;
+};
+var stopEverything = (e) => {
+  fire(e.target, "ujs:everythingStopped");
+  e.preventDefault();
+  e.stopPropagation();
+  e.stopImmediatePropagation();
+};
+var delegate = (element, selector, eventType, handler) => element.addEventListener(eventType, function(e) {
+  let { target } = e;
+  while (!!(target instanceof Element) && !matches(target, selector)) {
+    target = target.parentNode;
   }
-}
-var init_src = __esm({
-  "node_modules/@rails/actioncable/src/index.js"() {
-    init_connection();
-    init_connection_monitor();
-    init_consumer();
-    init_internal();
-    init_subscription();
-    init_subscriptions();
-    init_subscription_guarantor();
-    init_adapters();
-    init_logger();
+  if (target instanceof Element && handler.call(target, e) === false) {
+    e.preventDefault();
+    e.stopPropagation();
   }
 });
+var toArray = (e) => Array.prototype.slice.call(e);
+var serializeElement = (element, additionalParam) => {
+  let inputs = [element];
+  if (matches(element, "form")) {
+    inputs = toArray(element.elements);
+  }
+  const params = [];
+  inputs.forEach(function(input) {
+    if (!input.name || input.disabled) {
+      return;
+    }
+    if (matches(input, "fieldset[disabled] *")) {
+      return;
+    }
+    if (matches(input, "select")) {
+      toArray(input.options).forEach(function(option) {
+        if (option.selected) {
+          params.push({
+            name: input.name,
+            value: option.value
+          });
+        }
+      });
+    } else if (input.checked || ["radio", "checkbox", "submit"].indexOf(input.type) === -1) {
+      params.push({
+        name: input.name,
+        value: input.value
+      });
+    }
+  });
+  if (additionalParam) {
+    params.push(additionalParam);
+  }
+  return params.map(function(param) {
+    if (param.name) {
+      return `${encodeURIComponent(param.name)}=${encodeURIComponent(param.value)}`;
+    } else {
+      return param;
+    }
+  }).join("&");
+};
+var formElements = (form, selector) => {
+  if (matches(form, "form")) {
+    return toArray(form.elements).filter((el) => matches(el, selector));
+  } else {
+    return toArray(form.querySelectorAll(selector));
+  }
+};
+var handleConfirmWithRails = (rails) => function(e) {
+  if (!allowAction(this, rails)) {
+    stopEverything(e);
+  }
+};
+var confirm2 = (message, element) => window.confirm(message);
+var allowAction = function(element, rails) {
+  let callback;
+  const message = element.getAttribute("data-confirm");
+  if (!message) {
+    return true;
+  }
+  let answer = false;
+  if (fire(element, "confirm")) {
+    try {
+      answer = rails.confirm(message, element);
+    } catch (error) {
+    }
+    callback = fire(element, "confirm:complete", [answer]);
+  }
+  return answer && callback;
+};
+var handleDisabledElement = function(e) {
+  const element = this;
+  if (element.disabled) {
+    stopEverything(e);
+  }
+};
+var enableElement = (e) => {
+  let element;
+  if (e instanceof Event) {
+    if (isXhrRedirect(e)) {
+      return;
+    }
+    element = e.target;
+  } else {
+    element = e;
+  }
+  if (isContentEditable(element)) {
+    return;
+  }
+  if (matches(element, linkDisableSelector)) {
+    return enableLinkElement(element);
+  } else if (matches(element, buttonDisableSelector) || matches(element, formEnableSelector)) {
+    return enableFormElement(element);
+  } else if (matches(element, formSubmitSelector)) {
+    return enableFormElements(element);
+  }
+};
+var disableElement = (e) => {
+  const element = e instanceof Event ? e.target : e;
+  if (isContentEditable(element)) {
+    return;
+  }
+  if (matches(element, linkDisableSelector)) {
+    return disableLinkElement(element);
+  } else if (matches(element, buttonDisableSelector) || matches(element, formDisableSelector)) {
+    return disableFormElement(element);
+  } else if (matches(element, formSubmitSelector)) {
+    return disableFormElements(element);
+  }
+};
+var disableLinkElement = function(element) {
+  if (getData(element, "ujs:disabled")) {
+    return;
+  }
+  const replacement = element.getAttribute("data-disable-with");
+  if (replacement != null) {
+    setData(element, "ujs:enable-with", element.innerHTML);
+    element.innerHTML = replacement;
+  }
+  element.addEventListener("click", stopEverything);
+  return setData(element, "ujs:disabled", true);
+};
+var enableLinkElement = function(element) {
+  const originalText = getData(element, "ujs:enable-with");
+  if (originalText != null) {
+    element.innerHTML = originalText;
+    setData(element, "ujs:enable-with", null);
+  }
+  element.removeEventListener("click", stopEverything);
+  return setData(element, "ujs:disabled", null);
+};
+var disableFormElements = (form) => formElements(form, formDisableSelector).forEach(disableFormElement);
+var disableFormElement = function(element) {
+  if (getData(element, "ujs:disabled")) {
+    return;
+  }
+  const replacement = element.getAttribute("data-disable-with");
+  if (replacement != null) {
+    if (matches(element, "button")) {
+      setData(element, "ujs:enable-with", element.innerHTML);
+      element.innerHTML = replacement;
+    } else {
+      setData(element, "ujs:enable-with", element.value);
+      element.value = replacement;
+    }
+  }
+  element.disabled = true;
+  return setData(element, "ujs:disabled", true);
+};
+var enableFormElements = (form) => formElements(form, formEnableSelector).forEach((element) => enableFormElement(element));
+var enableFormElement = function(element) {
+  const originalText = getData(element, "ujs:enable-with");
+  if (originalText != null) {
+    if (matches(element, "button")) {
+      element.innerHTML = originalText;
+    } else {
+      element.value = originalText;
+    }
+    setData(element, "ujs:enable-with", null);
+  }
+  element.disabled = false;
+  return setData(element, "ujs:disabled", null);
+};
+var isXhrRedirect = function(event) {
+  const xhr = event.detail ? event.detail[0] : void 0;
+  return xhr && xhr.getResponseHeader("X-Xhr-Redirect");
+};
+var handleMethodWithRails = (rails) => function(e) {
+  const link = this;
+  const method = link.getAttribute("data-method");
+  if (!method) {
+    return;
+  }
+  if (isContentEditable(this)) {
+    return;
+  }
+  const href2 = rails.href(link);
+  const csrfToken$1 = csrfToken();
+  const csrfParam$1 = csrfParam();
+  const form = document.createElement("form");
+  let formContent = `<input name='_method' value='${method}' type='hidden' />`;
+  if (csrfParam$1 && csrfToken$1 && !isCrossDomain(href2)) {
+    formContent += `<input name='${csrfParam$1}' value='${csrfToken$1}' type='hidden' />`;
+  }
+  formContent += '<input type="submit" />';
+  form.method = "post";
+  form.action = href2;
+  form.target = link.target;
+  form.innerHTML = formContent;
+  form.style.display = "none";
+  document.body.appendChild(form);
+  form.querySelector('[type="submit"]').click();
+  stopEverything(e);
+};
+var isRemote = function(element) {
+  const value = element.getAttribute("data-remote");
+  return value != null && value !== "false";
+};
+var handleRemoteWithRails = (rails) => function(e) {
+  let data, method, url;
+  const element = this;
+  if (!isRemote(element)) {
+    return true;
+  }
+  if (!fire(element, "ajax:before")) {
+    fire(element, "ajax:stopped");
+    return false;
+  }
+  if (isContentEditable(element)) {
+    fire(element, "ajax:stopped");
+    return false;
+  }
+  const withCredentials = element.getAttribute("data-with-credentials");
+  const dataType = element.getAttribute("data-type") || "script";
+  if (matches(element, formSubmitSelector)) {
+    const button = getData(element, "ujs:submit-button");
+    method = getData(element, "ujs:submit-button-formmethod") || element.getAttribute("method") || "get";
+    url = getData(element, "ujs:submit-button-formaction") || element.getAttribute("action") || location.href;
+    if (method.toUpperCase() === "GET") {
+      url = url.replace(/\?.*$/, "");
+    }
+    if (element.enctype === "multipart/form-data") {
+      data = new FormData(element);
+      if (button != null) {
+        data.append(button.name, button.value);
+      }
+    } else {
+      data = serializeElement(element, button);
+    }
+    setData(element, "ujs:submit-button", null);
+    setData(element, "ujs:submit-button-formmethod", null);
+    setData(element, "ujs:submit-button-formaction", null);
+  } else if (matches(element, buttonClickSelector) || matches(element, inputChangeSelector)) {
+    method = element.getAttribute("data-method");
+    url = element.getAttribute("data-url");
+    data = serializeElement(element, element.getAttribute("data-params"));
+  } else {
+    method = element.getAttribute("data-method");
+    url = rails.href(element);
+    data = element.getAttribute("data-params");
+  }
+  ajax({
+    type: method || "GET",
+    url,
+    data,
+    dataType,
+    beforeSend(xhr, options) {
+      if (fire(element, "ajax:beforeSend", [xhr, options])) {
+        return fire(element, "ajax:send", [xhr]);
+      } else {
+        fire(element, "ajax:stopped");
+        return false;
+      }
+    },
+    success(...args) {
+      return fire(element, "ajax:success", args);
+    },
+    error(...args) {
+      return fire(element, "ajax:error", args);
+    },
+    complete(...args) {
+      return fire(element, "ajax:complete", args);
+    },
+    crossDomain: isCrossDomain(url),
+    withCredentials: withCredentials != null && withCredentials !== "false"
+  });
+  stopEverything(e);
+};
+var formSubmitButtonClick = function(e) {
+  const button = this;
+  const { form } = button;
+  if (!form) {
+    return;
+  }
+  if (button.name) {
+    setData(form, "ujs:submit-button", {
+      name: button.name,
+      value: button.value
+    });
+  }
+  setData(form, "ujs:formnovalidate-button", button.formNoValidate);
+  setData(form, "ujs:submit-button-formaction", button.getAttribute("formaction"));
+  return setData(form, "ujs:submit-button-formmethod", button.getAttribute("formmethod"));
+};
+var preventInsignificantClick = function(e) {
+  const link = this;
+  const method = (link.getAttribute("data-method") || "GET").toUpperCase();
+  const data = link.getAttribute("data-params");
+  const metaClick = e.metaKey || e.ctrlKey;
+  const insignificantMetaClick = metaClick && method === "GET" && !data;
+  const nonPrimaryMouseClick = e.button != null && e.button !== 0;
+  if (nonPrimaryMouseClick || insignificantMetaClick) {
+    e.stopImmediatePropagation();
+  }
+};
+var Rails = {
+  $,
+  ajax,
+  buttonClickSelector,
+  buttonDisableSelector,
+  confirm: confirm2,
+  cspNonce,
+  csrfToken,
+  csrfParam,
+  CSRFProtection,
+  delegate,
+  disableElement,
+  enableElement,
+  fileInputSelector,
+  fire,
+  formElements,
+  formEnableSelector,
+  formDisableSelector,
+  formInputClickSelector,
+  formSubmitButtonClick,
+  formSubmitSelector,
+  getData,
+  handleDisabledElement,
+  href,
+  inputChangeSelector,
+  isCrossDomain,
+  linkClickSelector,
+  linkDisableSelector,
+  loadCSPNonce,
+  matches,
+  preventInsignificantClick,
+  refreshCSRFTokens,
+  serializeElement,
+  setData,
+  stopEverything
+};
+var handleConfirm = handleConfirmWithRails(Rails);
+Rails.handleConfirm = handleConfirm;
+var handleMethod = handleMethodWithRails(Rails);
+Rails.handleMethod = handleMethod;
+var handleRemote = handleRemoteWithRails(Rails);
+Rails.handleRemote = handleRemote;
+var start = function() {
+  if (window._rails_loaded) {
+    throw new Error("rails-ujs has already been loaded!");
+  }
+  window.addEventListener("pageshow", function() {
+    $(formEnableSelector).forEach(function(el) {
+      if (getData(el, "ujs:disabled")) {
+        enableElement(el);
+      }
+    });
+    $(linkDisableSelector).forEach(function(el) {
+      if (getData(el, "ujs:disabled")) {
+        enableElement(el);
+      }
+    });
+  });
+  delegate(document, linkDisableSelector, "ajax:complete", enableElement);
+  delegate(document, linkDisableSelector, "ajax:stopped", enableElement);
+  delegate(document, buttonDisableSelector, "ajax:complete", enableElement);
+  delegate(document, buttonDisableSelector, "ajax:stopped", enableElement);
+  delegate(document, linkClickSelector, "click", preventInsignificantClick);
+  delegate(document, linkClickSelector, "click", handleDisabledElement);
+  delegate(document, linkClickSelector, "click", handleConfirm);
+  delegate(document, linkClickSelector, "click", disableElement);
+  delegate(document, linkClickSelector, "click", handleRemote);
+  delegate(document, linkClickSelector, "click", handleMethod);
+  delegate(document, buttonClickSelector, "click", preventInsignificantClick);
+  delegate(document, buttonClickSelector, "click", handleDisabledElement);
+  delegate(document, buttonClickSelector, "click", handleConfirm);
+  delegate(document, buttonClickSelector, "click", disableElement);
+  delegate(document, buttonClickSelector, "click", handleRemote);
+  delegate(document, inputChangeSelector, "change", handleDisabledElement);
+  delegate(document, inputChangeSelector, "change", handleConfirm);
+  delegate(document, inputChangeSelector, "change", handleRemote);
+  delegate(document, formSubmitSelector, "submit", handleDisabledElement);
+  delegate(document, formSubmitSelector, "submit", handleConfirm);
+  delegate(document, formSubmitSelector, "submit", handleRemote);
+  delegate(document, formSubmitSelector, "submit", (e) => setTimeout(() => disableElement(e), 13));
+  delegate(document, formSubmitSelector, "ajax:send", disableElement);
+  delegate(document, formSubmitSelector, "ajax:complete", enableElement);
+  delegate(document, formInputClickSelector, "click", preventInsignificantClick);
+  delegate(document, formInputClickSelector, "click", handleDisabledElement);
+  delegate(document, formInputClickSelector, "click", handleConfirm);
+  delegate(document, formInputClickSelector, "click", formSubmitButtonClick);
+  document.addEventListener("DOMContentLoaded", refreshCSRFTokens);
+  document.addEventListener("DOMContentLoaded", loadCSPNonce);
+  return window._rails_loaded = true;
+};
+Rails.start = start;
+if (typeof jQuery !== "undefined" && jQuery && jQuery.ajax) {
+  if (jQuery.rails) {
+    throw new Error("If you load both jquery_ujs and rails-ujs, use rails-ujs only.");
+  }
+  jQuery.rails = Rails;
+  jQuery.ajaxPrefilter(function(options, originalOptions, xhr) {
+    if (!options.crossDomain) {
+      return CSRFProtection(xhr);
+    }
+  });
+}
 
 // node_modules/@hotwired/turbo/dist/turbo.es2017-esm.js
 (function() {
@@ -858,9 +879,9 @@ function activateScriptElement(element) {
     return element;
   } else {
     const createdScriptElement = document.createElement("script");
-    const cspNonce = getMetaContent("csp-nonce");
-    if (cspNonce) {
-      createdScriptElement.nonce = cspNonce;
+    const cspNonce2 = getMetaContent("csp-nonce");
+    if (cspNonce2) {
+      createdScriptElement.nonce = cspNonce2;
     }
     createdScriptElement.textContent = element.textContent;
     createdScriptElement.async = false;
@@ -1029,11 +1050,11 @@ function fetchMethodFromString(method) {
   }
 }
 var FetchRequest = class {
-  constructor(delegate, method, location2, body = new URLSearchParams(), target = null) {
+  constructor(delegate2, method, location2, body = new URLSearchParams(), target = null) {
     this.abortController = new AbortController();
     this.resolveRequestPromise = (_value) => {
     };
-    this.delegate = delegate;
+    this.delegate = delegate2;
     this.method = method;
     this.headers = this.defaultHeaders;
     this.body = body;
@@ -1137,7 +1158,7 @@ var FetchRequest = class {
   }
 };
 var AppearanceObserver = class {
-  constructor(delegate, element) {
+  constructor(delegate2, element) {
     this.started = false;
     this.intersect = (entries) => {
       const lastEntry = entries.slice(-1)[0];
@@ -1145,7 +1166,7 @@ var AppearanceObserver = class {
         this.delegate.elementAppearedInViewport(this.element);
       }
     };
-    this.delegate = delegate;
+    this.delegate = delegate2;
     this.element = element;
     this.intersectionObserver = new IntersectionObserver(this.intersect);
   }
@@ -1214,9 +1235,9 @@ var FormSubmission = class _FormSubmission {
   static confirmMethod(message, _element, _submitter) {
     return Promise.resolve(confirm(message));
   }
-  constructor(delegate, formElement, submitter, mustRedirect = false) {
+  constructor(delegate2, formElement, submitter, mustRedirect = false) {
     this.state = FormSubmissionState.initialized;
-    this.delegate = delegate;
+    this.delegate = delegate2;
     this.formElement = formElement;
     this.submitter = submitter;
     this.formData = buildFormData(formElement, submitter);
@@ -1457,7 +1478,7 @@ function queryPermanentElementsAll(node) {
   return node.querySelectorAll("[id][data-turbo-permanent]");
 }
 var FormSubmitObserver = class {
-  constructor(delegate, eventTarget) {
+  constructor(delegate2, eventTarget) {
     this.started = false;
     this.submitCaptured = () => {
       this.eventTarget.removeEventListener("submit", this.submitBubbled, false);
@@ -1474,7 +1495,7 @@ var FormSubmitObserver = class {
         }
       }
     };
-    this.delegate = delegate;
+    this.delegate = delegate2;
     this.eventTarget = eventTarget;
   }
   start() {
@@ -1507,12 +1528,12 @@ function submissionDoesNotTargetIFrame(form, submitter) {
   }
 }
 var View = class {
-  constructor(delegate, element) {
+  constructor(delegate2, element) {
     this.resolveRenderPromise = (_value) => {
     };
     this.resolveInterceptionPromise = (_value) => {
     };
-    this.delegate = delegate;
+    this.delegate = delegate2;
     this.element = element;
   }
   scrollToAnchor(anchor) {
@@ -1605,7 +1626,7 @@ var FrameView = class extends View {
   }
 };
 var LinkInterceptor = class {
-  constructor(delegate, element) {
+  constructor(delegate2, element) {
     this.clickBubbled = (event) => {
       if (this.respondsToEventTarget(event.target)) {
         this.clickEvent = event;
@@ -1626,7 +1647,7 @@ var LinkInterceptor = class {
     this.willVisit = (_event) => {
       delete this.clickEvent;
     };
-    this.delegate = delegate;
+    this.delegate = delegate2;
     this.element = element;
   }
   start() {
@@ -1645,7 +1666,7 @@ var LinkInterceptor = class {
   }
 };
 var LinkClickObserver = class {
-  constructor(delegate, eventTarget) {
+  constructor(delegate2, eventTarget) {
     this.started = false;
     this.clickCaptured = () => {
       this.eventTarget.removeEventListener("click", this.clickBubbled, false);
@@ -1664,7 +1685,7 @@ var LinkClickObserver = class {
         }
       }
     };
-    this.delegate = delegate;
+    this.delegate = delegate2;
     this.eventTarget = eventTarget;
   }
   start() {
@@ -1701,8 +1722,8 @@ function doesNotTargetIFrame(anchor) {
   }
 }
 var FormLinkClickObserver = class {
-  constructor(delegate, element) {
-    this.delegate = delegate;
+  constructor(delegate2, element) {
+    this.delegate = delegate2;
     this.linkInterceptor = new LinkClickObserver(this, element);
   }
   start() {
@@ -1746,14 +1767,14 @@ var FormLinkClickObserver = class {
   }
 };
 var Bardo = class {
-  static async preservingPermanentElements(delegate, permanentElementMap, callback) {
-    const bardo = new this(delegate, permanentElementMap);
+  static async preservingPermanentElements(delegate2, permanentElementMap, callback) {
+    const bardo = new this(delegate2, permanentElementMap);
     bardo.enter();
     await callback();
     bardo.leave();
   }
-  constructor(delegate, permanentElementMap) {
-    this.delegate = delegate;
+  constructor(delegate2, permanentElementMap) {
+    this.delegate = delegate2;
     this.permanentElementMap = permanentElementMap;
   }
   enter() {
@@ -1872,9 +1893,9 @@ var FrameRenderer = class extends Renderer {
       currentElement.appendChild(sourceRange.extractContents());
     }
   }
-  constructor(delegate, currentSnapshot, newSnapshot, renderElement, isPreview, willRender = true) {
+  constructor(delegate2, currentSnapshot, newSnapshot, renderElement, isPreview, willRender = true) {
     super(currentSnapshot, newSnapshot, renderElement, isPreview, willRender);
-    this.delegate = delegate;
+    this.delegate = delegate2;
   }
   get shouldRender() {
     return true;
@@ -2199,7 +2220,7 @@ var SystemStatusCode;
   SystemStatusCode2[SystemStatusCode2["contentTypeMismatch"] = -2] = "contentTypeMismatch";
 })(SystemStatusCode || (SystemStatusCode = {}));
 var Visit = class {
-  constructor(delegate, location2, restorationIdentifier, options = {}) {
+  constructor(delegate2, location2, restorationIdentifier, options = {}) {
     this.identifier = uuid();
     this.timingMetrics = {};
     this.followedRedirect = false;
@@ -2209,7 +2230,7 @@ var Visit = class {
     this.acceptsStreamResponse = false;
     this.snapshotCached = false;
     this.state = VisitState.initialized;
-    this.delegate = delegate;
+    this.delegate = delegate2;
     this.location = location2;
     this.restorationIdentifier = restorationIdentifier || uuid();
     const { action, historyChanged, referrer, snapshot, snapshotHTML, response, visitCachedSnapshot, willRender, updateHistory, shouldCacheSnapshot, acceptsStreamResponse } = Object.assign(Object.assign({}, defaultOptions), options);
@@ -2710,7 +2731,7 @@ var FrameRedirector = class {
   }
 };
 var History = class {
-  constructor(delegate) {
+  constructor(delegate2) {
     this.restorationIdentifier = uuid();
     this.restorationData = {};
     this.started = false;
@@ -2730,7 +2751,7 @@ var History = class {
       await nextMicrotask();
       this.pageLoaded = true;
     };
-    this.delegate = delegate;
+    this.delegate = delegate2;
   }
   start() {
     if (!this.started) {
@@ -2788,8 +2809,8 @@ var History = class {
   }
 };
 var Navigator = class {
-  constructor(delegate) {
-    this.delegate = delegate;
+  constructor(delegate2) {
+    this.delegate = delegate2;
   }
   proposeVisit(location2, options = {}) {
     if (this.delegate.allowsVisitingLocationWithAction(location2, options.action)) {
@@ -2907,7 +2928,7 @@ var PageStage;
   PageStage2[PageStage2["complete"] = 3] = "complete";
 })(PageStage || (PageStage = {}));
 var PageObserver = class {
-  constructor(delegate) {
+  constructor(delegate2) {
     this.stage = PageStage.initial;
     this.started = false;
     this.interpretReadyState = () => {
@@ -2921,7 +2942,7 @@ var PageObserver = class {
     this.pageWillUnload = () => {
       this.delegate.pageWillUnload();
     };
-    this.delegate = delegate;
+    this.delegate = delegate2;
   }
   start() {
     if (!this.started) {
@@ -2958,12 +2979,12 @@ var PageObserver = class {
   }
 };
 var ScrollObserver = class {
-  constructor(delegate) {
+  constructor(delegate2) {
     this.started = false;
     this.onScroll = () => {
       this.updatePosition({ x: window.pageXOffset, y: window.pageYOffset });
     };
-    this.delegate = delegate;
+    this.delegate = delegate2;
   }
   start() {
     if (!this.started) {
@@ -3007,7 +3028,7 @@ function getPermanentElementMapForFragment(fragment) {
   return permanentElementMap;
 }
 var StreamObserver = class {
-  constructor(delegate) {
+  constructor(delegate2) {
     this.sources = /* @__PURE__ */ new Set();
     this.started = false;
     this.inspectFetchResponse = (event) => {
@@ -3022,7 +3043,7 @@ var StreamObserver = class {
         this.receiveMessageHTML(event.data);
       }
     };
-    this.delegate = delegate;
+    this.delegate = delegate2;
   }
   start() {
     if (!this.started) {
@@ -3332,9 +3353,9 @@ var PageView = class extends View {
   }
 };
 var Preloader = class {
-  constructor(delegate) {
+  constructor(delegate2) {
     this.selector = "a[data-turbo-preload]";
-    this.delegate = delegate;
+    this.delegate = delegate2;
   }
   get snapshotCache() {
     return this.delegate.navigator.view.snapshotCache;
@@ -3722,7 +3743,7 @@ var StreamActions = {
 var session = new Session();
 var cache = new Cache(session);
 var { navigator: navigator$1 } = session;
-function start() {
+function start2() {
   session.start();
 }
 function registerAdapter(adapter) {
@@ -3761,7 +3782,7 @@ var Turbo = /* @__PURE__ */ Object.freeze({
   PageRenderer,
   PageSnapshot,
   FrameRenderer,
-  start,
+  start: start2,
   registerAdapter,
   visit,
   connectStreamSource,
@@ -4389,122 +4410,9 @@ if (customElements.get("turbo-stream-source") === void 0) {
   }
 })();
 window.Turbo = Turbo;
-start();
+start2();
 
-// node_modules/@hotwired/turbo-rails/app/javascript/turbo/cable.js
-var consumer;
-async function getConsumer() {
-  return consumer || setConsumer(createConsumer2().then(setConsumer));
-}
-function setConsumer(newConsumer) {
-  return consumer = newConsumer;
-}
-async function createConsumer2() {
-  const { createConsumer: createConsumer3 } = await Promise.resolve().then(() => (init_src(), src_exports));
-  return createConsumer3();
-}
-async function subscribeTo(channel, mixin) {
-  const { subscriptions } = await getConsumer();
-  return subscriptions.create(channel, mixin);
-}
-
-// node_modules/@hotwired/turbo-rails/app/javascript/turbo/snakeize.js
-function walk(obj) {
-  if (!obj || typeof obj !== "object")
-    return obj;
-  if (obj instanceof Date || obj instanceof RegExp)
-    return obj;
-  if (Array.isArray(obj))
-    return obj.map(walk);
-  return Object.keys(obj).reduce(function(acc, key) {
-    var camel = key[0].toLowerCase() + key.slice(1).replace(/([A-Z]+)/g, function(m, x) {
-      return "_" + x.toLowerCase();
-    });
-    acc[camel] = walk(obj[key]);
-    return acc;
-  }, {});
-}
-
-// node_modules/@hotwired/turbo-rails/app/javascript/turbo/cable_stream_source_element.js
-var TurboCableStreamSourceElement = class extends HTMLElement {
-  async connectedCallback() {
-    connectStreamSource(this);
-    this.subscription = await subscribeTo(this.channel, {
-      received: this.dispatchMessageEvent.bind(this),
-      connected: this.subscriptionConnected.bind(this),
-      disconnected: this.subscriptionDisconnected.bind(this)
-    });
-  }
-  disconnectedCallback() {
-    disconnectStreamSource(this);
-    if (this.subscription)
-      this.subscription.unsubscribe();
-  }
-  dispatchMessageEvent(data) {
-    const event = new MessageEvent("message", { data });
-    return this.dispatchEvent(event);
-  }
-  subscriptionConnected() {
-    this.setAttribute("connected", "");
-  }
-  subscriptionDisconnected() {
-    this.removeAttribute("connected");
-  }
-  get channel() {
-    const channel = this.getAttribute("channel");
-    const signed_stream_name = this.getAttribute("signed-stream-name");
-    return { channel, signed_stream_name, ...walk({ ...this.dataset }) };
-  }
-};
-if (customElements.get("turbo-cable-stream-source") === void 0) {
-  customElements.define("turbo-cable-stream-source", TurboCableStreamSourceElement);
-}
-
-// node_modules/@hotwired/turbo-rails/app/javascript/turbo/fetch_requests.js
-function encodeMethodIntoRequestBody(event) {
-  if (event.target instanceof HTMLFormElement) {
-    const { target: form, detail: { fetchOptions } } = event;
-    form.addEventListener("turbo:submit-start", ({ detail: { formSubmission: { submitter } } }) => {
-      const body = isBodyInit(fetchOptions.body) ? fetchOptions.body : new URLSearchParams();
-      const method = determineFetchMethod(submitter, body, form);
-      if (!/get/i.test(method)) {
-        if (/post/i.test(method)) {
-          body.delete("_method");
-        } else {
-          body.set("_method", method);
-        }
-        fetchOptions.method = "post";
-      }
-    }, { once: true });
-  }
-}
-function determineFetchMethod(submitter, body, form) {
-  const formMethod = determineFormMethod(submitter);
-  const overrideMethod = body.get("_method");
-  const method = form.getAttribute("method") || "get";
-  if (typeof formMethod == "string") {
-    return formMethod;
-  } else if (typeof overrideMethod == "string") {
-    return overrideMethod;
-  } else {
-    return method;
-  }
-}
-function determineFormMethod(submitter) {
-  if (submitter instanceof HTMLButtonElement || submitter instanceof HTMLInputElement) {
-    if (submitter.hasAttribute("formmethod")) {
-      return submitter.formMethod;
-    } else {
-      return null;
-    }
-  } else {
-    return null;
-  }
-}
-function isBodyInit(body) {
-  return body instanceof FormData || body instanceof URLSearchParams;
-}
-
-// node_modules/@hotwired/turbo-rails/app/javascript/turbo/index.js
-addEventListener("turbo:before-fetch-request", encodeMethodIntoRequestBody);
+// app/javascript/application.js
+Rails.start();
+start2();
 //# sourceMappingURL=/assets/application.js.map
