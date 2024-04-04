@@ -39,5 +39,6 @@ ENTRYPOINT ["entrypoint.sh"]
 # ポートの公開
 EXPOSE 3002
 
+
 # Railsサーバーの起動コマンド
 CMD ["rails", "server", "-b", "0.0.0.0"]
