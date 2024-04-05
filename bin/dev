@@ -1,22 +1,11 @@
 #!/usr/bin/env sh
 
-# Check if Foreman is installed
-if ! gem list --installed --exact foreman; then
-  echo "Installing Foreman..."
+if gem list --no-installed --exact --silent foreman; then
+  echo "Installing foreman..."
   gem install foreman
 fi
 
-# Set the default port to 3005 if not specified
-export PORT="${PORT:-3005}"
+# Default to port 3000 if not specified
+export PORT="${PORT:-3000}"
 
-# Check if the server PID file exists and if the server process is not running, then remove the PID file
-pidfile='./tmp/pids/server.pid'
-if [ -f "$pidfile" ]; then
-  if ! ps $(cat "$pidfile") > /dev/null 2>&1; then
-    echo "Removing stale server PID file."
-    rm -f "$pidfile"
-  fi
-fi
-
-# Start Foreman with the development procfile
 exec foreman start -f Procfile.dev "$@"
