@@ -1,5 +1,3 @@
-import Rails from "@rails/ujs";
-import * as Turbo from "@hotwired/turbo";
-
-Rails.start();
-Turbo.start();
+// Entry point for the build script in your package.json
+import "@hotwired/turbo-rails"
+import "./controllers"

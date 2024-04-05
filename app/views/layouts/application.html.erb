@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>ViMemo</title>
+    <title>Back</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%= stylesheet_link_tag "application" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
   </head>
 
   <body>
     <% if logged_in? %>
-      <%= render 'shared/header' %>
+      <%= render partial: 'shared/header' %>
     <% else %>
-      <%= render 'shared/before_login_header' %>
+      <%= render partial: 'shared/before_login_header' %>
     <% end %>
     <%= yield %>
-    <%= render 'shared/footer' %>
+    <%= render partial: 'shared/footer' %>
   </body>
 </html>
