@@ -4,8 +4,8 @@ ENV LANG C.UTF-8
 ENV TZ Asia/Tokyo
 
 # # Node.jsのインストール
-# RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
-#     apt-get install -y nodejs
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs
 
 # # # Yarnのインストール
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
