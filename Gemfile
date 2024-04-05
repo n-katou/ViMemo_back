@@ -75,3 +75,5 @@ group :test do
 end
 
 gem 'sorcery', "0.16.3"
+
+gem "dockerfile-rails", ">= 1.6", :group => :development
