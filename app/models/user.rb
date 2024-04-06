@@ -11,9 +11,7 @@ class User < ApplicationRecord
   validates :reset_password_token, uniqueness: true, allow_nil: true
 
   def deliver_reset_password_instructions!
-    # トークンを生成
     generate_reset_password_token!
-    # メール送信処理
     UserMailer.reset_password_email(self).deliver_now
   end
 end

@@ -1,6 +1,13 @@
 Rails.application.routes.draw do
-  mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  if Rails.env.development?
+    if ENV['ACTUAL_EMAIL_SENDING'] == 'true'
+      # 実際のメール送信を行う設定
+      # このブロックは空にしておくか、実際のメール送信に関連する設定をここに記述します
+    else
+      # LetterOpenerWebを使ってメールをプレビューする
+      mount LetterOpenerWeb::Engine, at: "/letter_opener"
+    end
+  end
 
   # Defines the root path route ("/")
   # root "articles#index"
