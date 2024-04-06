@@ -1,6 +1,7 @@
 class UsersController < ApplicationController
   skip_before_action :require_login, only: %i[new create]
-  before_action :set_user, only: %i[edit update show]
+  before_action :set_user, only: %i[update]
+  before_action :set_current_user, only: %i[edit mypage]
 
   def new
     @user = User.new
@@ -11,17 +12,18 @@ class UsersController < ApplicationController
     if @user.save
       redirect_to root_path
     else
+      flash[:error] = @user.errors.full_messages.to_sentence
       render :new
     end
   end
 
-  def show; end
+  def mypage; end
 
   def edit; end
 
   def update
     if @user.update(user_params)
-      redirect_to user_path(@user)
+      redirect_to users_mypage_path
     else
       render :edit
     end
@@ -35,5 +37,9 @@ class UsersController < ApplicationController
 
   def set_user
     @user = User.find(params[:id])
+  end
+
+  def set_current_user
+    @user = current_user
   end
 end

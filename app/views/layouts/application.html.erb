@@ -16,7 +16,15 @@
     <% else %>
       <%= render partial: 'shared/before_login_header' %>
     <% end %>
-    <%= yield %>
-    <%= render partial: 'shared/footer' %>
+    <div class="container-fluid">
+      <div class="row">
+        <%#= render '/shared/sidebar' %>
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <%= render 'shared/flash_message' %>
+          <%= yield %>
+        </main>
+        <%= render partial: 'shared/footer' %>
+      </div>
+    </div>
   </body>
 </html>
