@@ -21,7 +21,7 @@ Rails.application.configure do
     authentication: 'plain',
     enable_starttls_auto: true
   }
-  config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+  config.action_mailer.default_url_options = { host: 'vimemoback.fly.dev', protocol: 'https' }
   
   #開発環境用の設定
   # config.action_mailer.delivery_method = :letter_opener_web
