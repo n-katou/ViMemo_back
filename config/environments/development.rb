@@ -9,24 +9,31 @@ Rails.application.configure do
   config.cache_classes = false
   config.hosts << "vimemoback.fly.dev"
 
-  config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
-
+  
   #本番環境用の設定
-  # config.action_mailer.delivery_method = :smtp
-  # config.action_mailer.smtp_settings = {
-  #   address: 'smtp.gmail.com',
-  #   port: 587,
-  #   domain: 'gmail.com',
-  #   user_name: ENV['EMAIL_USER_NAME'],
-  #   password: ENV['EMAIL_PASSWORD'],
-  #   authentication: 'plain',
-  #   enable_starttls_auto: true
-  # }
+  if ENV['ACTUAL_EMAIL_SENDING'] == 'true'
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = {
+      address: 'smtp.gmail.com',
+      port: 587,
+      domain: 'gmail.com',
+      user_name: ENV['EMAIL_USER_NAME'],
+      password: ENV['EMAIL_PASSWORD'],
+      authentication: 'plain',
+      enable_starttls_auto: true
+    }
+  else
+    config.action_mailer.delivery_method = :letter_opener_web
+  end
 
-  config.action_mailer.delivery_method = :letter_opener_web
-  config.action_mailer.default_url_options = Settings.default_url_options.to_h
-  config.action_mailer.delivery_method = :letter_opener
-  config.action_mailer.perform_deliveries = true
+  config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+  
+  #開発環境用の設定
+  # config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+  # config.action_mailer.delivery_method = :letter_opener_web
+  # config.action_mailer.default_url_options = Settings.default_url_options.to_h
+  # config.action_mailer.delivery_method = :letter_opener
+  # config.action_mailer.perform_deliveries = true
 
   # Do not eager load code on boot.
   config.eager_load = false
@@ -81,8 +88,6 @@ Rails.application.configure do
 
   config.assets.compile = true
   config.assets.debug = false
-
- 
 
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true
