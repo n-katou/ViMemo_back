@@ -1,5 +1,7 @@
 class ApplicationController < ActionController::Base
   before_action :require_login
+  layout 'layouts/application'
+  add_flash_types :success, :danger
 
   private
 

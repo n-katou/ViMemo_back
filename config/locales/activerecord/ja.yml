@@ -1,0 +1,22 @@
+ja:
+  activerecord:
+    models:
+      user: ユーザー
+      viedo: ビデオ
+    attributes:
+      user:
+        email: メールアドレス
+        name: 名前
+        avatar: アバター
+        password: パスワード
+        password_confirmation: パスワード確認
+        role: 権限
+  attributes:
+    id: ID
+    created_at: 作成日時
+    updated_at: 更新日時
+  enums:
+    user:
+      role:
+        general: 一般
+        admin: 管理者

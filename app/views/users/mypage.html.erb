@@ -1,0 +1,19 @@
+<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+  <div class="position-sticky pt-3 sidebar-sticky">
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <%= User.human_attribute_name(:avatar) %>
+        <%= image_tag(current_user.avatar.url, size: "150x150") %>
+      </li>
+      <li class="nav-item">
+        <%= User.human_attribute_name(:name) %>
+        <%= current_user.name %>
+      </li>
+      <li class="nav-item">
+        <%= User.human_attribute_name(:email) %>
+        <%= current_user.email %>
+      </li>
+    </ul>
+    <%= link_to t('defaults.edit'), edit_mypage_path, class: 'btn btn-success' %>
+  </div>
+</nav>
