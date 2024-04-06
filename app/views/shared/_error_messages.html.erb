@@ -1,0 +1,9 @@
+<% if local_assigns[:object] && local_assigns[:object].errors.any? %>
+  <div id="errors" class="alert alert-danger">
+    <ul>
+    <% local_assigns[:object].errors.full_messages.each do |message| %>
+      <li><%= message %></li>
+    <% end %>
+    </ul>
+  </div>
+<% end %>
