@@ -11,21 +11,16 @@ Rails.application.configure do
 
   
   #本番環境用の設定
-  if ENV['ACTUAL_EMAIL_SENDING'] == 'true'
-    config.action_mailer.delivery_method = :smtp
-    config.action_mailer.smtp_settings = {
-      address: 'smtp.gmail.com',
-      port: 587,
-      domain: 'gmail.com',
-      user_name: ENV['EMAIL_USER_NAME'],
-      password: ENV['EMAIL_PASSWORD'],
-      authentication: 'plain',
-      enable_starttls_auto: true
-    }
-  else
-    config.action_mailer.delivery_method = :letter_opener_web
-  end
-
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address: 'smtp.gmail.com',
+    port: 587,
+    domain: 'gmail.com',
+    user_name: ENV['EMAIL_USER_NAME'],
+    password: ENV['EMAIL_PASSWORD'],
+    authentication: 'plain',
+    enable_starttls_auto: true
+  }
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
   
   #開発環境用の設定
@@ -64,7 +59,7 @@ Rails.application.configure do
   config.active_storage.service = :local
 
   # Don't care if the mailer can't send.
-  config.action_mailer.raise_delivery_errors = false
+  config.action_mailer.raise_delivery_errors = true
 
   config.action_mailer.perform_caching = false
 
