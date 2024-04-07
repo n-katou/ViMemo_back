@@ -20,10 +20,15 @@ class GoogleOauthsController < ApplicationController
       auto_login(@user)
       redirect_to root_path, notice: "ログインしました！"
     else
-      redirect_to root_path, alert: "ログインに失敗しました！"
+      begin
+        @user = create_from(provider)
+        reset_session
+        auto_login(@user)
+        redirect_to root_path, notice: "Googleアカウントでログインしました！"
+      rescue => e
+        Rails.logger.error { "ログイン処理中にエラーが発生しました: #{e.message}" }
+        redirect_to login_path, alert: "ログインに失敗しました！"
+      end
     end
-  rescue => e
-    Rails.logger.error { "ログイン処理中にエラーが発生しました: #{e.message}" }
-    redirect_to root_path, alert: "ログインに失敗しました！"
   end
 end
