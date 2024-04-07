@@ -4,6 +4,7 @@ class GoogleOauthsController < ApplicationController
   def oauth
     client_id = ENV['GOOGLE_CLIENT_ID']
     redirect_uri = "https://vimemoback.fly.dev/oauth/callback?provider=google"
+    # redirect_uri = "http://localhost:3000/oauth/callback?provider=google"
     scope = "email profile"
     state = "SOME_STATE_VALUE"
 
@@ -21,7 +22,7 @@ class GoogleOauthsController < ApplicationController
       redirect_to root_path, notice: "ログインしました！"
     else
       begin
-        @user = create_from(provider)
+        @user = create_from_google(service.user_info)
         reset_session
         auto_login(@user)
         redirect_to root_path, notice: "Googleアカウントでログインしました！"
@@ -30,5 +31,16 @@ class GoogleOauthsController < ApplicationController
         redirect_to login_path, alert: "ログインに失敗しました！"
       end
     end
+  end
+
+  private
+
+  def create_from_google(user_info)
+    user = User.new
+    user.email = user_info[:email]
+    user.is_valid = true
+    user.role = 0 
+    user.save!
+    user
   end
 end

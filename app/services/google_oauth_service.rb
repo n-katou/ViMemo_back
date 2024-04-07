@@ -4,6 +4,7 @@ class GoogleOauthService
     @client_id = ENV['GOOGLE_CLIENT_ID']
     @client_secret = ENV['GOOGLE_CLIENT_SECRET']
     @redirect_uri = "https://vimemoback.fly.dev/oauth/callback?provider=google"
+    # @redirect_uri = "http://localhost:3000/oauth/callback?provider=google"
   end
 
   def authenticate
@@ -32,9 +33,8 @@ class GoogleOauthService
 
   def find_or_create_user(user_info)
     User.find_or_create_by(email: user_info['email']) do |user|
-      user.first_name = user_info['first_name']
-      user.last_name = user_info['last_name']
-      # 他の必要なユーザー情報を設定
+      Rails.logger.info "User info name: #{user_info['name']}"
+      user.name = user_info['name']
     end
   end
 end
