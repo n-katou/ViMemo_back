@@ -81,3 +81,5 @@ gem 'carrierwave', '~> 2.0'
 gem 'config'
 gem 'letter_opener_web', '~> 2.0'
 gem 'dotenv-rails'
+
+gem 'omniauth-google-oauth2'
