@@ -1,4 +1,4 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: "aws.n.kato@gmail.com"
+  default from: "support@vimemo.com"
   layout "mailer"
 end
