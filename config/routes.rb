@@ -21,7 +21,7 @@ Rails.application.routes.draw do
   # セッション管理用のルーティング
   get 'login', to: 'user_sessions#new'
   post 'login', to: 'user_sessions#create'
-  delete '/logout', to: 'user_sessions#destroy'
+  delete 'logout', to: 'user_sessions#destroy'
   
 
   post 'oauth/callback', to: 'google_oauths#callback', as: :oauth_callback_post
@@ -29,6 +29,7 @@ Rails.application.routes.draw do
   get 'oauth/:provider', to: 'google_oauths#oauth', as: :auth_at_provider
 
   resources :youtube_videos, only: [:index, :show, :destroy] do
+    resources :notes, only: [:create, :destroy, :update, :edit]
     get 'fetch_videos_by_genre', on: :collection
   end
 end
