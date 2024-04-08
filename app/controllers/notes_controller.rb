@@ -1,5 +1,5 @@
 class NotesController < ApplicationController
-  before_action :set_video, only: [:create]
+  before_action :set_video, only: [:edit, :update, :destroy, :create]
 
   def create
     @youtube_video = YoutubeVideo.find(params[:youtube_video_id])
@@ -35,7 +35,7 @@ class NotesController < ApplicationController
   def update
     @note = Note.find(params[:id])
     if @note.update(note_params)
-      redirect_to youtube_video_path(@note.video), notice: 'メモが更新されました。'
+      redirect_to youtube_video_path(@note.youtube_video), notice: 'メモが更新されました。'
     else
       # エラー処理
       render :edit
@@ -43,7 +43,7 @@ class NotesController < ApplicationController
   end
 
   def edit
-    @note = Note.find(params[:id])
+    @note = @youtube_video.notes.find(params[:id])
     respond_to do |format|
       format.html 
     end
