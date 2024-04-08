@@ -8,4 +8,38 @@
 
 <%= link_to '削除', youtube_video_path(@youtube_video), data: { turbo_method: :delete, turbo_confirm: t('defaults.delete_confirm') }, class: 'btn btn-danger' %>
 
+<!-- メモの追加フォーム -->
+<%= render 'notes/form' %>
+
+<!-- メモの一覧表示 -->
+<div id="notes_list">
+  <h2>メモ一覧</h2>
+  <% if @youtube_video.notes.any? { |note| note.content.present? } %>
+    <% @youtube_video.notes.each do |note| %>
+      <% if note.content.present? %>
+        <div> 
+          <%= render 'notes/note', note: note %>
+        </div>
+      <% end %>
+    <% end %>
+  <% else %>
+    <p id="no_notes_message">メモがありません。</p>
+  <% end %>
+</div>
+
+<script>
+  document.addEventListener("turbo:submit-end", function(event) {
+    var form = document.getElementById("new_note_form");
+    if (form) {
+      form.reset(); // フォームの内容をリセット
+    }
+  });
+
+  function playFromTimestamp(seconds) {
+  // YouTube動画の埋め込みURLを更新
+    var videoUrl = "https://www.youtube.com/embed/<%= @youtube_video.youtube_id %>?start=" + seconds + "&autoplay=1";
+    document.getElementById('youtube-video').src = videoUrl;
+  }
+</script>
+
 <%= link_to '戻る', youtube_videos_path, class: 'btn btn-primary' %>

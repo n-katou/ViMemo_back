@@ -1,0 +1,7 @@
+<%= turbo_stream.remove "note-#{@note.id}" %>
+
+<% if @youtube_video.notes.empty? %>
+  <%= turbo_stream.update "notes_list" do %>
+    <p id="no_notes_message">メモがありません。</p>
+  <% end %>
+<% end %>

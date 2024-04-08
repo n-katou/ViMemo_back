@@ -1,0 +1,22 @@
+<%= turbo_stream.append "notes_list" do %>
+  <div id="note-<%= @note.id %>">
+    <p>
+      <strong>タイムスタンプ:</strong>
+      <%= link_to note.video_timestamp, '#', 
+            onclick: "playFromTimestamp(#{video_timestamp_to_seconds(note.video_timestamp)}); return false;", 
+            class: "timestamp-link" %>
+    </p>
+    <p><strong>メモ:</strong> <%= @note.content %></p>
+    <%= link_to '編集', edit_youtube_video_note_path(@youtube_video, @note),
+                data: { turbo_frame: dom_id(@note) }, class: 'btn btn-info' %>
+    <%= link_to '削除',
+            youtube_video_note_path(note.youtube_video, note),
+            method: :delete,
+            data: { turbo_confirm: t('defaults.delete_confirm'), turbo_method: :delete },
+            class: 'btn btn-danger' %>
+  </div>
+<% end %>
+
+<% if @youtube_video.notes.count == 1 %>
+  <%= turbo_stream.remove "no_notes_message" %>
+<% end %>
