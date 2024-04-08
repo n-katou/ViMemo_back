@@ -7,6 +7,7 @@
             class: "timestamp-link" %>
     </p>
     <p><strong>メモ:</strong> <%= @note.content %></p>
+    <%= link_to 'Xでシェア', "https://x.com/share?url=#{request.url}&text=#{ERB::Util.url_encode("【シェア】\nタイムスタンプ: #{note.video_timestamp} \nメモ: #{note.content} \nYouTube: https://www.youtube.com/watch?v=#{note.youtube_video.youtube_id}&t=#{video_timestamp_to_seconds(note.video_timestamp)}s")}", target: '_blank', class: 'btn btn-primary' %>
     <%= link_to '編集', edit_youtube_video_note_path(@youtube_video, @note),
                 data: { turbo_frame: dom_id(@note) }, class: 'btn btn-info' %>
     <%= link_to '削除',
