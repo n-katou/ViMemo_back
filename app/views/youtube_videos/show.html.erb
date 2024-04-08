@@ -1,0 +1,11 @@
+<h1><%= @youtube_video.title %></h1>
+<!-- 動画の埋め込み表示 -->
+<div>
+  <iframe id="youtube-video" width="560" height="315" src="https://www.youtube.com/embed/<%= @youtube_video.youtube_id %>" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+<p>公開日: <%= @youtube_video.published_at %></p>
+<p>動画時間: <%= format_duration(@youtube_video.duration) %></p>
+
+<%= link_to '削除', youtube_video_path(@youtube_video), data: { turbo_method: :delete, turbo_confirm: t('defaults.delete_confirm') }, class: 'btn btn-danger' %>
+
+<%= link_to '戻る', youtube_videos_path, class: 'btn btn-primary' %>

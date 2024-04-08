@@ -27,4 +27,8 @@ Rails.application.routes.draw do
   post 'oauth/callback', to: 'google_oauths#callback', as: :oauth_callback_post
   get 'oauth/callback', to: 'google_oauths#callback', as: :oauth_callback_get
   get 'oauth/:provider', to: 'google_oauths#oauth', as: :auth_at_provider
+
+  resources :youtube_videos, only: [:index, :show, :destroy] do
+    get 'fetch_videos_by_genre', on: :collection
+  end
 end
