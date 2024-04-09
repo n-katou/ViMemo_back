@@ -27,8 +27,8 @@ class NotesController < ApplicationController
     @note.destroy
   
     respond_to do |format|
-      format.html { redirect_to youtube_video_path(@youtube_video), notice: 'Note was successfully destroyed.' }
       format.turbo_stream
+      format.html { redirect_to youtube_video_path(@youtube_video), notice: 'Note was successfully destroyed.' }
     end
   end
 
