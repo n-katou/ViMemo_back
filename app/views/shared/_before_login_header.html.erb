@@ -1,9 +1,14 @@
-<header>
-  <div>
-    <ul class="navbar-nav ms-auto main-nav align-items-center">
-      <li class="nav-item">
-        <%= link_to t('header.login'), login_path, class: "nav-link" %>
-      </li>
-    </ul>
+<header class="bg-base-100">
+  <div class="navbar container mx-auto flex justify-between">
+    <div class="flex-initial">
+      <%= link_to 'ViMemo', root_path, class: "btn btn-ghost normal-case text-xl" %>
+    </div>
+    <div class="flex-initial">
+      <ul class="menu menu-horizontal p-0">
+        <li class="nav-item">
+          <%= link_to t('header.login'), login_path, class: "btn" %>
+        </li>
+      </ul>
+    </div>
   </div>
 </header>

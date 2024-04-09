@@ -1,6 +1,9 @@
-<h1><%= link_to youtube_video.title, youtube_video_path(youtube_video) %></h1>
+<h1>
+  <%= link_to youtube_video.title, youtube_video_path(youtube_video) %>
+</h1>
 <!-- 動画の埋め込み表示 -->
 <div>
   <iframe width="560" height="315" src="https://www.youtube.com/embed/<%= youtube_video.youtube_id %>" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 </div>
 <p>公開日: <%= youtube_video.published_at %></p>
+<p class='mb-4'>動画時間: <%= format_duration(youtube_video.duration) %></p>
