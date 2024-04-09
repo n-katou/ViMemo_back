@@ -14,13 +14,14 @@
 <!-- メモの一覧表示 -->
 <div id="notes_list">
   <h2>メモ一覧</h2>
-  <% if @youtube_video.notes.any? { |note| note.content.present? } %>
-    <% @youtube_video.notes.each do |note| %>
-      <% if note.content.present? %>
-        <div> 
-          <%= render 'notes/note', note: note %>
-        </div>
-      <% end %>
+  <% visible_notes = @youtube_video.notes.select do |note| 
+    note.content.present? && (note.is_visible || (current_user && note.user_id == current_user.id))
+  end %>
+  <% if visible_notes.any? %>
+    <% visible_notes.each do |note| %>
+      <div id="<%= dom_id(note) %>"> 
+        <%= render 'notes/note', note: note %>
+      </div>
     <% end %>
   <% else %>
     <p id="no_notes_message">メモがありません。</p>

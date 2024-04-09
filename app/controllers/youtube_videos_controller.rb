@@ -61,6 +61,13 @@ class YoutubeVideosController < ApplicationController
   # 特定のビデオを表示するアクション
   def show
     @youtube_video = YoutubeVideo.find(params[:id])
+  
+    # ログインしているかどうかを確認
+    if current_user
+      @notes = @youtube_video.notes
+    else
+      @notes = @youtube_video.notes.where(is_visible: true)
+    end
   end
 
   def destroy
