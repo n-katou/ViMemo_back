@@ -6,20 +6,20 @@
 <p>公開日: <%= @youtube_video.published_at %></p>
 <p>動画時間: <%= format_duration(@youtube_video.duration) %></p>
 
-<%= link_to '削除', youtube_video_path(@youtube_video), data: { turbo_method: :delete, turbo_confirm: t('defaults.delete_confirm') }, class: 'btn btn-danger' %>
+<%= link_to '削除', youtube_video_path(@youtube_video), data: { turbo_method: :delete, turbo_confirm: t('defaults.delete_confirm') }, class: 'btn btn-error' %>
 
 <!-- メモの追加フォーム -->
 <%= render 'notes/form' %>
 
 <!-- メモの一覧表示 -->
 <div id="notes_list">
-  <h2>メモ一覧</h2>
+  <h2 style="margin-top: 20px;">メモ一覧</h2>
   <% visible_notes = @youtube_video.notes.select do |note| 
     note.content.present? && (note.is_visible || (current_user && note.user_id == current_user.id))
   end %>
   <% if visible_notes.any? %>
     <% visible_notes.each do |note| %>
-      <div id="<%= dom_id(note) %>"> 
+      <div class="mb-4">
         <%= render 'notes/note', note: note %>
       </div>
     <% end %>
@@ -43,4 +43,4 @@
   }
 </script>
 
-<%= link_to '戻る', youtube_videos_path, class: 'btn btn-primary' %>
+<%= link_to '戻る', youtube_videos_path, class: 'btn btn-primary', style: 'margin-top: 20px;' %>

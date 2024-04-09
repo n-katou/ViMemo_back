@@ -11,7 +11,7 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "articles#index"
-  root 'tests#index'
+  root 'tops#index'
   # ユーザー登録機能用のルーティング
   get 'users/mypage', to: 'users#mypage'
   get 'users/edit_mypage', to: 'users#edit', as: 'edit_mypage'

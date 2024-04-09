@@ -1,17 +1,20 @@
 <div>
   <%= form_with model: [@youtube_video, @youtube_video.notes.build], id: "new_note_form", url: youtube_video_notes_path(@youtube_video), class: 'new_note', data: { turbo_frame: "note" } do |f| %>
-    <div class="form-group">
-      <%= f.label :video_timestamp, "タイムスタンプ" %>
-      <%= f.text_field :video_timestamp, class: 'form-control', placeholder: "例: '1:23'" %>
+    <div class="form-control mb-4">
+      <%= f.label :video_timestamp, "タイムスタンプ", class: 'label' %>
+      <div class="input-group">
+        <%= f.text_field :video_timestamp, class: 'input input-bordered w-full max-w-xs', placeholder: "例: '1:23'" %>
+      </div>
     </div>
-    <div class="form-group">
-      <%= f.label :content, "メモ" %>
-      <%= f.text_area :content, class: 'form-control', placeholder: "メモを入力" %>
+    <div class="form-control mb-4">
+      <%= f.label :content, "メモ", class: 'label' %>
+      <%= f.text_area :content, class: 'textarea textarea-bordered', placeholder: "メモを入力" %>
     </div>
-    <div class="form-group">
-      <%= f.label :is_visible, "表示" %>
-      <%= f.select :is_visible, [[ '表示する', true ], [ '表示しない', false ]], {}, { class: "form-select" } %>
+    <div class="form-control w-full max-w-xs">
+      <%= f.label :is_visible, "表示", class: "label" do %>
+      <% end %>
+      <%= f.select :is_visible, [['表示する', true], ['表示しない', false]], { disabled: true, selected: true }, { class: "select select-bordered" } %>
     </div>
-    <%= f.submit "投稿", class: 'btn btn-primary' %>
+    <%= f.submit "投稿", class: 'btn btn-primary mt-4' %>
   <% end %>
 </div>

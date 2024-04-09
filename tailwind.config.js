@@ -7,5 +7,8 @@ module.exports = {
   ],
   plugins: [
     require('daisyui')
-  ]
+  ],
+  daisyui: {
+    themes: ['light'] // デフォルトのテーマをライトに設定
+  }
 }
