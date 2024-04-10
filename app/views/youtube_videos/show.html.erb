@@ -1,7 +1,7 @@
 <h1><%= @youtube_video.title %></h1>
 <!-- 動画の埋め込み表示 -->
 <div>
-  <iframe id="youtube-video" width="560" height="315" src="https://www.youtube.com/embed/<%= @youtube_video.youtube_id %>" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  <iframe id="youtube-video" width="560" height="315" src="https://www.youtube.com/embed/<%= @youtube_video.youtube_id %>?playsinline=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 </div>
 <p>公開日: <%= @youtube_video.published_at %></p>
 <p>動画時間: <%= format_duration(@youtube_video.duration) %></p>
