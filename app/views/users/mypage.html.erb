@@ -1,4 +1,14 @@
 <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+  <h1>動画取得</h1>
+  <%= form_with url: fetch_videos_by_genre_youtube_videos_path, method: :get, local: true, class: "w-full md:w-1/2 px-3" do |form| %>
+      <div class="w-full">
+        <%= form.label :genre, "ジャンルまたはキーワード", class: "block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" %>
+        <%= form.text_field :genre, class: "input input-bordered w-full" %>
+        <div class="mt-4">
+          <%= form.submit "取得", class: "btn" %>
+        </div>
+      </div>
+  <% end %>
   <div class="position-sticky pt-3 sidebar-sticky">
     <ul class="nav flex-column">
       <li class="nav-item">
