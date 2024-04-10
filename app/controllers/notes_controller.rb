@@ -4,7 +4,14 @@ class NotesController < ApplicationController
   def create
     @youtube_video = YoutubeVideo.find(params[:youtube_video_id])
     @note = @youtube_video.notes.build(note_params)
-    @note.user_id = current_user.id 
+    @note.user_id = current_user.id
+
+    # フォームから送信された値を取得
+    minutes = params[:video_timestamp_minutes].to_i
+    seconds = params[:video_timestamp_seconds].to_i
+
+    # タイムスタンプを計算
+    @note.video_timestamp = format("%02d:%02d", minutes, seconds)
 
     respond_to do |format|
       if @note.save

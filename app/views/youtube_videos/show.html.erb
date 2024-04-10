@@ -37,9 +37,12 @@
   });
 
   function playFromTimestamp(seconds) {
-  // YouTube動画の埋め込みURLを更新
     var videoUrl = "https://www.youtube.com/embed/<%= @youtube_video.youtube_id %>?start=" + seconds + "&autoplay=1";
-    document.getElementById('youtube-video').src = videoUrl;
+    var videoFrame = document.getElementById('youtube-video');
+    videoFrame.src = videoUrl;
+
+    // モバイルデバイスでの再生を確実にするための追加の処理
+    videoFrame.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
   }
 </script>
 
