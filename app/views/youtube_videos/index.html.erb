@@ -1,7 +1,7 @@
 <div class="container mx-auto mb-5 pt-2">
   <h1 class="text-3xl font-bold mb-4">Youtubeビデオ一覧</h1>
   <div class="flex flex-wrap -mx-3 mb-6">
-    <%= search_form_for @q, url: youtube_videos_path, method: :get, class: "w-full md:w-1/2 px-3 mb-6" do |f| %>
+    <%= search_form_for @q, url: youtube_videos_path, method: :get, class: "w-full md:w-1/2 px-3 mb-3" do |f| %>
       <div id="search-form" class="w-full">
         <button type="button" class="btn btn-ghost" onclick="switchSearchType('title')">タイトル検索</button>
         <button type="button" class="btn btn-ghost" onclick="switchSearchType('memo')">メモ検索</button>
@@ -15,7 +15,7 @@
           <%= f.search_field :notes_content_cont, placeholder: "メモを検索", class: "input input-bordered w-full mb-4" %>
         </div>
 
-        <div class="flex justify-between px-3 mb-4">
+        <div class="flex justify-between px-3">
           <%= f.submit "検索", class: "btn btn-primary" %>
         </div>
       </div>
