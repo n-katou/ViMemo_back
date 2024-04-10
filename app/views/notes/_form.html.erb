@@ -11,9 +11,8 @@
       <%= f.text_area :content, class: 'textarea textarea-bordered', placeholder: "メモを入力" %>
     </div>
     <div class="form-control w-full max-w-xs">
-      <%= f.label :is_visible, "表示", class: "label" do %>
-      <% end %>
-      <%= f.select :is_visible, [['表示する', true], ['表示しない', false]], { disabled: true, selected: true }, { class: "select select-bordered" } %>
+      <%= f.label :is_visible, "表示", class: "label" %>
+      <%= f.select :is_visible, [['表示する', true], ['表示しない', false]], {}, { class: "select select-bordered" } %>
     </div>
     <%= f.submit "投稿", class: 'btn btn-primary mt-4' %>
   <% end %>
