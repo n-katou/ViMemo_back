@@ -10,21 +10,20 @@
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
   </head>
 
-  <body>
+  <body class="d-flex flex-column min-vh-100">
     <% if logged_in? %>
       <%= render partial: 'shared/header' %>
     <% else %>
       <%= render partial: 'shared/before_login_header' %>
     <% end %>
-    <div class="container-fluid">
+    <div class="container-fluid d-flex align-items-center justify-content-center" style="min-height: 100vh;">
       <div class="row">
-        <%#= render '/shared/sidebar' %>
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-        <%= render 'shared/flash_message' %>
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+          <%= render 'shared/flash_message' %>
           <%= yield %>
         </main>
-        <%= render partial: 'shared/footer' %>
       </div>
     </div>
+    <%= render partial: 'shared/footer' %>
   </body>
 </html>
