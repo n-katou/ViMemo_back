@@ -1,0 +1,21 @@
+<div class="container mx-auto mb-5 pt-2 max-w-4xl">
+  <h1 class="text-3xl font-bold mb-4 text-center">ビデオ一覧</h1>
+  <div class="flex flex-wrap justify-center mb-6">
+    <%= render 'shared/search_form', q: @q %>
+  </div>
+  <div class="flex justify-center">
+    <div class="w-full max-w-4xl">
+      <%= render @videos %>
+    </div>
+  </div>
+  <div class="flex justify-center">
+    <div class="w-auto">
+      <%= paginate @videos, class: "pagination" %>
+    </div>
+  </div>
+  <div class="flex justify-center my-4">
+    <%= link_to new_video_path, class: "btn btn-primary" do %>
+      <h2 class="text-lg">新規登録</h2>
+    <% end %>
+  </div>
+</div>

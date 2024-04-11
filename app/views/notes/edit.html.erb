@@ -1,6 +1,7 @@
 <h2>メモの編集</h2>
+<% video = @youtube_video || @video %>
 
-<%= form_with model: [@youtube_video, @note], id: "edit_note-#{@note.id}", class: 'edit_note', local: true do |f| %>
+<%= form_with model: [video, @note], id: "edit_note-#{@note.id}", class: 'edit_note', local: true do |f| %>
   <div class="form-group">
     <%= f.label :video_timestamp, "タイムスタンプ" %>
     <%= f.text_field :video_timestamp, class: 'form-control' %>
@@ -16,4 +17,4 @@
   <%= f.submit "更新する", class: 'btn btn-primary' %>
 <% end %>
 
-<%= link_to '戻る', youtube_video_path(@youtube_video), class: 'btn btn-secondary' %>
+<%= link_to '戻る', back_path, class: 'btn btn-secondary' %>

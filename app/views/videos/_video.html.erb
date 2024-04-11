@@ -1,0 +1,27 @@
+<% if video.is_visible || (current_user && video.user == current_user) %>
+  <h1 class="text-center mb-4">
+    <%= link_to video.title, video_path(video) %>
+  </h1>
+
+  <div class="flex justify-center">
+  <div class="mb-4 max-w-xl">
+    <video width="300" height="100" controls>
+      <source src="<%= video.file_path %>" type="video/mp4">
+      お使いのブラウザは動画タグをサポートしていません。
+    </video>
+    <div>
+      <% unless video.is_visible %>
+        <p class="mb-2 text-red-500">非表示中</p>
+      <% end %>
+      <p class="mb-2">投稿日: <%= video.created_at.strftime("%Y-%m-%d") %></p>
+      <% if video.duration.present? %>
+        <p>動画時間: <%= format_duration(video.duration) %></p>
+      <% end %>
+      <%= link_to '編集', edit_video_path(video), class: 'btn btn-primary' %>
+      <%= link_to '削除', video_path(video),
+                  data: { turbo_confirm: '本当に削除しますか？', turbo_method: :delete },
+                  class: 'btn btn-danger' %>
+    </div>
+  </div>
+</div>
+<% end %>

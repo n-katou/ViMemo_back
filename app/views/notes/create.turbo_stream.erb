@@ -1,5 +1,5 @@
 <%= turbo_stream.append "notes_list", partial: "notes/note", locals: { note: @note } %>
 
-<% if @youtube_video.notes.reload.where(is_visible: true).count == 1 %>
+<% if @video.notes.reload.where(is_visible: true).count == 1 %>
   <%= turbo_stream.remove "no_notes_message" %>
 <% end %>
