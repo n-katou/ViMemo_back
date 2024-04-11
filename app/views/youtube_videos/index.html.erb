@@ -1,15 +1,15 @@
-<div class="container mx-auto mb-5 pt-2">
-  <h1 class="text-3xl font-bold mb-4">Youtubeビデオ一覧</h1>
-  <div class="flex flex-wrap -mx-3 mb-6">
+<div class="container mx-auto mb-5 pt-2 max-w-4xl">
+  <h1 class="text-3xl font-bold mb-4 text-center">Youtubeビデオ一覧</h1>
+  <div class="flex flex-wrap justify-center mb-6">
     <%= render 'shared/search_form', q: @q %>
   </div>
-  <div class="row justify-content-center">
-    <div class="col-md-12">
+  <div class="flex justify-center">
+    <div class="w-full max-w-4xl">
       <%= render @youtube_videos %>
     </div>
   </div>
-  <div class="row justify-content-center">
-    <div class="col-md-auto">
+  <div class="flex justify-center">
+    <div class="w-auto">
       <%= paginate @youtube_videos, class: "pagination" %>
     </div>
   </div>
