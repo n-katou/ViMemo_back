@@ -12,7 +12,7 @@
     <label tabindex="0" class="btn m-1">メニュー</label>
     <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
       <li><%= link_to 'プロフィール', users_mypage_path %></li>
-      <li><%= link_to t('header.logout'), logout_path, method: :delete %></li>
+      <li><%= link_to t('header.logout'), logout_path, data: { turbo_method: :delete } %></li>
     </ul>
   </div>
 </header>
