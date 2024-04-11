@@ -1,14 +1,16 @@
 <header class="bg-base-100">
-  <div class="navbar max-w-screen-xl mx-auto">
-    <div class="navbar-start">
-      <%= link_to 'ViMemo', root_path, class: "btn btn-ghost normal-case text-xl" %>
-    </div>
-    <div class="navbar max-w-screen-xl mx-auto flex justify-end">
-    <div class="navbar-end">
-      <ul class="menu menu-horizontal p-0">
-        <li><%= link_to 'プロフィール', users_mypage_path, class: 'btn btn-ghost' %></li>
-        <li><%= link_to t('header.logout'), logout_path, class: 'btn btn-ghost', data: { turbo_method: :delete } %></li>
-      </ul>
-    </div>
+  <div class="navbar mb-3">
+    <%= link_to 'ViMemo', root_path, class: "btn btn-ghost normal-case text-xl" %>
+    <ul class="menu menu-horizontal ml-12">
+      <li><%= link_to 'プロフィール', users_mypage_path, class: 'btn btn-ghost' %></li>
+      <li><%= link_to t('header.logout'), logout_path, class: 'btn btn-ghost', data: { turbo_method: :delete } %></li>
+    </ul>
+  </div>
+  <div class="mb-3">
+    <%= search_form_for @q, url: youtube_videos_path, method: :get, class: "flex items-center space-x-4" do |f| %>
+      <%= f.label :title_cont, "タイトル", class: "label text-sm" %>
+      <%= f.search_field :title_cont, placeholder: "タイトルを検索", class: "input input-bordered" %>
+      <%= f.submit "検索", class: "btn btn-primary" %>
+    <% end %>
   </div>
 </header>
