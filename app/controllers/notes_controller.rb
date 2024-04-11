@@ -2,29 +2,38 @@ class NotesController < ApplicationController
   before_action :set_video, only: [:edit, :update, :destroy, :create]
 
   def create
-    @youtube_video = YoutubeVideo.find(params[:youtube_video_id])
-    @note = @youtube_video.notes.build(note_params)
-    @note.user_id = current_user.id
+    if params[:youtube_video_id]
+      @video = YoutubeVideo.find_by(id: params[:youtube_video_id])
+    elsif params[:video_id]
+      @video = Video.find_by(id: params[:video_id])
+    end
+  
+    if @video
+      @note = @video.notes.build(note_params)
+      @note.user_id = current_user.id
+      # フォームから送信された値を取得してタイムスタンプを計算
+      minutes = params[:video_timestamp_minutes].to_i
+      seconds = params[:video_timestamp_seconds].to_i
+      @note.video_timestamp = format("%02d:%02d", minutes, seconds)
 
-    # フォームから送信された値を取得
-    minutes = params[:video_timestamp_minutes].to_i
-    seconds = params[:video_timestamp_seconds].to_i
-
-    # タイムスタンプを計算
-    @note.video_timestamp = format("%02d:%02d", minutes, seconds)
-
-    respond_to do |format|
-      if @note.save
-        format.turbo_stream do
-          render "create", locals: { note: @note, youtube_video: @youtube_video }
+      respond_to do |format|
+        if @note.save
+          format.turbo_stream do
+            render "create", locals: { note: @note, video: @video }
+          end
+          format.html { redirect_to redirect_path, notice: 'Note was successfully created.' }
+        else
+          format.turbo_stream do
+            render turbo_stream: turbo_stream.replace("errors", partial: "shared/error_messages", locals: { object: @note })
+          end
+          format.html { render 'videos/show', status: :unprocessable_entity }
         end
-        format.html { redirect_to youtube_video_path(@youtube_video), notice: 'Note was successfully created.' }
-      else
-        format.turbo_stream do
-          render turbo_stream: turbo_stream.replace("errors", partial: "shared/error_messages", locals: { object: @note })
-        end
-        format.html { render 'youtube_videos/show', status: :unprocessable_entity }
       end
+    else
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace("errors", partial: "shared/error_messages", locals: { object: @note })
+      end
+      format.html { render 'youtube_videos/show', status: :unprocessable_entity }
     end
   end
 
@@ -50,7 +59,7 @@ class NotesController < ApplicationController
   end
 
   def edit
-    @note = @youtube_video.notes.find(params[:id])
+    @note = @video.notes.find(params[:id])
     respond_to do |format|
       format.html 
     end
@@ -59,10 +68,18 @@ class NotesController < ApplicationController
   private
 
   def set_video
-    @youtube_video = YoutubeVideo.find(params[:youtube_video_id])
+    if params[:youtube_video_id]
+      @video = @youtube_video = YoutubeVideo.find_by(id: params[:youtube_video_id])
+    elsif params[:video_id]
+      @video = Video.find_by(id: params[:video_id])
+    end
   end
 
   def note_params
     params.require(:note).permit(:content, :video_timestamp, :is_visible)
+  end
+
+  def redirect_path
+    @video.is_a?(YoutubeVideo) ? youtube_video_path(@video) : video_path(@video)
   end
 end

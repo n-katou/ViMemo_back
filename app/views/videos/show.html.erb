@@ -1,0 +1,52 @@
+<h1><%= @video.title %></h1>
+<!-- 動画の埋め込み表示 -->
+<div>
+  <video width="300" height="100" controls>
+    <source src="<%= @video.file_path %>" type="video/mp4">
+    お使いのブラウザは動画タグをサポートしていません。
+  </video>
+</div>
+<p>公開日: <%= @video.created_at %></p>
+<p>動画時間: <%#= format_duration(@video.duration) %></p>
+
+<%= link_to '削除', video_path(@video), data: { turbo_method: :delete, turbo_confirm: t('defaults.delete_confirm') }, class: 'btn btn-error' %>
+
+<!-- メモの追加フォーム -->
+<%= render 'notes/form_video' %>
+
+<!-- メモの一覧表示 -->
+<div id="notes_list">
+  <h2 style="margin-top: 20px;">メモ一覧</h2>
+  <% visible_notes = @video.notes.select do |note| 
+    note.content.present? && (note.is_visible || (current_user && note.user_id == current_user.id))
+  end %>
+  <% if visible_notes.any? %>
+    <% visible_notes.each do |note| %>
+      <div class="mb-4">
+        <%= render 'notes/note', note: note %>
+      </div>
+    <% end %>
+  <% else %>
+    <p id="no_notes_message">メモがありません。</p>
+  <% end %>
+</div>
+
+<script>
+  document.addEventListener("turbo:submit-end", function(event) {
+    var form = document.getElementById("new_note_form");
+    if (form) {
+      form.reset(); // フォームの内容をリセット
+    }
+  });
+
+  function playFromTimestamp(seconds) {
+    var videoUrl = "<%= @video.file_path %>?start=" + seconds + "&autoplay=1";
+    var videoFrame = document.getElementById('video');
+    videoFrame.src = videoUrl;
+
+    // モバイルデバイスでの再生を確実にするための追加の処理
+    videoFrame.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+  }
+</script>
+
+<%= link_to '戻る', videos_path, class: 'btn btn-primary', style: 'margin-top: 20px;' %>

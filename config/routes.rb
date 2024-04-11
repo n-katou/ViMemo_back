@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'videos/new'
+  get 'videos/create'
   if Rails.env.development?
     if ENV['ACTUAL_EMAIL_SENDING'] == 'true'
       # 実際のメール送信を行う設定
@@ -29,7 +31,12 @@ Rails.application.routes.draw do
   get 'oauth/:provider', to: 'google_oauths#oauth', as: :auth_at_provider
 
   resources :youtube_videos, only: [:index, :show, :destroy] do
-    resources :notes, only: [:create, :destroy, :update, :edit]
     get 'fetch_videos_by_genre', on: :collection
+    resources :notes, only: [:create, :destroy, :update, :edit]
   end
+  
+  resources :videos do
+    resources :notes, only: [:create, :update, :destroy, :edit]
+  end
+  
 end

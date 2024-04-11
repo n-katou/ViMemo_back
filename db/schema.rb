@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_04_08_140007) do
+ActiveRecord::Schema[7.0].define(version: 2024_04_11_163232) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -56,10 +56,12 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_08_140007) do
     t.boolean "is_visible", default: true
     t.string "video_timestamp"
     t.bigint "user_id", null: false
-    t.bigint "youtube_video_id", null: false
+    t.bigint "youtube_video_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "video_id"
     t.index ["user_id"], name: "index_notes_on_user_id"
+    t.index ["video_id"], name: "index_notes_on_video_id"
     t.index ["youtube_video_id"], name: "index_notes_on_youtube_video_id"
   end
 
@@ -81,6 +83,18 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_08_140007) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token"
   end
 
+  create_table "videos", force: :cascade do |t|
+    t.string "title"
+    t.text "description"
+    t.integer "duration"
+    t.string "file_path"
+    t.boolean "is_visible", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_videos_on_user_id"
+  end
+
   create_table "youtube_videos", force: :cascade do |t|
     t.string "youtube_id"
     t.string "title"
@@ -98,6 +112,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_08_140007) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "authentications", "users"
   add_foreign_key "notes", "users"
+  add_foreign_key "notes", "videos"
   add_foreign_key "notes", "youtube_videos"
+  add_foreign_key "videos", "users"
   add_foreign_key "youtube_videos", "users"
 end
