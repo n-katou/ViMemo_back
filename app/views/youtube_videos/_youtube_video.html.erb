@@ -1,8 +1,8 @@
-<h1 class="text-center mb-4">
+<h1 class="mb-4">
   <%= link_to youtube_video.title, youtube_video_path(youtube_video) %>
 </h1>
-<div class="flex justify-center">
-  <div class="mb-4 max-w-xl">
+<div class="flex">
+  <div class="mb-6 max-w-xl text-center">
     <iframe width="560" height="315" src="https://www.youtube.com/embed/<%= youtube_video.youtube_id %>" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     <div>
       <p class="mb-2">公開日: <%= youtube_video.published_at %></p>
