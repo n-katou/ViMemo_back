@@ -1,18 +1,18 @@
-<header class="bg-base-100 flex flex-col items-center justify-center py-2 space-y-4">
-  <div class="navbar mb-2 flex justify-center w-auto">
-    <%= link_to 'ViMemo', root_path, class: "btn btn-ghost normal-case text-l" %>
-    <div class="mb-2 w-auto">
-      <%= search_form_for @q, url: youtube_videos_path, method: :get, class: "flex items-center space-x-4" do |f| %>
-        <%= f.search_field :title_cont, placeholder: "タイトルを検索", class: "input input-bordered" %>
-        <%= f.submit "検索", class: "btn btn-primary" %>
-      <% end %>
-    </div>
-    <div class="dropdown dropdown-end">
-      <label tabindex="0" class="btn m-1">メニュー</label>
-      <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 space-y-2">
-        <li><%= link_to 'プロフィール', users_mypage_path %></li>
-        <li><%= link_to t('header.logout'), logout_path, method: :delete %></li>
-      </ul>
-    </div>
+<header class="bg-base-100 flex flex-col items-center justify-left w-full max-w-4xl space-y-2">
+  <div class="navbar mb-2 flex w-auto">
+    <%= link_to 'ViMemo', root_path, class: "btn btn-ghost normal-case text-xl" %>
+  </div>
+  <div class="flex">
+    <%= search_form_for @q, url: youtube_videos_path, method: :get, class: "flex items-center space-x-4" do |f| %>
+      <%= f.search_field :title_cont, placeholder: "タイトルを検索", class: "input input-bordered" %>
+      <%= f.submit "検索", class: "btn btn-primary" %>
+    <% end %>
+  </div>
+  <div class="dropdown dropdown-end">
+    <label tabindex="0" class="btn m-1">メニュー</label>
+    <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+      <li><%= link_to 'プロフィール', users_mypage_path %></li>
+      <li><%= link_to t('header.logout'), logout_path, method: :delete %></li>
+    </ul>
   </div>
 </header>
