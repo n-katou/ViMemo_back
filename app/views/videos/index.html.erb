@@ -1,14 +1,14 @@
-<div class="container mx-auto mb-5 pt-2 max-w-4xl">
+<div class="container mx-auto mb-5 pt-2 px-4 max-w-4xl">
   <h1 class="text-3xl font-bold mb-4 text-center">ビデオ一覧</h1>
   <div class="flex flex-wrap justify-center mb-6">
     <%= render 'shared/search_form', q: @q %>
   </div>
-  <div class="flex justify-center">
+  <div class="flex justify-center mb-6">
     <div class="w-full max-w-4xl">
       <%= render @videos %>
     </div>
   </div>
-  <div class="flex justify-center">
+  <div class="flex justify-center mb-6">
     <div class="w-auto">
       <%= paginate @videos, class: "pagination" %>
     </div>
