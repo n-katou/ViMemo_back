@@ -81,4 +81,8 @@ class YoutubeVideosController < ApplicationController
     end
   end
 
+  def favorites
+    @liked_videos = current_user.liked_videos.includes(:likes).page(params[:page]).per(10)
+  end
+
 end

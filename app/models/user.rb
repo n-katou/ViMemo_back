@@ -3,6 +3,8 @@ class User < ApplicationRecord
   mount_uploader :avatar, UserImageUploader
   has_one_attached :avatar
   has_many :authentications, dependent: :destroy
+  has_many :likes
+
   accepts_nested_attributes_for :authentications
 
   enum role: { general: 0, admin: 1 }
@@ -17,5 +19,10 @@ class User < ApplicationRecord
   def deliver_reset_password_instructions!
     generate_reset_password_token!
     UserMailer.reset_password_email(self).deliver_now
+  end
+
+  # ユーザーが「いいね」したYouTubeビデオのリストを取得
+  def liked_videos
+    YoutubeVideo.joins(:likes).where(likes: { user_id: id })
   end
 end
