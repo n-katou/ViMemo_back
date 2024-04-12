@@ -3,26 +3,37 @@ class LikesController < ApplicationController
 
   def create
     @like = @likeable.likes.new(user: current_user)
-    if @like.save
-      redirect_to @likeable, notice: 'Liked!'
-    else
-      redirect_to @likeable, alert: 'Unable to like.'
+    respond_to do |format|
+      if @like.save
+        format.html { redirect_to @likeable, notice: 'Liked!' }
+        format.turbo_stream
+      else
+        format.html { redirect_to @likeable, alert: 'Unable to like.' }
+        format.turbo_stream
+      end
     end
   end
 
   def destroy
-    @like = @likeable.likes.find(params[:id])
+    @youtube_video = YoutubeVideo.find(params[:youtube_video_id])
+    @like = @youtube_video.likes.find(params[:id])
     @like.destroy
-    redirect_to @likeable, notice: 'Unliked!'
+    respond_to do |format|
+      format.html { redirect_to @likeable, notice: 'Unliked!' }
+      format.turbo_stream
+    end
   end
 
   private
 
   def find_likeable
-    if params[:likeable_type]
+    if params[:likeable_type] && params[:likeable_id]
       klass = params[:likeable_type].safe_constantize
-      @likeable = klass.find_by(id: params[:likeable_id]) if klass
+      @likeable = klass.find_by(id: params[:likeable_id])
     end
-    redirect_to root_path, alert: "Invalid operation." unless @likeable
+  
+    unless @likeable
+      redirect_to root_path, alert: "Invalid operation."
+    end
   end
 end
