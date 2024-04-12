@@ -40,5 +40,7 @@ Rails.application.routes.draw do
     resources :notes, only: [:create, :update, :destroy, :edit]
     resources :likes, only: [:create, :destroy]
   end
+
+  get 'favorites', to: 'youtube_videos#favorites', as: 'favorites_videos'
   
 end
