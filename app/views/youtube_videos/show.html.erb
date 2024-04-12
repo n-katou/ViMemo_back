@@ -5,6 +5,14 @@
 </div>
 <p>公開日: <%= @youtube_video.published_at %></p>
 <p>動画時間: <%= format_duration(@youtube_video.duration) %></p>
+<div>
+  <% user_like = @youtube_video.likes.find_by(user: current_user) %>
+  <% if user_like %>
+    <%= link_to 'いいねを取り消す', youtube_video_like_path(@youtube_video, user_like, likeable_type: @youtube_video.class.name, likeable_id: @youtube_video.id), method: :delete, data: { turbo_method: :delete }, class: 'btn btn-warning' %>
+  <% else %>
+    <%= link_to 'いいね', youtube_video_likes_path(@youtube_video, likeable_type: @youtube_video.class.name, likeable_id: @youtube_video.id), method: :post, data: { turbo_method: :post }, class: 'btn btn-success' %>
+  <% end %>
+</div>
 
 <%= link_to '削除', youtube_video_path(@youtube_video), data: { turbo_method: :delete, turbo_confirm: t('defaults.delete_confirm') }, class: 'btn btn-error' %>
 

@@ -33,10 +33,12 @@ Rails.application.routes.draw do
   resources :youtube_videos, only: [:index, :show, :destroy] do
     get 'fetch_videos_by_genre', on: :collection
     resources :notes, only: [:create, :destroy, :update, :edit]
+    resources :likes, only: [:create, :destroy]
   end
   
   resources :videos do
     resources :notes, only: [:create, :update, :destroy, :edit]
+    resources :likes, only: [:create, :destroy]
   end
   
 end
