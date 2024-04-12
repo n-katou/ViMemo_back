@@ -1,16 +1,15 @@
-<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+<div class="mb-4">
   <h1>動画取得</h1>
-  <%= form_with url: fetch_videos_by_genre_youtube_videos_path, method: :get, local: true, class: "w-full md:w-1/2 px-3" do |form| %>
-      <div class="w-full">
-        <%= form.label :genre, "ジャンルまたはキーワード", class: "block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" %>
-        <%= form.text_field :genre, class: "input input-bordered w-full" %>
-        <div class="mt-4">
-          <%= form.submit "取得", class: "btn" %>
-        </div>
-      </div>
+  <%= form_with url: fetch_videos_by_genre_youtube_videos_path, method: :get, local: true, class: "w-full" do |form| %>
+    <%= form.label :genre, "ジャンルまたはキーワード", class: "block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" %>
+    <%= form.text_field :genre, class: "input input-bordered" %>
+    <%= form.submit "取得", class: "btn" %>
   <% end %>
-  <div class="position-sticky pt-3 sidebar-sticky">
-    <ul class="nav flex-column">
+</div>
+<div class="flex">
+  <!-- 左側ナビゲーションバー -->
+  <div class="basis-1/4 mr-10">
+    <ul class="nav">
       <li class="nav-item">
         <%= User.human_attribute_name(:avatar) %>
         <%= image_tag(current_user.avatar.url, width: '100', height: '100') %>
@@ -25,8 +24,24 @@
       </li>
     </ul>
     <%= link_to t('defaults.edit'), edit_mypage_path, class: 'btn btn-success' %>
+    <%= link_to t('videos.create'), new_video_path, class: 'btn btn-primary' %>
   </div>
-</nav>
+
+  <!-- 右側コンテンツエリア -->
+  <div class="basis-3/4 ml-2">
+    <h1 class="text-xl font-bold mb-4">「いいね」した動画一覧</h1>
+    <% if @liked_videos.any? %>
+      <%= render @liked_videos %>
+      <!-- ページネーション -->
+      <div class="mt-4">
+        <%= paginate @liked_videos %>
+      </div>
+    <% else %>
+      <p>いいねした動画がありません。</p>
+    <% end %>
+  </div>
+</div>
+
 <div>
   <%= link_to '戻る', root_path, class: 'btn btn-primary' %>
 </div>
