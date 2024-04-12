@@ -19,7 +19,7 @@
                 class: 'btn btn-success' %>
   <% end %>
 </div>
-<%= link_to '削除', youtube_video_path(@youtube_video), data: { turbo_method: :delete, turbo_confirm: t('defaults.delete_confirm') }, class: 'btn btn-error' %>
+<%#= link_to '削除', youtube_video_path(@youtube_video), data: { turbo_method: :delete, turbo_confirm: t('defaults.delete_confirm') }, class: 'btn btn-error' %>
 
 <!-- メモの追加フォーム -->
 <%= render 'notes/form_youtube' %>

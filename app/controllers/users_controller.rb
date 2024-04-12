@@ -17,7 +17,10 @@ class UsersController < ApplicationController
     end
   end
 
-  def mypage; end
+  def mypage
+    @user = current_user
+    @liked_videos = current_user.liked_videos.page(params[:page])
+  end
 
   def edit; end
 

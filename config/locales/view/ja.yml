@@ -78,6 +78,7 @@ ja:
   videos:
     index:
       title: youtube一覧
+    create: 動画を投稿
   up_videos:
     new:
       title: ビデオ投稿
