@@ -1,6 +1,6 @@
 <% if video.is_visible || (current_user && video.user == current_user) %>
   <h1 class="mb-4">
-    <%= link_to video.title, video_path(video) %>
+    <%= link_to video.title, video_path(video), class: "btn btn-outline animate-bounce" %>
   </h1>
 
   <div class="flex">

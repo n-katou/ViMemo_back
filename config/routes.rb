@@ -11,8 +11,6 @@ Rails.application.routes.draw do
     end
   end
 
-  # Defines the root path route ("/")
-  # root "articles#index"
   root 'tops#index'
   # ユーザー登録機能用のルーティング
   get 'users/mypage', to: 'users#mypage'
@@ -42,5 +40,6 @@ Rails.application.routes.draw do
   end
 
   get 'favorites', to: 'youtube_videos#favorites', as: 'favorites_videos'
+  resources :combined_videos, only: %i[index]
   
 end
