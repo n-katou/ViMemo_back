@@ -33,8 +33,9 @@ class GoogleOauthService
 
   def find_or_create_user(user_info)
     User.find_or_create_by(email: user_info['email']) do |user|
-      Rails.logger.info "User info name: #{user_info['name']}"
       user.name = user_info['name']
+      user.password = SecureRandom.hex(10)  # 例としてランダムパスワードを設定
+      user.password_confirmation = user.password
     end
   end
 end

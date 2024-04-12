@@ -20,3 +20,13 @@ ja:
       role:
         general: 一般
         admin: 管理者
+  errors:
+      models:
+        user:
+          attributes:
+            password:
+              too_short: "パスワードは最低 %{count} 文字必要です。"
+            password_confirmation:
+              blank: "パスワード確認を入力してください。"
+            email:
+              blank: "メールアドレスを入力してください。"
