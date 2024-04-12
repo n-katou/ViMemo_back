@@ -1,29 +1,26 @@
-<div>
+<div class="p-4 bg-base-200 shadow-xl rounded-box">
   <%= form_with model: [@youtube_video, @youtube_video.notes.build], id: "new_note_form", url: youtube_video_notes_path(@youtube_video), class: 'new_note', data: { turbo_frame: "note" } do |f| %>
     <div class="form-control mb-4">
       <%= f.label :video_timestamp, "タイムスタンプ", class: 'label' %>
-      <div class="input-group">
-        <div>
-          <input type="range" min="0" max="3600" value="0" id="timestamp-slider" class="range range-xs w-3/4" onchange="sliderChanged(this.value);">
-        </div>
-      </div>
-      <div class="flex space-x-2">
+      <%# <div class="input-group">
+        <input type="range" min="0" max="3600" value="0" id="timestamp-slider" class="range range-xs w-full" onchange="sliderChanged(this.value);">
+      </div> %>
+      <div class="flex space-x-2 mt-2">
         <input type="number" id="video_timestamp_minutes" name="video_timestamp_minutes" value="0" min="0" max="59" class="input input-bordered w-20" onchange="timeChanged();">
-        <label for="video_timestamp_minutes" class="label">分</label>
-
+        <label for="video_timestamp_minutes" class="label px-2">分</label>
         <input type="number" id="video_timestamp_seconds" name="video_timestamp_seconds" value="0" min="0" max="59" class="input input-bordered w-20" onchange="timeChanged();">
-        <label for="video_timestamp_seconds" class="label">秒</label>
+        <label for="video_timestamp_seconds" class="label px-2">秒</label>
       </div>
     </div>
     <div class="form-control mb-4">
       <%= f.label :content, "メモ", class: 'label' %>
-      <%= f.text_area :content, class: 'textarea textarea-bordered', placeholder: "メモを入力" %>
+      <%= f.text_area :content, class: 'textarea textarea-bordered h-24', placeholder: "メモを入力" %>
     </div>
-    <div class="form-control w-full max-w-xs">
+    <div class="form-control mb-4">
       <%= f.label :is_visible, "表示", class: "label" %>
-      <%= f.select :is_visible, [['表示する', true], ['表示しない', false]], {}, { class: "select select-bordered" } %>
+      <%= f.select :is_visible, [['表示する', true], ['表示しない', false]], {}, { class: "select select-bordered w-full" } %>
     </div>
-    <%= f.submit "投稿", class: 'btn btn-primary mt-4' %>
+    <%= f.submit "投稿", class: 'btn btn-primary mt-4 w-full' %>
   <% end %>
 </div>
 <script>

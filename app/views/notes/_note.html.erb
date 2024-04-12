@@ -1,14 +1,22 @@
-<div id="<%= dom_id(note) %>" class="mb-3 card w-96 bg-base-100 shadow-xl image-full">
+<div id="<%= dom_id(note) %>" class="card w-96 bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300">
   <div class="card-body">
-    <p class="card-title"><strong>ユーザー名：</strong><%= note.user.name %></p>
-    <p class="card-title"><strong>タイムスタンプ:</strong>
+    <img src="<%= note.user.avatar_url %>" alt="Profile image" width="50" height="50">
+    <p>
+      <span class="font-bold">ユーザー名:</span>
+      <%= note.user.name %>
+    </p>
+    <p>
+      <span class="font-bold">タイムスタンプ:</span>
       <%= link_to note.video_timestamp, '#',
                   onclick: "playFromTimestamp(#{video_timestamp_to_seconds(note.video_timestamp)}); return false;",
-                  class: "timestamp-link" %>
+                  class: "link link-hover" %>
     </p>
-    <p class="card-title"><strong>メモ:</strong> <%= note.content %></p>
+    <p>
+      <span class="font-bold">メモ:</span>
+      <%= note.content %>
+    </p>
     <% unless note.is_visible %>
-      <p class="card-title"><strong>ステータス：</strong>非表示中</p>
+      <p><span class="badge badge-error">非表示中</span></p>
     <% end %>
     <% if note.persisted? && current_user == note.user %>
       <div class="card-actions justify-end">
