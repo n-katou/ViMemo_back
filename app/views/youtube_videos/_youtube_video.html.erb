@@ -1,5 +1,5 @@
 <h1 class="mb-4">
-  <%= link_to youtube_video.title, youtube_video_path(youtube_video) %>
+  <%= link_to youtube_video.title, youtube_video_path(youtube_video), class: "btn btn-outline animate-bounce" %>
 </h1>
 <div class="flex">
   <div class="mb-6 text-left w-full">
@@ -7,6 +7,8 @@
     <div>
       <p>公開日: <%= youtube_video.published_at %></p>
       <p>動画時間: <%= format_duration(youtube_video.duration) %></p>
+      <p>メモ数: <%= youtube_video.notes.count %></p>
+      <p>いいね数: <%= youtube_video.likes.count %></p>
     </div>
   </div>
 </div>

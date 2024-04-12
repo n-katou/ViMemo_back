@@ -1,11 +1,11 @@
 <header class="bg-base-100 w-full">
   <div class="navbar mb-2 max-w-full mx-auto px-4 sm:px-6 lg:px-8">
     <%= link_to 'ViMemo', root_path, class: "btn btn-ghost normal-case text-xl" %>
-    <%= search_form_for @q, url: youtube_videos_path, method: :get, class: "flex items-center space-x-4 ml-4 flex-grow" do |f| %>
+    <%= search_form_for @q, url: combined_videos_path, method: :get, class: "flex items-center space-x-4 ml-4 flex-grow" do |f| %>
       <%= f.search_field :title_cont, placeholder: "タイトルを検索", class: "input input-bordered flex-grow" %>
       <%= f.submit "検索", class: "btn btn-primary" %>
     <% end %>
-    <div class="navbar bg-base-100">
+    <div class="dropdown dropdown-end">
       <div class="flex-none">
         <button class="btn btn-square btn-ghost" onclick="toggleMenu()" style="padding: 8px; background-color: transparent;">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" style="fill: none; stroke: currentColor; stroke-width: 2;">
