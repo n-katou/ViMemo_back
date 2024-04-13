@@ -3,12 +3,30 @@
 </h1>
 <div class="flex">
   <div class="mb-6 text-left w-full">
-    <iframe class="w-full aspect-video" height="300" src="https://www.youtube.com/embed/<%= youtube_video.youtube_id %>" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-    <div>
-      <p>公開日: <%= youtube_video.published_at %></p>
-      <p>動画時間: <%= format_duration(youtube_video.duration) %></p>
-      <p>メモ数: <%= youtube_video.notes.count %></p>
-      <p>いいね数: <%= youtube_video.likes.count %></p>
+    <div class="video-wrapper">
+      <iframe class="aspect-video" width="400" height="300" src="https://www.youtube.com/embed/<%= youtube_video.youtube_id %>" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     </div>
+    <p>公開日: <%= youtube_video.published_at %></p>
+    <p>動画時間: <%= format_duration(youtube_video.duration) %></p>
+    <p>メモ数: <%= youtube_video.notes.count %></p>
+    <p>いいね数: <%= youtube_video.likes.count %></p>
   </div>
 </div>
+
+<style>
+  .video-wrapper {
+    position: relative;
+    padding-top: 56.25%;
+    height: 0;
+    overflow: hidden;
+    z-index: 10;
+  }
+
+  .video-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+</style>
