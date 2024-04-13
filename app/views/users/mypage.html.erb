@@ -3,7 +3,7 @@
     <h1>動画取得</h1>
     <%= form_with url: fetch_videos_by_genre_youtube_videos_path, method: :get, local: true, class: "w-full" do |form| %>
       <%= form.text_field :genre, class: "input input-bordered input-lg" , placeholder: "ジャンル or キーワード" %>
-      <%= form.submit "取得", class: "btn" %>
+      <%= form.submit "取得", class: "btn btn-outline" %>
     <% end %>
   </div>
   
@@ -24,8 +24,8 @@
           <%= current_user.email %>
         </li>
       </ul>
-      <%= link_to t('defaults.edit'), edit_mypage_path, class: 'btn btn-success' %>
-      <%= link_to t('videos.create'), new_video_path, class: 'btn btn-primary' %>
+      <%= link_to t('defaults.edit'), edit_mypage_path, class: 'btn btn-outline btn-success' %>
+      <%= link_to t('videos.create'), new_video_path, class: 'btn btn-outline btn-primary' %>
     </div>
 
     <!-- 右側コンテンツエリア -->

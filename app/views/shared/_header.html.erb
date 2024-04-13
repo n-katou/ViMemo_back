@@ -3,7 +3,7 @@
     <%= link_to 'ViMemo', root_path, class: "btn btn-ghost normal-case text-xl" %>
     <%= search_form_for @q, url: combined_videos_path, method: :get, class: "flex items-center space-x-4 ml-4 flex-grow" do |f| %>
       <%= f.search_field :title_cont, placeholder: "タイトルを検索", class: "input input-bordered flex-grow" %>
-      <%= f.submit "検索", class: "btn btn-primary" %>
+      <%= f.submit "検索", class: "btn btn-outline btn-primary" %>
     <% end %>
     <div class="dropdown dropdown-bottom dropdown-end">
       <div tabindex="0" role="button" class="btn m-1">
