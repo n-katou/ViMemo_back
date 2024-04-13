@@ -6,10 +6,9 @@
       <%= form.submit "取得", class: "btn btn-outline" %>
     <% end %>
   </div>
-  
-  <div class="flex">
     <!-- 左側ナビゲーションバー -->
-    <div class="flex flex-auto lg:pr-4 md:pr-2 pr-1">
+  <div class="flex">
+    <div class="flex mr-10">
       <ul class="nav flex-col">
         <li class="nav-item mb-3">
           <%= User.human_attribute_name(:avatar) %>
@@ -33,7 +32,7 @@
     </div>
 
     <!-- 右側コンテンツエリア -->
-    <div class="flex-1 w-full lg:pr-4 md:pr-2 pr-1">
+    <div class="flex-1 flex-auto lg:pr-4 md:pr-2 pr-1">
       <h1 class="text-xl font-bold mb-4">「いいね」した動画一覧</h1>
       <% if @liked_videos.any? %>
         <%# 後々スライダーで実装 %>
@@ -43,7 +42,7 @@
           <%= paginate @liked_videos %>
         </div>
         <div class="mb-3">
-          <%= link_to 'いいねしたビデオ一覧へ', favorites_videos_path, class: "btn btn-outline" %>
+          <%= link_to 'いいねしたビデオ一覧へ', favorites_videos_path, class: "btn btn-outline btn-secondary" %>
         </div>
       <% else %>
         <p>いいねした動画がありません。</p>
