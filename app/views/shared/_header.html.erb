@@ -1,20 +1,30 @@
-<header class="bg-base-100 w-full">
-  <div class="navbar mb-2 max-w-full mx-auto px-4 sm:px-6 lg:px-8">
-    <%= link_to 'ViMemo', root_path, class: "btn btn-ghost normal-case text-xl" %>
-    <%= search_form_for @q, url: combined_videos_path, method: :get, class: "flex items-center space-x-4 ml-4 flex-grow" do |f| %>
-      <%= f.search_field :title_cont, placeholder: "タイトルを検索", class: "input input-bordered flex-grow" %>
-      <%= f.submit "検索", class: "btn btn-outline btn-primary" %>
-    <% end %>
-    <div class="dropdown dropdown-bottom dropdown-end">
-      <div tabindex="0" role="button" class="btn m-1">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" style="fill: none; stroke: currentColor; stroke-width: 2;">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
-        </svg>
-      </div>
-      <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
-        <li><%= link_to 'プロフィール', users_mypage_path %></li>
-        <li><%= link_to t('header.logout'), logout_path, data: { turbo_method: :delete } %></li>
-      </ul>
+<header class="bg-base-100 flex w-full px-4 sm:px-6 lg:px-8">
+  <%= link_to 'ViMemo', root_path, class: "btn btn-ghost normal-case text-xl" %>
+  <%= search_form_for @q, url: combined_videos_path, method: :get, class: "flex items-center space-x-4 ml-4 flex-grow" do |f| %>
+    <%= f.search_field :title_cont, placeholder: "タイトルを検索", class: "input input-bordered flex-grow" %>
+    <%= f.submit "検索", class: "btn btn-outline btn-primary" %>
+  <% end %>
+  <div class="dropdown dropdown-bottom dropdown-end" style="position: relative; z-index: 1000;">
+    <div tabindex="0" role="button" class="btn m-1">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" style="fill: none; stroke: currentColor; stroke-width: 2;">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
+      </svg>
     </div>
+    <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52" style="position: absolute; top: 100%; left: 0; z-index: 1001;">
+      <li><%= link_to 'プロフィール', users_mypage_path %></li>
+      <li><%= link_to t('header.logout'), logout_path, data: { turbo_method: :delete } %></li>
+    </ul>
   </div>
 </header>
+
+<style>
+  .dropdown {
+    position: relative;
+    z-index: 1000;
+  }
+
+  .dropdown-content {
+    position: absolute;
+    z-index: 1001; /* ドロップダウンの内容を最前面に */
+  }
+</style>
