@@ -11,7 +11,8 @@
       </svg>
     </div>
     <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52" style="position: absolute; top: 100%; left: 0; z-index: 1001;">
-      <li><%= link_to 'プロフィール', users_mypage_path %></li>
+      <li><%= link_to 'マイページ', users_mypage_path %></li>
+      <li><%= link_to '投稿ビデオ一覧', videos_path %></li>
       <li><%= link_to t('header.logout'), logout_path, data: { turbo_method: :delete } %></li>
     </ul>
   </div>

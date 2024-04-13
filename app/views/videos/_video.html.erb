@@ -5,10 +5,12 @@
 
   <div class="flex">
     <div class="mb-4 max-w-xl">
-      <video width="100%" controls>
-        <source src="<%= video.file_path %>" type="video/mp4">
-        お使いのブラウザは動画タグをサポートしていません。
-      </video>
+      <div class="square-video-wrapper">
+        <video class="square-video" controls>
+          <source src="<%= video.file_path %>" type="video/mp4">
+          お使いのブラウザは動画タグをサポートしていません。
+        </video>
+      </div>
       <div>
         <% unless video.is_visible %>
           <p class="mb-2 text-red-500">非表示中</p>
@@ -25,3 +27,16 @@
     </div>
   </div>
 <% end %>
+
+<style>
+  .square-video-wrapper {
+    width: 500px; /* 正方形の幅を設定 */
+    height: 500px; /* 正方形の高さを設定 */
+    overflow: hidden; /* 動画が正方形の外にはみ出さないようにする */
+  }
+
+  .square-video {
+    width: 100%; /* 動画を正方形の幅いっぱいに広げる */
+    height: 100%; /* 動画を正方形の高さいっぱいに広げる */
+  }
+</style>

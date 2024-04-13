@@ -32,10 +32,14 @@
     <div class="flex-1 w-full">
       <h1 class="text-xl font-bold mb-4">「いいね」した動画一覧</h1>
       <% if @liked_videos.any? %>
+        <%# 後々スライダーで実装 %>
         <%= render @liked_videos %>
         <!-- ページネーション -->
         <div class="mt-4">
           <%= paginate @liked_videos %>
+        </div>
+        <div class="mb-3">
+          <%= link_to 'いいねしたビデオ一覧へ', favorites_videos_path, class: "btn btn-outline" %>
         </div>
       <% else %>
         <p>いいねした動画がありません。</p>
