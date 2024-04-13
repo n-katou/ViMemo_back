@@ -14,7 +14,7 @@ class UserImageUploader < CarrierWave::Uploader::Base
   end
 
   def default_url
-    'sample.jpg'
+    'default-avatar.jpg'
   end
 
   def extension_allowlist
