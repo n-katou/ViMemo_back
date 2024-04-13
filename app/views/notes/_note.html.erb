@@ -1,31 +1,33 @@
-<div id="<%= dom_id(note) %>" class="card w-96 bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300">
-  <div class="card-body">
-    <img src="<%= note.user.avatar_url %>" alt="Profile image" width="50" height="50">
-    <p>
-      <span class="font-bold">ユーザー名:</span>
-      <%= note.user.name %>
-    </p>
-    <p>
-      <span class="font-bold">タイムスタンプ:</span>
-      <%= link_to note.video_timestamp, '#',
-                  onclick: "playFromTimestamp(#{video_timestamp_to_seconds(note.video_timestamp)}); return false;",
-                  class: "link link-hover" %>
-    </p>
-    <p>
-      <span class="font-bold">メモ:</span>
-      <%= note.content %>
-    </p>
-    <% unless note.is_visible %>
-      <p><span class="badge badge-error">非表示中</span></p>
-    <% end %>
-    <% if note.persisted? && current_user == note.user %>
-      <div class="card-actions justify-end">
-        <% if note.youtube_video.present? %>
-          <%= link_to 'Xでシェア', "https://x.com/share?url=#{request.url}&text=#{ERB::Util.url_encode("【シェア】\nタイムスタンプ: #{note.video_timestamp} \nメモ: #{note.content} \nYouTube: https://www.youtube.com/watch?v=#{note.youtube_video.youtube_id}&t=#{video_timestamp_to_seconds(note.video_timestamp)}s")}", target: '_blank', class: 'btn btn-primary' %>
-        <% end %>
-        <%= link_to '編集', edit_path_for(note), data: { turbo_frame: dom_id(note) }, class: 'btn btn-info' %>
-        <%= link_to '削除', delete_path_for(note), data: { turbo_method: :delete, turbo_confirm: t('defaults.delete_confirm')}, class: 'btn btn-error' %>
-      </div>
-    <% end %>
+<div class="p-2 flex-1 lg:max-w-1/3">
+  <div id="<%= dom_id(note) %>" class="card w-96 bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 mb-3">
+    <div class="card-body">
+      <%= image_tag(note.user.avatar.url, width: '100', height: '100') %>
+      <p>
+        <span class="font-bold">ユーザー名:</span>
+        <%= note.user.name %>
+      </p>
+      <p>
+        <span class="font-bold">タイムスタンプ:</span>
+        <%= link_to note.video_timestamp, '#',
+                    onclick: "playFromTimestamp(#{video_timestamp_to_seconds(note.video_timestamp)}); return false;",
+                    class: "link link-hover" %>
+      </p>
+      <p>
+        <span class="font-bold">メモ:</span>
+        <%= note.content %>
+      </p>
+      <% unless note.is_visible %>
+        <p><span class="badge badge-error">非表示中</span></p>
+      <% end %>
+      <% if note.persisted? && current_user == note.user %>
+        <div class="card-actions justify-end">
+          <% if note.youtube_video.present? %>
+            <%= link_to 'Xでシェア', "https://x.com/share?url=#{request.url}&text=#{ERB::Util.url_encode("【シェア】\nタイムスタンプ: #{note.video_timestamp} \nメモ: #{note.content} \nYouTube: https://www.youtube.com/watch?v=#{note.youtube_video.youtube_id}&t=#{video_timestamp_to_seconds(note.video_timestamp)}s")}", target: '_blank', class: 'btn btn-primary' %>
+          <% end %>
+          <%= link_to '編集', edit_path_for(note), data: { turbo_frame: dom_id(note) }, class: 'btn btn-info' %>
+          <%= link_to '削除', delete_path_for(note), data: { turbo_method: :delete, turbo_confirm: t('defaults.delete_confirm')}, class: 'btn btn-error' %>
+        </div>
+      <% end %>
+    </div>
   </div>
 </div>

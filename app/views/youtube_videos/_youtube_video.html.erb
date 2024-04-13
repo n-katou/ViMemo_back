@@ -3,7 +3,7 @@
 </h1>
 <div class="flex">
   <div class="mb-6 text-left w-full">
-    <iframe class="w-full aspect-video" src="https://www.youtube.com/embed/<%= youtube_video.youtube_id %>" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <iframe class="w-full aspect-video" height="300" src="https://www.youtube.com/embed/<%= youtube_video.youtube_id %>" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     <div>
       <p>公開日: <%= youtube_video.published_at %></p>
       <p>動画時間: <%= format_duration(youtube_video.duration) %></p>

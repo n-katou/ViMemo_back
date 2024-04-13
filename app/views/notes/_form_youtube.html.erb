@@ -1,4 +1,4 @@
-<div class="p-4 bg-base-200 shadow-xl rounded-box">
+<div class="p-2 bg-base-200 shadow-xl rounded-box">
   <%= form_with model: [@youtube_video, @youtube_video.notes.build], id: "new_note_form", url: youtube_video_notes_path(@youtube_video), class: 'new_note', data: { turbo_frame: "note" } do |f| %>
     <div class="form-control mb-4">
       <%= f.label :video_timestamp, "タイムスタンプ", class: 'label' %>
@@ -18,9 +18,9 @@
     </div>
     <div class="form-control mb-4">
       <%= f.label :is_visible, "表示", class: "label" %>
-      <%= f.select :is_visible, [['表示する', true], ['表示しない', false]], {}, { class: "select select-bordered w-full" } %>
+      <%= f.select :is_visible, [['表示する', true], ['表示しない', false]], {}, { class: "select select-bordered" } %>
     </div>
-    <%= f.submit "投稿", class: 'btn btn-primary mt-4 w-full' %>
+    <%= f.submit "投稿", class: 'btn btn-primary mt-4' %>
   <% end %>
 </div>
 <script>
