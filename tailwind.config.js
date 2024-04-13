@@ -9,6 +9,6 @@ module.exports = {
     require('daisyui')
   ],
   daisyui: {
-    themes: ['light'] // デフォルトのテーマをライトに設定
+    themes: ["nord"] // デフォルトのテーマをライトに設定
   }
 }

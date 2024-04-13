@@ -9,27 +9,31 @@
   
   <div class="flex">
     <!-- 左側ナビゲーションバー -->
-    <div class="flex-1">
+    <div class="flex flex-auto lg:pr-4 md:pr-2 pr-1">
       <ul class="nav flex-col">
-        <li class="nav-item">
+        <li class="nav-item mb-3">
           <%= User.human_attribute_name(:avatar) %>
           <%= image_tag(current_user.avatar.url, width: '100', height: '100') %>
         </li>
-        <li class="nav-item">
+        <li class="nav-item mb-3">
           <%= User.human_attribute_name(:name) %>
           <%= current_user.name %>
         </li>
-        <li class="nav-item">
+        <li class="nav-item mb-3">
           <%= User.human_attribute_name(:email) %>
           <%= current_user.email %>
         </li>
+        <li class="nav-item mb-3">
+          <%= link_to t('defaults.edit'), edit_mypage_path, class: 'btn btn-outline btn-success' %>
+        </li>
+        <li class="nav-item mb-3">
+          <%= link_to t('videos.create'), new_video_path, class: 'btn btn-outline btn-primary' %>
+        </li>
       </ul>
-      <%= link_to t('defaults.edit'), edit_mypage_path, class: 'btn btn-outline btn-success' %>
-      <%= link_to t('videos.create'), new_video_path, class: 'btn btn-outline btn-primary' %>
     </div>
 
     <!-- 右側コンテンツエリア -->
-    <div class="flex-1 w-full">
+    <div class="flex-1 w-full lg:pr-4 md:pr-2 pr-1">
       <h1 class="text-xl font-bold mb-4">「いいね」した動画一覧</h1>
       <% if @liked_videos.any? %>
         <%# 後々スライダーで実装 %>
