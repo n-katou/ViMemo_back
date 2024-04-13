@@ -80,9 +80,4 @@ class YoutubeVideosController < ApplicationController
       redirect_to youtube_videos_path, alert: 'Video not found', status: :not_found
     end
   end
-
-  def favorites
-    @liked_videos = current_user.liked_videos.includes(:likes).page(params[:page]).per(10)
-  end
-
 end

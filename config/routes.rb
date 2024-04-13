@@ -39,7 +39,7 @@ Rails.application.routes.draw do
     resources :likes, only: [:create, :destroy]
   end
 
-  get 'favorites', to: 'youtube_videos#favorites', as: 'favorites_videos'
+  get 'favorites', to: 'combined_videos#favorites', as: 'favorites_videos'
   resources :combined_videos, only: %i[index]
   
 end

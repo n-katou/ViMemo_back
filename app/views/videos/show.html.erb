@@ -1,7 +1,7 @@
 <h1><%= @video.title %></h1>
 <!-- 動画の埋め込み表示 -->
-<div>
-  <video width="300" height="100" controls>
+<div class="square-video-wrapper">
+  <video id="video" class="square-video" controls>
     <source src="<%= @video.file_path %>" type="video/mp4">
     お使いのブラウザは動画タグをサポートしていません。
   </video>
@@ -9,7 +9,9 @@
 <p>公開日: <%= @video.created_at %></p>
 <p>動画時間: <%#= format_duration(@video.duration) %></p>
 
-<%= link_to '削除', video_path(@video), data: { turbo_method: :delete, turbo_confirm: t('defaults.delete_confirm') }, class: 'btn btn-error' %>
+<% if current_user == @video.user %>
+  <%= link_to '削除', video_path(@video), data: { turbo_method: :delete, turbo_confirm: t('defaults.delete_confirm') }, class: 'btn btn-error' %>
+<% end %>
 
 <!-- メモの追加フォーム -->
 <%= render 'notes/form_video' %>
@@ -21,11 +23,13 @@
     note.content.present? && (note.is_visible || (current_user && note.user_id == current_user.id))
   end %>
   <% if visible_notes.any? %>
-    <% visible_notes.each do |note| %>
-      <div class="mb-4">
-        <%= render 'notes/note', note: note %>
-      </div>
-    <% end %>
+    <div class="flex flex-wrap mx-2">
+      <% visible_notes.each do |note| %>
+        <div class="p-2 flex-1 lg:max-w-1/3">
+          <%= render 'notes/note', note: note %>
+        </div>
+      <% end %>
+    </div>
   <% else %>
     <p id="no_notes_message">メモがありません。</p>
   <% end %>
@@ -50,3 +54,17 @@
 </script>
 
 <%= link_to '戻る', videos_path, class: 'btn btn-primary', style: 'margin-top: 20px;' %>
+
+<style>
+  .square-video-wrapper {
+    width: 500px; /* 正方形の幅を設定 */
+    height: 500px; /* 正方形の高さを設定 */
+    overflow: hidden; /* 動画が正方形の外にはみ出さないようにする */
+  }
+
+  .square-video {
+    width: 100%; /* 動画を正方形の幅いっぱいに広げる */
+    height: 100%; /* 動画を正方形の高さいっぱいに広げる */
+  }
+</style>
+

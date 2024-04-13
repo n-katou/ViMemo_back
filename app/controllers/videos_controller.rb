@@ -8,6 +8,15 @@ class VideosController < ApplicationController
 
   # GET /up_videos/:id
   def show
+    @video = Video.find(params[:id])
+    @likeable = @video
+    @user_like = @likeable.likes.find_by(user: current_user)
+    # ログインしているかどうかを確認
+    if current_user
+      @notes = @video.notes
+    else
+      @notes = @video.notes.where(is_visible: true)
+    end
   end
 
   # GET /up_videos/new
