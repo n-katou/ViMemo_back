@@ -1,44 +1,46 @@
-<h1><%= @youtube_video.title %></h1>
-<!-- 動画の埋め込み表示 -->
-<div>
-  <iframe class="w-full aspect-video" id="youtube-video" width="560" height="315" src="https://www.youtube.com/embed/<%= @youtube_video.youtube_id %>?playsinline=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-</div>
-<p>公開日: <%= @youtube_video.published_at %></p>
-<p>動画時間: <%= format_duration(@youtube_video.duration) %></p>
-<div id="like_button">
-  <% user_like = @youtube_video.likes.find_by(user: current_user) %>
-  <% if user_like %>
-    <%= link_to 'いいねを取り消す', youtube_video_like_path(@youtube_video, user_like, likeable_type: @youtube_video.class.name, likeable_id: @youtube_video.id),
-                data: { turbo_method: :delete, turbo_frame: "like_button" },
-                remote: true,
-                class: 'btn btn-warning' %>
-  <% else %>
-    <%= link_to 'いいね', youtube_video_likes_path(@youtube_video, likeable_type: @youtube_video.class.name, likeable_id: @youtube_video.id),
-                data: { turbo_method: :post, turbo_frame: "like_button" },
-                remote: true,
-                class: 'btn btn-success' %>
-  <% end %>
-</div>
-<%#= link_to '削除', youtube_video_path(@youtube_video), data: { turbo_method: :delete, turbo_confirm: t('defaults.delete_confirm') }, class: 'btn btn-error' %>
-
-<!-- メモの追加フォーム -->
-<%= render 'notes/form_youtube' %>
-
-<!-- メモの一覧表示 -->
-<div id="notes_list">
-  <h2 style="margin-top: 20px;">メモ一覧</h2>
-  <% visible_notes = @youtube_video.notes.select do |note| 
-    note.content.present? && (note.is_visible || (current_user && note.user_id == current_user.id))
-  end %>
-  <% if visible_notes.any? %>
-    <% visible_notes.each do |note| %>
-      <div class="mb-4">
-        <%= render 'notes/note', note: note %>
-      </div>
+<div class="container">
+  <h1><%= @youtube_video.title %></h1>
+  <!-- 動画の埋め込み表示 -->
+  <div>
+    <iframe class="w-full aspect-video" id="youtube-video" height="300" src="https://www.youtube.com/embed/<%= @youtube_video.youtube_id %>?playsinline=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
+  <p>公開日: <%= @youtube_video.published_at %></p>
+  <p>動画時間: <%= format_duration(@youtube_video.duration) %></p>
+  <!-- いいねボタンとその他のコンポーネント -->
+  <div id="like_button">
+    <% user_like = @youtube_video.likes.find_by(user: current_user) %>
+    <% if user_like %>
+      <%= link_to 'いいねを取り消す', youtube_video_like_path(@youtube_video, user_like, likeable_type: @youtube_video.class.name, likeable_id: @youtube_video.id),
+                  data: { turbo_method: :delete, turbo_frame: "like_button" },
+                  remote: true,
+                  class: 'btn btn-warning' %>
+    <% else %>
+      <%= link_to 'いいね', youtube_video_likes_path(@youtube_video, likeable_type: @youtube_video.class.name, likeable_id: @youtube_video.id),
+                  data: { turbo_method: :post, turbo_frame: "like_button" },
+                  remote: true,
+                  class: 'btn btn-success' %>
     <% end %>
-  <% else %>
-    <p id="no_notes_message">メモがありません。</p>
-  <% end %>
+  </div>
+  <%= render 'notes/form_youtube' %>
+  <div id="notes_list">
+    <h2 style="margin-top: 20px;">メモ一覧</h2>
+    <% visible_notes = @youtube_video.notes.select do |note| 
+      note.content.present? && (note.is_visible || (current_user && note.user_id == current_user.id))
+    end %>
+    <% if visible_notes.any? %>
+      <div class="flex flex-wrap mx-2">
+        <% visible_notes.each do |note| %>
+          <!-- 各メモをflex-1として配置、幅を調整 -->
+          <div class="p-2 flex-1 lg:max-w-1/3">
+            <%= render 'notes/note', note: note %>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p id="no_notes_message">メモがありません。</p>
+    <% end %>
+  </div>
+  <%= link_to '戻る', youtube_videos_path, class: 'btn btn-primary', style: 'margin-top: 20px;' %>
 </div>
 
 <script>
@@ -58,5 +60,3 @@
     videoFrame.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
   }
 </script>
-
-<%= link_to '戻る', youtube_videos_path, class: 'btn btn-primary', style: 'margin-top: 20px;' %>
