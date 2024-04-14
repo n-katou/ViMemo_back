@@ -21,6 +21,7 @@ class Admin::UsersController < Admin::BaseController
   def show; end
 
   def destroy
+    @user.youtube_videos.destroy_all
     @user.destroy!
     redirect_to admin_users_path, success: t('defaults.flash_message.deleted', item: User.model_name.human), status: :see_other
   end
