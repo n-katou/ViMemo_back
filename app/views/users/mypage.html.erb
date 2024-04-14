@@ -1,11 +1,13 @@
 <div class="container px-4 w-full">
-  <div class="mb-4">
-    <h1>動画取得</h1>
-    <%= form_with url: fetch_videos_by_genre_youtube_videos_path, method: :get, local: true, class: "w-full" do |form| %>
-      <%= form.text_field :genre, class: "input input-bordered input-lg" , placeholder: "ジャンル or キーワード" %>
-      <%= form.submit "取得", class: "btn btn-outline" %>
-    <% end %>
-  </div>
+  <% if current_user&.admin? %> 
+    <div class="mb-4">
+      <h1>動画取得</h1>
+      <%= form_with url: fetch_videos_by_genre_youtube_videos_path, method: :get, local: true, class: "w-full" do |form| %>
+        <%= form.text_field :genre, class: "input input-bordered input-lg", placeholder: "ジャンル or キーワード" %>
+        <%= form.submit "取得", class: "btn btn-outline" %>
+      <% end %>
+    </div>
+  <% end %>
     <!-- 左側ナビゲーションバー -->
   <div class="flex">
     <div class="flex mr-10">
