@@ -4,6 +4,8 @@ class User < ApplicationRecord
   has_one_attached :avatar
   has_many :authentications, dependent: :destroy
   has_many :likes
+  has_many :youtube_videos, dependent: :destroy
+  has_many :videos, dependent: :destroy
 
   accepts_nested_attributes_for :authentications
 

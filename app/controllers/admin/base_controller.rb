@@ -9,7 +9,7 @@ class Admin::BaseController < ApplicationController
   end
 
   def authorize_admin_access
-    return if current_user.email == 'naoto.light@gmail.com' || current_user.role == 'admin'
+    return if current_user.email == 'naoto.light@gmail.com'
     redirect_to root_path, alert: 'You are not authorized to access this page.'
   end
 end
