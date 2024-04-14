@@ -28,6 +28,9 @@
         <li class="nav-item mb-3">
           <%= link_to t('videos.create'), new_video_path, class: 'btn btn-outline btn-primary' %>
         </li>
+        <li>
+          <%= link_to '会員一覧', admin_users_path(@user), class: 'btn btn-success' %>
+        </li>
       </ul>
     </div>
 
