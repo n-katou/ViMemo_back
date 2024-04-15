@@ -5,10 +5,10 @@ class LikesController < ApplicationController
     @like = @likeable.likes.new(user: current_user)
     respond_to do |format|
       if @like.save
-        format.html { redirect_to @likeable, notice: 'Liked!' }
+        format.html { redirect_to @likeable, notice: t('likes.liked') }
         format.turbo_stream
       else
-        format.html { redirect_to @likeable, alert: 'Unable to like.' }
+        format.html { redirect_to @likeable, alert: t('likes.unable_to_like') }
         format.turbo_stream
       end
     end
@@ -19,7 +19,7 @@ class LikesController < ApplicationController
     @like = @youtube_video.likes.find(params[:id])
     @like.destroy
     respond_to do |format|
-      format.html { redirect_to @likeable, notice: 'Unliked!' }
+      format.html { redirect_to @likeable, notice: t('likes.unliked') }
       format.turbo_stream
     end
   end
@@ -33,7 +33,7 @@ class LikesController < ApplicationController
     end
   
     unless @likeable
-      redirect_to root_path, alert: "Invalid operation."
+      redirect_to root_path, alert: t('likes.invalid_operation')
     end
   end
 end

@@ -37,9 +37,17 @@
 
 <script>
   document.addEventListener("turbo:submit-end", function(event) {
+  // フォームのIDまたはその他の特定の識別子を確認
+    var detail = event.detail;
     var form = document.getElementById("new_note_form");
-    if (form) {
-      form.reset(); // フォームの内容をリセット
+    if (form && detail.success) {
+      // エラーメッセージをクリア
+      var errorDiv = document.getElementById("errors");
+      if (errorDiv) {
+        errorDiv.innerHTML = '';
+      }
+      // フォームの内容をリセット
+      form.reset();
     }
   });
 
