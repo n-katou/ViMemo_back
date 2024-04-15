@@ -4,6 +4,14 @@ class VideosController < ApplicationController
   # GET /up_videos
   def index
     @videos = Video.page(params[:page]).per(10)
+    case params[:sort]
+    when 'likes_desc'
+      @videos = @videos.order(likes_count: :desc)
+    when 'notes_desc'
+      @videos = @videos.order(notes_count: :desc)
+    else
+      @videos = @videos.order(created_at: :desc)
+    end
   end
 
   # GET /up_videos/:id
