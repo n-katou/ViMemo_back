@@ -3,9 +3,9 @@
   <div class="flex justify-left mb-6">
     <%= render 'shared/search_form', q: @q %>
   </div>
-  <div>
-    <%= link_to 'いいね数が多い順', videos_path(sort: 'likes_desc', q: params[:q]), class: "btn btn-primary" %>
-    <%= link_to 'メモ数が多い順', videos_path(sort: 'notes_desc', q: params[:q]), class: "btn btn-primary" %>
+  <div class="mb-4">
+    <%= link_to 'いいね数が多い順', videos_path(sort: 'likes_desc', q: params[:q]), class: "btn btn-accent" %>
+    <%= link_to 'メモ数が多い順', videos_path(sort: 'notes_desc', q: params[:q]), class: "btn btn-accent" %>
   </div>
   <div class="flex justify-center mb-6">
     <div class="w-full">

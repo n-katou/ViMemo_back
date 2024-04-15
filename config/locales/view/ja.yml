@@ -1,4 +1,7 @@
 ja:
+  flash_messages:
+    videos_fetched_success: "%{count}件のビデオを取得して保存しました。"
+    fetch_videos_failed: "YouTubeからビデオを取得できませんでした。"
   defaults:
       flash_message:
         require_login: ログインしてください

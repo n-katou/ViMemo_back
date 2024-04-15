@@ -1,22 +1,30 @@
 <%= form_with model: [@video], local: true, html: { multipart: true } do |form| %>
-  <div class="mb-3">
-    <%= form.label :title, "Title" %>
-    <%= form.text_field :title, class: "form-control" %>
+  <div class="form-control">
+    <%= form.label :title, "Title", class: "label" %>
+    <div class="input-group">
+      <%= form.text_field :title, class: "input input-bordered" %>
+    </div>
   </div>
 
-  <div class="mb-3">
-    <%= form.label :description, "Description" %>
-    <%= form.text_area :description, class: "form-control", rows: 3 %>
+  <div class="form-control">
+    <%= form.label :description, "Description", class: "label" %>
+    <div class="input-group">
+      <%= form.text_area :description, class: "textarea textarea-bordered", rows: 3 %>
+    </div>
   </div>
 
-  <div class="mb-3">
-    <%= form.label :file_path, "Video File" %>
-    <%= form.file_field :file_path, class: "form-control" %>
+  <div class="form-control">
+    <%= form.label :file_path, "Video File", class: "label" %>
+    <div class="input-group">
+      <%= form.file_field :file_path, class: "input" %>
+    </div>
   </div>
 
-  <div class="mb-3">
-    <%= form.label :is_visible, "表示" %>
-    <%= form.select :is_visible, [[ '表示する', true ], [ '表示しない', false ]], {}, { class: "form-select" } %>
+  <div class="form-control mb-4">
+    <%= form.label :is_visible, "表示", class: "label" %>
+    <div class="input-group">
+      <%= form.select :is_visible, [[ '表示する', true ], [ '表示しない', false ]], {}, { class: "select select-bordered" } %>
+    </div>
   </div>
 
   <%= form.submit @video.new_record? ? '新規登録' : '更新', class: "btn btn-primary" %>

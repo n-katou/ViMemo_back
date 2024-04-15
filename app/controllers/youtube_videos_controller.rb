@@ -34,9 +34,11 @@ class YoutubeVideosController < ApplicationController
         end
       end
       
-      render json: { status: 'Success', message: "#{youtube_videos_data.length} videos fetched and saved successfully." }, status: :ok
+      flash[:success] = t('flash_messages.videos_fetched_success', count: youtube_videos_data.length)
+      redirect_to youtube_videos_path
     else
-      render json: { status: 'Error', message: 'Failed to fetch videos from YouTube' }, status: :bad_request
+      flash[:error] = t('flash_messages.fetch_videos_failed')
+      redirect_to youtube_videos_path
     end
   end
   
