@@ -2,11 +2,8 @@ class NotesController < ApplicationController
   before_action :set_video, only: [:edit, :update, :destroy, :create]
 
   def create
-    if params[:youtube_video_id]
-      @video = YoutubeVideo.find_by(id: params[:youtube_video_id])
-    elsif params[:video_id]
-      @video = Video.find_by(id: params[:video_id])
-    end
+    # ビデオの取得
+    @video = YoutubeVideo.find_by(id: params[:youtube_video_id]) || Video.find_by(id: params[:video_id])
   
     if @video
       @note = @video.notes.build(note_params)
@@ -15,25 +12,21 @@ class NotesController < ApplicationController
       minutes = params[:video_timestamp_minutes].to_i
       seconds = params[:video_timestamp_seconds].to_i
       @note.video_timestamp = format("%02d:%02d", minutes, seconds)
-
+  
       respond_to do |format|
         if @note.save
-          format.turbo_stream do
-            render "create", locals: { note: @note, video: @video }
-          end
+          format.turbo_stream { render "create", locals: { note: @note, video: @video } }
           format.html { redirect_to redirect_path, notice: 'Note was successfully created.' }
         else
-          format.turbo_stream do
-            render turbo_stream: turbo_stream.replace("errors", partial: "shared/error_messages", locals: { object: @note })
-          end
-          format.html { render 'videos/show', status: :unprocessable_entity }
+          format.turbo_stream { render turbo_stream: turbo_stream.replace("errors", partial: "shared/error_messages", locals: { object: @note }) }
+          format.html { render 'youtube_videos/show', status: :unprocessable_entity }
         end
       end
     else
-      format.turbo_stream do
-        render turbo_stream: turbo_stream.replace("errors", partial: "shared/error_messages", locals: { object: @note })
+      respond_to do |format|
+        format.turbo_stream { render turbo_stream: turbo_stream.replace("errors", partial: "shared/error_messages", locals: { object: @video, default_message: "Video not found." }) }
+        format.html { redirect_to youtube_videos_path, alert: "Video not found." }
       end
-      format.html { render 'youtube_videos/show', status: :unprocessable_entity }
     end
   end
 

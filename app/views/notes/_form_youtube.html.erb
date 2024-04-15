@@ -1,5 +1,8 @@
 <div class="p-2 bg-base-200 shadow-xl rounded-box">
   <%= form_with model: [@youtube_video, @youtube_video.notes.build], id: "new_note_form", url: youtube_video_notes_path(@youtube_video), class: 'new_note', data: { turbo_frame: "note" } do |f| %>
+    <div id="errors">
+      <%= render 'shared/error_messages', object: @note %>
+    </div>
     <div class="form-control mb-4">
       <%= f.label :video_timestamp, "タイムスタンプ", class: 'label' %>
       <div class="flex space-x-2 mt-2">

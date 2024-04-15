@@ -3,6 +3,7 @@ ja:
     models:
       user: ユーザー
       viedo: ビデオ
+      note: ノート
     attributes:
       user:
         email: メールアドレス
@@ -11,6 +12,8 @@ ja:
         password: パスワード
         password_confirmation: パスワード確認
         role: 権限
+      note:
+        content: 内容
   attributes:
     id: ID
     created_at: 作成日時
@@ -30,3 +33,9 @@ ja:
               blank: "パスワード確認を入力してください。"
             email:
               blank: "メールアドレスを入力してください。"
+        note:
+          attributes:
+            content:
+              blank: "内容を入力してください。"
+      messages:
+        blank: "を入力してください。"
