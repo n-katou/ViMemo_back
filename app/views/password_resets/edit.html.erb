@@ -1,23 +1,25 @@
 <% content_for(:title, t('.title')) %>
-<div class="container">
+<div class="container mx-auto p-4">
   <div class="row">
     <div class="col-md-10 col-lg-8 mx-auto">
-      <h1><%= t('.title') %></h1>
-      <%= form_with model: @user, url: password_reset_path(@token), method: :patch do |f| %>
-      <%= render 'shared/error_messages', object: f.object %>
-        <div class="mb-3">
-          <%= f.label :email, class: "form-label" %>
-          <%= @user.email %>
+      <h1 class="text-3xl font-bold mb-4"><%= t('.title') %></h1>
+      <%= form_with model: @user, url: password_reset_path(@token), method: :patch, local: true do |f| %>
+        <%= render 'shared/error_messages', object: f.object %>
+        <div class="form-control">
+          <%= f.label :email, class: "label" %>
+          <label class="input-group">
+            <%= @user.email %>
+          </label>
         </div>
-        <div class="mb-3">
-          <%= f.label :password, class: "form-label" %>
-          <%= f.password_field :password, class: "form-control" %>
+        <div class="form-control">
+          <%= f.label :password, class: "label" %>
+          <%= f.password_field :password, class: "input input-bordered" %>
         </div>
-        <div class="mb-3">
-          <%= f.label :password_confirmation, class: "form-label" %>
-          <%= f.password_field :password_confirmation, class: "form-control" %>
+        <div class="form-control">
+          <%= f.label :password_confirmation, class: "label" %>
+          <%= f.password_field :password_confirmation, class: "input input-bordered" %>
         </div>
-        <%= f.submit class: "btn btn-primary" %>
+        <%= f.submit t('.submit'), class: "btn btn-primary mt-4" %>
       <% end %>
     </div>
   </div>

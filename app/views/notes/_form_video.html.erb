@@ -1,6 +1,9 @@
 <div>
   <% if @video %>
     <%= form_with model: [@video, @video.notes.build], id: "new_note_form", url: video_notes_path(@video), class: 'new_note', data: { turbo_frame: "note" } do |f| %>
+      <div id="errors">
+        <%= render 'shared/error_messages', object: @note %>
+      </div>
       <div class="form-control mb-4">
         <%= f.label :video_timestamp, "タイムスタンプ", class: 'label' %>
         <div class="flex gap-2 mt-2">

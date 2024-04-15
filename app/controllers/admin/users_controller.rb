@@ -2,7 +2,7 @@ class Admin::UsersController < Admin::BaseController
   before_action :set_user, only: %i[edit update show destroy]
 
   def index
-    @q = Video.ransack(params[:q])  # ビデオの検索オブジェクトを使用する
+    @q = Video.ransack(params[:q])
     @videos = @q.result(distinct: true).order(created_at: :desc).page(params[:page])
     @users = User.all.page(params[:page]).per(10)
   end
@@ -21,6 +21,9 @@ class Admin::UsersController < Admin::BaseController
   def show; end
 
   def destroy
+    @user = User.find(params[:id])
+    @user.likes.destroy_all
+    @user.notes.destroy_all
     @user.youtube_videos.destroy_all
     @user.destroy!
     redirect_to admin_users_path, success: t('defaults.flash_message.deleted', item: User.model_name.human), status: :see_other

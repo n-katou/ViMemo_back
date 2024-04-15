@@ -2,13 +2,9 @@ class NotesController < ApplicationController
   before_action :set_video, only: [:edit, :update, :destroy, :create]
 
   def create
-    # ビデオの取得
-    @video = YoutubeVideo.find_by(id: params[:youtube_video_id]) || Video.find_by(id: params[:video_id])
-  
     if @video
       @note = @video.notes.build(note_params)
       @note.user_id = current_user.id
-      # フォームから送信された値を取得してタイムスタンプを計算
       minutes = params[:video_timestamp_minutes].to_i
       seconds = params[:video_timestamp_seconds].to_i
       @note.video_timestamp = format("%02d:%02d", minutes, seconds)
@@ -16,7 +12,7 @@ class NotesController < ApplicationController
       respond_to do |format|
         if @note.save
           format.turbo_stream { render "create", locals: { note: @note, video: @video } }
-          format.html { redirect_to redirect_path, notice: 'Note was successfully created.' }
+          format.html { redirect_to redirect_path, notice: t('notes.created_successfully') }
         else
           format.turbo_stream { render turbo_stream: turbo_stream.replace("errors", partial: "shared/error_messages", locals: { object: @note }) }
           format.html { render 'youtube_videos/show', status: :unprocessable_entity }
@@ -24,29 +20,26 @@ class NotesController < ApplicationController
       end
     else
       respond_to do |format|
-        format.turbo_stream { render turbo_stream: turbo_stream.replace("errors", partial: "shared/error_messages", locals: { object: @video, default_message: "Video not found." }) }
-        format.html { redirect_to youtube_videos_path, alert: "Video not found." }
+        format.turbo_stream { render turbo_stream: turbo_stream.replace("errors", partial: "shared/error_messages", locals: { object: @video, default_message: t('notes.video_not_found') }) }
+        format.html { redirect_to youtube_videos_path, alert: t('notes.video_not_found') }
       end
     end
   end
 
   def destroy
     @note = Note.find(params[:id])
-    @youtube_video = @note.youtube_video
     @note.destroy
   
     respond_to do |format|
       format.turbo_stream
-      format.html { redirect_to youtube_video_path(@youtube_video), notice: 'Note was successfully destroyed.' }
+      format.html { redirect_to youtube_video_path(@youtube_video), notice: t('notes.destroyed_successfully') }
     end
   end
 
   def update
-    @note = Note.find(params[:id])
     if @note.update(note_params)
-      redirect_to youtube_video_path(@note.youtube_video), notice: 'メモが更新されました。'
+      redirect_to youtube_video_path(@note.youtube_video), notice: t('notes.updated_successfully')
     else
-      # エラー処理
       render :edit
     end
   end
@@ -54,18 +47,14 @@ class NotesController < ApplicationController
   def edit
     @note = @video.notes.find(params[:id])
     respond_to do |format|
-      format.html 
+      format.html
     end
   end
 
   private
 
   def set_video
-    if params[:youtube_video_id]
-      @video = @youtube_video = YoutubeVideo.find_by(id: params[:youtube_video_id])
-    elsif params[:video_id]
-      @video = Video.find_by(id: params[:video_id])
-    end
+    @video = params[:youtube_video_id] ? YoutubeVideo.find_by(id: params[:youtube_video_id]) : Video.find_by(id: params[:video_id])
   end
 
   def note_params

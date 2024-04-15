@@ -1,12 +1,14 @@
 <% content_for(:title, t('.title')) %>
-<div class="container">
+<div class="container mx-auto">
   <div class="row">
     <div class="col-md-10 col-lg-8 mx-auto">
-      <h1><%= t('.title') %></h1>
+      <h1 class="text-3xl font-bold text-center mb-6"><%= t('.title') %></h1>
       <%= form_with url: password_resets_path do |f| %>
-        <div class="mb-3">
-          <%= f.label :email, class: "form-label" %>
-          <%= f.email_field :email, class: 'form-control' %>
+        <div class="form-control w-full max-w-xs mb-3">
+          <%= f.label :email, class: "label" %>
+          <div class="input-group">
+            <%= f.email_field :email, class: 'input input-bordered w-full max-w-xs' %>
+          </div>
         </div>
         <%= f.submit t('.submit'), class: "btn btn-primary" %>
       <% end %>

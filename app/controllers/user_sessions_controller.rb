@@ -16,6 +16,6 @@ class UserSessionsController < ApplicationController
 
   def destroy
     logout
-    redirect_to root_path, notice: 'ログアウトしました。', status: :see_other
+    redirect_to root_path, notice: t('user_sessions.destroy.success'), status: :see_other
   end
 end

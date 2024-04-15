@@ -1,7 +1,4 @@
 ja:
-  flash_messages:
-    videos_fetched_success: "%{count}件のビデオを取得して保存しました。"
-    fetch_videos_failed: "YouTubeからビデオを取得できませんでした。"
   defaults:
       flash_message:
         require_login: ログインしてください
@@ -82,6 +79,13 @@ ja:
     index:
       title: youtube一覧
     create: 動画を投稿
+    video_uploaded_successfully: "ビデオのアップロードに成功しました。"
+    video_updated_successfully: "ビデオが正常に更新されました。"
+    video_destroyed_successfully: "ビデオが正常に削除されました。"
+    title: "Youtube&投稿ビデオ一覧"
+    sort_by_likes: "いいね数が多い順"
+    sort_by_notes: "メモ数が多い順"
+
   up_videos:
     new:
       title: ビデオ投稿
@@ -92,4 +96,23 @@ ja:
       title: ビデオ一覧
   google_oauths:
     callback:
-      success: "Googleアカウントでのログインに成功しました！"
+      success: "Googleアカウントでのログインに成功しました"
+  authorization:
+    access_denied: "あなたはこのページにアクセスする権限がありません。"
+  auth:
+    login_success: "ログインしました！"
+    login_failed: "ログインに失敗しました！"
+  likes:
+    liked: "いいね！"
+    unliked: "いいね解除"
+    unable_to_like: "いいねできませんでした。"
+    invalid_operation: "無効な操作です。"
+  notes:
+    created_successfully: "メモが正常に作成されました。"
+    destroyed_successfully: "メモが正常に削除されました。"
+    updated_successfully: "メモが更新されました。"
+    video_not_found: "ビデオが見つかりませんでした。"
+    invalid_operation: "無効な操作です。"
+  flash_messages:
+    videos_fetched_success: "%{count}件のビデオを取得して保存しました。"
+    fetch_videos_failed: "YouTubeからビデオを取得できませんでした。"

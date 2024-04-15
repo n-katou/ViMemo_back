@@ -19,6 +19,7 @@
         <% if video.duration.present? %>
           <p>動画時間: <%= format_duration(video.duration) %></p>
         <% end %>
+        <p class="mb-2">メモ数: <%= video.notes.count %></p>
         <%= link_to '編集', edit_video_path(video), class: 'btn btn-primary' %>
         <%= link_to '削除', video_path(video),
                     data: { turbo_confirm: '本当に削除しますか？', turbo_method: :delete },

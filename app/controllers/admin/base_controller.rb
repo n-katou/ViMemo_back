@@ -10,6 +10,6 @@ class Admin::BaseController < ApplicationController
 
   def authorize_admin_access
     return if current_user.email == ENV['ADMIN_EMAIL']
-    redirect_to root_path, alert: 'You are not authorized to access this page.'
+    redirect_to root_path, alert: t('authorization.access_denied')
   end
 end

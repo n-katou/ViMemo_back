@@ -13,7 +13,7 @@ ja:
         password_confirmation: パスワード確認
         role: 権限
       note:
-        content: 内容
+        content: メモ
   attributes:
     id: ID
     created_at: 作成日時
@@ -36,6 +36,6 @@ ja:
         note:
           attributes:
             content:
-              blank: "内容を入力してください。"
+              blank: "メモを入力してください。"
       messages:
         blank: "を入力してください。"

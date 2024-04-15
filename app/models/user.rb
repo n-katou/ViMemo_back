@@ -6,6 +6,7 @@ class User < ApplicationRecord
   has_many :likes
   has_many :youtube_videos, dependent: :destroy
   has_many :videos, dependent: :destroy
+  has_many :notes, dependent: :destroy
 
   accepts_nested_attributes_for :authentications
 
