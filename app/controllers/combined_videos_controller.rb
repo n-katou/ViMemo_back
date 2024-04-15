@@ -1,16 +1,32 @@
 class CombinedVideosController < ApplicationController
   def index
-    @q = YoutubeVideo.ransack(params[:q])
+    @search_params = search_params
+    @q = YoutubeVideo.ransack(@search_params)
     @youtube_videos = @q.result(distinct: true)
 
-    @up_q = Video.ransack(params[:q])
+    @up_q = Video.ransack(@search_params)
     @videos = @up_q.result(distinct: true)
 
-    combined_videos = (@youtube_videos.to_a + @videos.to_a).sort_by(&:created_at).reverse
+    combined_videos = (@youtube_videos.to_a + @videos.to_a)
+
+    # ソートキーとソート順をパラメータから取得し、それに基づいてソート処理を行う
+    sort_key = params[:sort_key] || 'created_at'
+    sort_order = params[:sort_order] || 'desc'
+    combined_videos.sort_by! { |video| video.send(sort_key) }
+    combined_videos.reverse! if sort_order == 'desc'
+
     @paginated_videos = Kaminari.paginate_array(combined_videos).page(params[:page]).per(10)
   end
 
+
   def favorites
     @liked_videos = current_user.liked_videos.includes(:likes).page(params[:page]).per(10)
+  end
+
+  private
+
+  # Strong Parametersを使って、安全にパラメータをフィルタリングするメソッド
+  def search_params
+    params.require(:q).permit(:title_cont, :created_at, :likes_count, :notes_count)
   end
 end
