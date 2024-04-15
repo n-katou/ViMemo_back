@@ -55,7 +55,18 @@ class YoutubeVideosController < ApplicationController
   # ビデオの一覧を表示するアクション
   def index
     @q = YoutubeVideo.ransack(params[:q])
-    @youtube_videos = @q.result(distinct: true).includes(:notes).order(created_at: :desc).page(params[:page])
+    @youtube_videos = @q.result.includes(:notes)
+  
+    case params[:sort]
+    when 'likes_desc'
+      @youtube_videos = @youtube_videos.order(likes_count: :desc)
+    when 'notes_desc'
+      @youtube_videos = @youtube_videos.order(notes_count: :desc)
+    else
+      @youtube_videos = @youtube_videos.order(created_at: :desc)
+    end
+  
+    @youtube_videos = @youtube_videos.page(params[:page])
   end
 
   # 特定のビデオを表示するアクション

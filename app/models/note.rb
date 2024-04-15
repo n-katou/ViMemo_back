@@ -1,6 +1,6 @@
 class Note < ApplicationRecord
   belongs_to :user
-  belongs_to :youtube_video, optional: true
+  belongs_to :youtube_video, optional: true, counter_cache: true
   belongs_to :video, optional: true
   has_many :likes, as: :likeable, dependent: :destroy
   validates :content, presence: true
