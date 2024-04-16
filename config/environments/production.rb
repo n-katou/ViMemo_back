@@ -2,7 +2,7 @@ require "active_support/core_ext/integer/time"
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
-  config.hosts << "vimemoback.fly.dev"
+  config.hosts << "vimemo.fly.dev"
   config.require_master_key = true
 
   config.action_mailer.delivery_method = :smtp
