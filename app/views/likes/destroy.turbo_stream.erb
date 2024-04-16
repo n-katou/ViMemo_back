@@ -1,1 +1,1 @@
-<%= turbo_stream.replace "like_button", partial: "likes/like_button", locals: { youtube_video: @youtube_video } %>
+<%= turbo_stream.replace "like_button_#{params[:likeable_id]}", partial: "likes/like_button", locals: { youtube_video: @youtube_video } %>

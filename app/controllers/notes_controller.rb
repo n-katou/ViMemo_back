@@ -1,5 +1,7 @@
 class NotesController < ApplicationController
   before_action :set_video, only: [:edit, :update, :destroy, :create]
+  before_action :set_youtube_video, only: [:edit, :update, :show]
+  before_action :set_note, only: [:update]
 
   def create
     if @video
@@ -40,6 +42,7 @@ class NotesController < ApplicationController
     if @note.update(note_params)
       redirect_to youtube_video_path(@note.youtube_video), notice: t('notes.updated_successfully')
     else
+      flash.now[:alert] = t('notes.update_failed')
       render :edit
     end
   end
@@ -55,6 +58,14 @@ class NotesController < ApplicationController
 
   def set_video
     @video = params[:youtube_video_id] ? YoutubeVideo.find_by(id: params[:youtube_video_id]) : Video.find_by(id: params[:video_id])
+  end
+  
+  def set_youtube_video
+    @youtube_video = YoutubeVideo.find_by(id: params[:youtube_video_id])
+  end
+
+  def set_note
+    @note = Note.find(params[:id])
   end
 
   def note_params

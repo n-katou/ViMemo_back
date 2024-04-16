@@ -10,7 +10,7 @@
   <p>公開日: <%= l(@youtube_video.published_at, format: :long) %></p>
   <p>動画時間: <%= format_duration(@youtube_video.duration) %></p>
   <!-- いいねボタンとその他のコンポーネント -->
-  <div id="like_button">
+  <div id="like_button_<%= @youtube_video.id %>">
     <% user_like = @youtube_video.likes.find_by(user: current_user) %>
     <% if user_like %>
       <%= link_to 'いいねを取り消す', youtube_video_like_path(@youtube_video, user_like, likeable_type: @youtube_video.class.name, likeable_id: @youtube_video.id),
