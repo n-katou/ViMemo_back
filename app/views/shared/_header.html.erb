@@ -1,19 +1,42 @@
-<header class="bg-primary flex w-full px-4 sm:px-6 lg:px-8">
-  <%= link_to 'ViMemo', root_path, class: "btn btn-ghost normal-case text-xl" %>
-  <%= search_form_for @q, url: combined_videos_path, method: :get, class: "flex items-center space-x-4 ml-4 flex-grow" do |f| %>
-    <%= f.search_field :title_cont, placeholder: "タイトルを検索", class: "input input-bordered" %>
+<header class="bg-primary flex items-center justify-between w-full px-4 sm:px-6 lg:px-8">
+  <%= link_to image_tag('logo.png', alt: 'ViMemo', class: 'logo'), root_path %>
+  <%= search_form_for @q, url: combined_videos_path, method: :get, class: "flex items-center space-x-4 flex-grow mx-4" do |f| %>
+    <%= f.search_field :title_cont, placeholder: "タイトルを検索", class: "input input-bordered flex-grow" %>
     <%= f.submit "検索", class: "btn" %>
   <% end %>
-  <div class="dropdown dropdown-left" style="z-index: 1000;">
+  <div class="dropdown dropdown-left">
     <div tabindex="0" role="button" class="btn m-1">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" style="fill: none; stroke: currentColor; stroke-width: 2;">
         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
       </svg>
     </div>
-    <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52" style="z-index: 1001;">
+    <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52" style="z-index: 1001;">
       <li><%= link_to 'マイページ', users_mypage_path %></li>
       <li><%= link_to '投稿ビデオ一覧', videos_path %></li>
       <li><%= link_to t('header.logout'), logout_path, data: { turbo_method: :delete } %></li>
     </ul>
   </div>
 </header>
+
+<style>
+  .logo {
+    width: 200px;       /* 幅を設定 */
+    height: auto;       /* 高さを自動調整して比率を保持 */
+    border-radius: 10px; /* 角の丸みを加える */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* 影を付けて立体感を出す */
+    margin: 10px 0;     /* 上下の余白 */
+    transition: transform 0.3s ease; /* ホバー時のアニメーションを滑らかに */
+    margin-right: 20px;
+  }
+
+  .logo:hover {
+    transform: scale(1.05); /* ホバー時に少し大きくする */
+  }
+
+  @media (max-width: 768px) {
+    .logo {
+      width: 150px; /* モバイルデバイスでのロゴの幅を小さくする */
+      margin: 5px 0; /* 余白を調整 */
+    }
+  }
+</style>
