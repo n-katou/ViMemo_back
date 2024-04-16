@@ -12,6 +12,9 @@ Rails.application.routes.draw do
   end
 
   root 'tops#index'
+  get 'tops/agreement', to: 'tops#agreement', as: 'agreement'
+  get 'tops/privacy', to: 'tops#privacy', as: 'privacy'
+
   # ユーザー登録機能用のルーティング
   get 'users/mypage', to: 'users#mypage'
   get 'users/edit_mypage', to: 'users#edit', as: 'edit_mypage'

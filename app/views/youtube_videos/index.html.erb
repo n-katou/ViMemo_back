@@ -15,7 +15,17 @@
   </div>
   <div class="flex justify-center">
     <div class="w-auto">
-      <%= paginate @youtube_videos, class: "pagination" %>
+      <%= paginate @youtube_videos, class: "btn-group", remote: false do |f| %>
+        <%= f.first_page_tag 'First', class: 'btn' unless f.current_page == 1 %>
+        <%= f.prev_page_tag 'Prev', class: 'btn' unless f.current_page == 1 %>
+        <% f.each_page do |page| %>
+          <% if page.left_outer? || page.right_outer? || page.inside_window? %>
+            <%= f.page_tag page, class: 'btn' %>
+          <% end %>
+        <% end %>
+        <%= f.next_page_tag 'Next', class: 'btn' unless f.current_page == f.total_pages %>
+        <%= f.last_page_tag 'Last', class: 'btn' unless f.current_page == f.total_pages %>
+      <% end %>
     </div>
   </div>
 </div>
