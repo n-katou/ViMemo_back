@@ -15,12 +15,12 @@
     <div id="like_button_<%= youtube_video.id %>">
       <% user_like = youtube_video.likes.find_by(user: current_user) %>
       <% if user_like %>
-        <%= link_to 'いいねを取り消す', youtube_video_like_path(youtube_video, user_like, likeable_type: youtube_video.class.name, likeable_id: youtube_video.id),
+        <%= link_to t('likes.unliked'), youtube_video_like_path(youtube_video, user_like, likeable_type: youtube_video.class.name, likeable_id: youtube_video.id),
                     data: { turbo_method: :delete, turbo_frame: "like_button" },
                     remote: true,
                     class: 'btn btn-outline btn-warning' %>
       <% else %>
-        <%= link_to 'いいね', youtube_video_likes_path(youtube_video, likeable_type: youtube_video.class.name, likeable_id: youtube_video.id),
+        <%= link_to  t('likes.liked'), youtube_video_likes_path(youtube_video, likeable_type: youtube_video.class.name, likeable_id: youtube_video.id),
                     data: { turbo_method: :post, turbo_frame: "like_button" },
                     remote: true,
                     class: 'btn btn-outline btn-success' %>
