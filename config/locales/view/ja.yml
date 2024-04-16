@@ -1,7 +1,4 @@
 ja:
-  defaults:
-      flash_message:
-        require_login: ログインしてください
   helpers:
     submit:
       create: 登録
@@ -31,11 +28,12 @@ ja:
     header:
       login: ログイン
       logout: ログアウト
-      board: 掲示板
-      board_index: 掲示板一覧
-      create_board: 掲示板作成
-      bookmark_index: ブックマーク一覧
-      profile: プロフィール
+    flash_message:
+      require_login: "ログインしてください"
+    sort:
+      likes_desc: "いいね数が多い順"
+      notes_desc: "メモ数が多い順"
+      created_at_desc: "新しい投稿順"
   user_sessions:
     new:
       title: ログイン
@@ -77,23 +75,13 @@ ja:
       success: パスワードを変更しました
   videos:
     index:
-      title: youtube一覧
+      new_video: 動画投稿
     create: 動画を投稿
     video_uploaded_successfully: "ビデオのアップロードに成功しました。"
     video_updated_successfully: "ビデオが正常に更新されました。"
     video_destroyed_successfully: "ビデオが正常に削除されました。"
     title: "Youtube&投稿ビデオ一覧"
-    sort_by_likes: "いいね数が多い順"
-    sort_by_notes: "メモ数が多い順"
-
-  up_videos:
-    new:
-      title: ビデオ投稿
-    index:
-      title: 投稿ビデオ一覧
-  combined_videos:
-    index:
-      title: ビデオ一覧
+    new_video: "新規登録"
   google_oauths:
     callback:
       success: "Googleアカウントでのログインに成功しました"

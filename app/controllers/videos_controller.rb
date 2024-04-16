@@ -2,22 +2,24 @@ class VideosController < ApplicationController
   before_action :set_video, only: [:show, :edit, :update, :destroy]
 
   def index
-    @videos = Video.page(params[:page]).per(10)
-    case params[:sort]
-    when 'likes_desc'
-      @videos = @videos.order(likes_count: :desc)
-    when 'notes_desc'
-      @videos = @videos.order(notes_count: :desc)
-    else
-      @videos = @videos.order(created_at: :desc)
-    end
-  end
+    @q = Video.ransack(params[:q])
+    @videos = @q.result(distinct: true).includes(:notes)
 
-  def show
-    @video = Video.find(params[:id])
-    @likeable = @video
-    @user_like = @likeable.likes.find_by(user: current_user)
-    @notes = current_user ? @video.notes : @video.notes.where(is_visible: true)
+    # ソート条件を設定
+    @videos = case params[:sort]
+              when 'likes_desc'
+                @videos.order(likes_count: :desc)
+              when 'notes_desc'
+                @videos.order(notes_count: :desc)
+              else
+                @videos.order(created_at: :desc) # デフォルトで新しい投稿順
+              end
+
+    # ページネーションを追加
+    @videos = @videos.page(params[:page])
+
+    # 安全にパラメータをフィルタリング
+    @filtered_q_params = params[:q]&.permit(:notes_content_cont)
   end
 
   def new

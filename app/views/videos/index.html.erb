@@ -1,11 +1,12 @@
-<div class="container mx-auto mb-5 pt-2 px-4 sm:px-6 lg:px-8 max-w-full sm:max-w-xl md:max-w-2xl lg:max-w-4xl">
+<div class="container mb-5 pt-2 px-4 sm:px-6 lg:px-8 max-w-full sm:max-w-xl md:max-w-2xl lg:max-w-4xl">
   <h1 class="text-3xl font-bold mb-4">投稿ビデオ一覧</h1>
   <div class="flex justify-left mb-6">
-    <%= render 'shared/search_form', q: @q %>
+    <%= render 'videos/search_form', q: @q %>
   </div>
   <div class="mb-4">
-    <%= link_to 'いいね数が多い順', videos_path(sort: 'likes_desc', q: params[:q]), class: "btn btn-accent" %>
-    <%= link_to 'メモ数が多い順', videos_path(sort: 'notes_desc', q: params[:q]), class: "btn btn-accent" %>
+    <%= link_to t('defaults.sort.likes_desc'), videos_path(sort: 'likes_desc', q: @filtered_q_params), class: "btn btn-accent" %>
+    <%= link_to t('defaults.sort.notes_desc'), videos_path(sort: 'notes_desc', q: @filtered_q_params), class: "btn btn-accent" %>
+    <%= link_to t('defaults.sort.created_at_desc'), videos_path(sort: 'created_at_desc', q: @filtered_q_params), class: "btn btn-accent" %>
   </div>
   <div class="flex justify-center mb-6">
     <div class="w-full">
@@ -19,7 +20,7 @@
   </div>
   <div class="flex my-4">
     <%= link_to new_video_path, class: "btn btn-primary" do %>
-      <h2 class="text-lg">新規登録</h2>
+      <h2 class="text-lg"><%= t('videos.index.new_video') %></h2>
     <% end %>
   </div>
 </div>

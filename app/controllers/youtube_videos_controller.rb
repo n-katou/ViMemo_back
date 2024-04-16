@@ -57,18 +57,22 @@ class YoutubeVideosController < ApplicationController
   # ビデオの一覧を表示するアクション
   def index
     @q = YoutubeVideo.ransack(params[:q])
-    @youtube_videos = @q.result.includes(:notes)
-  
-    case params[:sort]
-    when 'likes_desc'
-      @youtube_videos = @youtube_videos.order(likes_count: :desc)
-    when 'notes_desc'
-      @youtube_videos = @youtube_videos.order(notes_count: :desc)
-    else
-      @youtube_videos = @youtube_videos.order(created_at: :desc)
-    end
-  
+    @youtube_videos = @q.result(distinct: true).includes(:notes)
+
+    @youtube_videos = case params[:sort]
+                      when 'likes_desc'
+                        @youtube_videos.order(likes_count: :desc)
+                      when 'notes_desc'
+                        @youtube_videos.order(notes_count: :desc)
+                      when 'created_at_desc'
+                        @youtube_videos.order(created_at: :desc)
+                      else
+                        @youtube_videos.order(created_at: :desc) # デフォルトでも新しい投稿順
+                      end
+
     @youtube_videos = @youtube_videos.page(params[:page])
+
+    @filtered_q_params = params[:q]&.permit(:notes_content_cont)
   end
 
   # 特定のビデオを表示するアクション
