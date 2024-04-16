@@ -3,7 +3,7 @@ class GoogleOauthService
     @code = code
     @client_id = ENV['GOOGLE_CLIENT_ID']
     @client_secret = ENV['GOOGLE_CLIENT_SECRET']
-    @redirect_uri = "https://vimemoback.fly.dev/oauth/callback?provider=google"
+    @redirect_uri = "https://vimemo.fly.dev/oauth/callback?provider=google"
     # @redirect_uri = "http://localhost:3000/oauth/callback?provider=google"
   end
 
