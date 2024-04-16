@@ -40,8 +40,9 @@
     <div class="flex-1 flex-auto lg:pr-4 md:pr-2 pr-1">
       <h1 class="text-xl font-bold mb-4">「いいね」した動画一覧</h1>
       <% if @liked_videos.any? %>
-        <%# 後々スライダーで実装 %>
-        <%= render @liked_videos %>
+        <div class="mb-4">
+          <%= render 'shared/swiper', videos: @liked_videos %>
+        </div>
         <!-- ページネーション -->
         <div class="mt-4">
           <%= paginate @liked_videos %>
