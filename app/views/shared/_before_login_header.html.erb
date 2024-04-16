@@ -1,7 +1,7 @@
 <header class="bg-primary flex w-full px-4 sm:px-6 lg:px-8">
   <div class="navbar container mx-auto flex justify-between">
     <div class="flex-initial">
-      <%= link_to 'ViMemo', root_path, class: "btn btn-ghost normal-case text-xl" %>
+      <%= link_to image_tag('logo.png', alt: 'ViMemo', class: 'logo'), root_path %>
     </div>
     <div class="flex-initial">
       <ul class="menu menu-horizontal p-0">
@@ -12,3 +12,26 @@
     </div>
   </div>
 </header>
+<style>
+  .logo {
+    width: 200px;       /* 幅を設定 */
+    height: auto;       /* 高さを自動調整して比率を保持 */
+    border-radius: 10px; /* 角の丸みを加える */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* 影を付けて立体感を出す */
+    margin: 10px 0;     /* 上下の余白 */
+    transition: transform 0.3s ease; /* ホバー時のアニメーションを滑らかに */
+    margin-right: 20px;
+  }
+
+  .logo:hover {
+    transform: scale(1.05); /* ホバー時に少し大きくする */
+  }
+
+  @media (max-width: 768px) {
+    .logo {
+      width: 150px; /* モバイルデバイスでのロゴの幅を小さくする */
+      margin: 5px 0; /* 余白を調整 */
+    }
+  }
+</style>
+
