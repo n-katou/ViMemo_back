@@ -1,12 +1,14 @@
-<h1 class="mb-4">
-  <%= link_to youtube_video.title, youtube_video_path(youtube_video), class: "btn btn-outline" %>
-</h1>
+<div class="mb-4">
+  <h1>
+    <%= link_to youtube_video.title, youtube_video_path(youtube_video) %>
+  </h1>
+</div>
 <div class="flex">
   <div class="mb-6 text-left w-full">
     <div class="video-wrapper">
-      <iframe class="aspect-video" width="400" height="300" src="https://www.youtube.com/embed/<%= youtube_video.youtube_id %>" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      <iframe class="aspect-video" src="https://www.youtube.com/embed/<%= youtube_video.youtube_id %>" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     </div>
-    <p>公開日: <%= youtube_video.published_at %></p>
+    <p>公開日: <%= l(youtube_video.published_at, format: :long) %></p>
     <p>動画時間: <%= format_duration(youtube_video.duration) %></p>
     <p>メモ数: <%= youtube_video.notes.count %></p>
     <p>いいね数: <%= youtube_video.likes.count %></p>
@@ -16,10 +18,9 @@
 <style>
   .video-wrapper {
     position: relative;
-    padding-top: 56.25%;
+    padding-top: 56.25%; /* 16:9 Aspect Ratio */
     height: 0;
     overflow: hidden;
-    z-index: 10;
   }
 
   .video-wrapper iframe {

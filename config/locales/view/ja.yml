@@ -104,3 +104,14 @@ ja:
   flash_messages:
     videos_fetched_success: "%{count}件のビデオを取得して保存しました。"
     fetch_videos_failed: "YouTubeからビデオを取得できませんでした。"
+  date:
+    formats:
+      default: "%Y年%m月%d日"
+      short: "%m/%d"
+      long: "%Y年%m月%d日 %H:%M"
+  time:
+    formats:
+      default: "%H:%M"
+      short: "%H:%M"
+      long: "%Y年%m月%d日 %H:%M"
+
