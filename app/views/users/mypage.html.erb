@@ -41,7 +41,7 @@
       <h1 class="text-xl font-bold mb-4">「いいね」した動画一覧</h1>
       <% if @liked_videos.any? %>
         <div class="mb-4">
-          <%= render @liked_videos %>
+          <%= render 'shared/swiper', videos: @liked_videos %>
         </div>
         <!-- ページネーション -->
         <div class="mt-4">
