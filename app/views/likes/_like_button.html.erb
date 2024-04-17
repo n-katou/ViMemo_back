@@ -1,8 +1,16 @@
-<div id="like_button_<%= youtube_video.id %>">
-  <% user_like = youtube_video.likes.find_by(user: current_user) %>
+<div id="like_button_<%= likeable.id %>">
+  <% user_like = likeable.likes.find_by(user: current_user) %>
   <% if user_like %>
-    <%= link_to t('likes.unliked'), youtube_video_like_path(youtube_video, user_like, likeable_type: youtube_video.class.name, likeable_id: youtube_video.id), method: :delete, data: { turbo_method: :delete, turbo_frame: "like_button" }, remote: true, class: 'btn btn-outline btn-warning' %>
+    <%= link_to t('likes.unliked'), youtube_video_like_path(likeable, user_like, likeable_type: likeable.class.name, likeable_id: likeable.id),
+                method: :delete,
+                data: { turbo_method: :delete, turbo_frame: "like_button_#{likeable.id}" },
+                
+                class: 'btn btn-outline btn-warning' %>
   <% else %>
-    <%= link_to t('likes.liked'), youtube_video_likes_path(youtube_video, likeable_type: youtube_video.class.name, likeable_id: youtube_video.id), method: :post, data: { turbo_method: :post, turbo_frame: "like_button" }, remote: true, class: 'btn btn-outline btn-success' %>
+    <%= link_to t('likes.liked'), youtube_video_likes_path(likeable, likeable_type: likeable.class.name, likeable_id: likeable.id),
+                method: :post,
+                data: { turbo_method: :post, turbo_frame: "like_button_#{likeable.id}" },
+                
+                class: 'btn btn-outline btn-success' %>
   <% end %>
 </div>
