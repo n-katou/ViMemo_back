@@ -20,7 +20,24 @@ class CombinedVideosController < ApplicationController
 
 
   def favorites
-    @liked_videos = current_user.liked_videos.includes(:likes).page(params[:page]).per(10)
+    @user = current_user
+    @likes = @user.likes.includes(:likeable)
+  
+    # 'likeable_type' を基にして異なるタイプのビデオをフィルタリング
+    liked_youtube_videos = @likes.select { |like| like.likeable_type == "YoutubeVideo" }.map(&:likeable)
+    liked_up_videos = @likes.select { |like| like.likeable_type == "Video" }.map(&:likeable)
+  
+    combined_videos = liked_youtube_videos + liked_up_videos
+  
+    sort_key = params[:sort_key] || 'created_at'
+    sort_order = params[:sort_order] || 'desc'
+    
+    # ソート処理
+    combined_videos.sort_by! { |video| video.send(sort_key) }
+    combined_videos.reverse! if sort_order == 'desc'
+  
+    # ページネーション
+    @paginated_videos = Kaminari.paginate_array(combined_videos).page(params[:page]).per(10)
   end
 
   private

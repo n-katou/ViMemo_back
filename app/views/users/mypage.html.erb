@@ -39,16 +39,15 @@
     <!-- 右側コンテンツエリア -->
     <div class="flex-1 flex-auto lg:pr-4 md:pr-2 pr-1">
       <h1 class="text-xl font-bold mb-4">「いいね」した動画一覧</h1>
-      <% if @liked_videos.any? %>
+      <% if @likes.any? %>
         <div class="mb-4">
-          <%= render @liked_videos %>
+          <% @likes.each do |like| %>
+            <%= render like.likeable %>
+          <% end %>
         </div>
         <!-- ページネーション -->
         <div class="mt-4">
-          <%= paginate @liked_videos %>
-        </div>
-        <div class="mb-3">
-          <%= link_to 'いいねしたビデオ一覧へ', favorites_videos_path, class: "btn btn-outline btn-secondary" %>
+          <%= paginate @likes %>
         </div>
       <% else %>
         <p>いいねした動画がありません。</p>
