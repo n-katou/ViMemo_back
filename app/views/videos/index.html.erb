@@ -3,10 +3,15 @@
   <div class="flex justify-left mb-6">
     <%= render 'videos/search_form', q: @q %>
   </div>
-  <div class="mb-4">
-    <%= link_to t('defaults.sort.likes_desc'), videos_path(sort: 'likes_desc', q: @filtered_q_params), class: "btn btn-accent" %>
-    <%= link_to t('defaults.sort.notes_desc'), videos_path(sort: 'notes_desc', q: @filtered_q_params), class: "btn btn-accent" %>
-    <%= link_to t('defaults.sort.created_at_desc'), videos_path(sort: 'created_at_desc', q: @filtered_q_params), class: "btn btn-accent" %>
+  <div tabindex="0" class="collapse collapse-arrow border border-base-300 bg-base-100 rounded-box mb-5" style="border-color: #004080; border-width: 2px; border-style: solid; border-radius: 8px;">
+    <div class="collapse-title text-xl font-medium" id="accordion-toggle">
+      ソートオプション
+    </div>
+    <div class="mb-4" style="display: none; flex-direction: column; padding: 10px;">
+      <%= link_to t('defaults.sort.likes_desc'), videos_path(sort: 'likes_desc', q: @filtered_q_params), class: "btn btn-accent mb-2" %>
+      <%= link_to t('defaults.sort.notes_desc'), videos_path(sort: 'notes_desc', q: @filtered_q_params), class: "btn btn-accent mb-2" %>
+      <%= link_to t('defaults.sort.created_at_desc'), videos_path(sort: 'created_at_desc', q: @filtered_q_params), class: "btn btn-accent mb-2" %>
+    </div>
   </div>
   <div class="flex justify-center mb-6">
     <div class="w-full">
@@ -24,3 +29,15 @@
     <% end %>
   </div>
 </div>
+
+<script>
+  document.getElementById('accordion-toggle').addEventListener('click', function(event) {
+    var content = this.nextElementSibling;
+    if (content.style.display === 'none') {
+      content.style.display = 'block';
+    } else {
+      content.style.display = 'none';
+    }
+  });
+</script>
+
