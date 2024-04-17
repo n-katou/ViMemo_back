@@ -1,12 +1,28 @@
 <div class="container mb-5 pt-2 px-4 sm:px-6 lg:px-8 max-w-full sm:max-w-xl md:max-w-2xl lg:max-w-4xl">
   <h1 class="text-3xl font-bold mb-4 text-left">Youtube&投稿ビデオ一覧</h1>
-  <div class="mb-4">
-    <%= link_to t('defaults.sort.likes_desc'), combined_videos_path(q: @search_params.to_h, sort_key: 'likes_count', sort_order: 'desc'), class: "btn btn-accent" %>
-    <%= link_to t('defaults.sort.notes_desc'), combined_videos_path(q: @search_params.to_h, sort_key: 'notes_count', sort_order: 'desc'), class: "btn btn-accent" %>
-    <%= link_to t('defaults.sort.created_at_desc'), combined_videos_path(sort_key: 'created_at', sort_order: 'desc'), class: "btn btn-accent" %>
+  <div tabindex="0" class="collapse collapse-arrow border border-base-300 bg-base-100 rounded-box mb-5">
+    <div class="collapse-title text-xl font-medium" id="accordion-toggle">
+      ソートオプション
+    </div>
+    <div class="mb-4" style="display: none; flex-direction: column;">
+      <%= link_to t('defaults.sort.likes_desc'), combined_videos_path(q: @search_params.to_h, sort_key: 'likes_count', sort_order: 'desc'), class: "btn btn-accent mb-2" %>
+      <%= link_to t('defaults.sort.notes_desc'), combined_videos_path(q: @search_params.to_h, sort_key: 'notes_count', sort_order: 'desc'), class: "btn btn-accent mb-2" %>
+      <%= link_to t('defaults.sort.created_at_desc'), combined_videos_path(sort_key: 'created_at', sort_order: 'desc'), class: "btn btn-accent mb-2" %>
+    </div>
   </div>
   <div class="col-md-12">
     <%= render @paginated_videos %>
     <%= paginate @paginated_videos %>
   </div>
 </div>
+
+<script>
+  document.getElementById('accordion-toggle').addEventListener('click', function(event) {
+    var content = this.nextElementSibling;
+    if (content.style.display === 'none') {
+      content.style.display = 'block';
+    } else {
+      content.style.display = 'none';
+    }
+  });
+</script>
