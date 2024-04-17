@@ -2,12 +2,18 @@
   <h1 class="text-3xl font-bold mb-4 text-left">お気に入り一覧</h1>
   <div class="flex">
     <div class="w-full">
-      <%= render @liked_videos %>
-    </div>
-  </div>
-  <div class="flex">
-    <div class="w-auto">
-      <%= paginate @liked_videos, class: "pagination" %>
+      <% if @likes.any? %>
+        <div class="mb-4">
+          <% @likes.each do |like| %>
+            <%= render like.likeable %>
+          <% end %>
+        </div>
+        <div class="mt-4">
+          <%= paginate @likes %>
+        </div>
+      <% else %>
+        <p>いいねした動画がありません。</p>
+      <% end %>
     </div>
   </div>
 </div>

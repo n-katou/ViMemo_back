@@ -19,7 +19,7 @@ class UsersController < ApplicationController
 
   def mypage
     @user = current_user
-    @liked_videos = current_user.liked_videos.page(params[:page])
+    @likes = @user.likes.includes(:likeable).order(created_at: :desc).page(params[:page])
   end
 
   def edit; end

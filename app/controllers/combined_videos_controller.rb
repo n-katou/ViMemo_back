@@ -20,7 +20,8 @@ class CombinedVideosController < ApplicationController
 
 
   def favorites
-    @liked_videos = current_user.liked_videos.includes(:likes).page(params[:page]).per(10)
+    @user = current_user
+    @likes = @user.likes.includes(:likeable).order(created_at: :desc).page(params[:page])
   end
 
   private
