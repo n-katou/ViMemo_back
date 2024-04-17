@@ -1,10 +1,10 @@
 <div class="container mb-5 pt-2 px-4 sm:px-6 lg:px-8 max-w-full sm:max-w-xl md:max-w-2xl lg:max-w-4xl">
   <h1 class="text-3xl font-bold mb-4 text-left">Youtube&投稿ビデオ一覧</h1>
-  <div tabindex="0" class="collapse collapse-arrow border border-base-300 bg-base-100 rounded-box mb-5">
+  <div tabindex="0" class="collapse collapse-arrow border border-base-300 bg-base-100 rounded-box mb-5" style="border-color: #004080; border-width: 2px; border-style: solid; border-radius: 8px;">
     <div class="collapse-title text-xl font-medium" id="accordion-toggle">
       ソートオプション
     </div>
-    <div class="mb-4" style="display: none; flex-direction: column;">
+    <div class="mb-4" style="display: none; flex-direction: column; padding: 10px;">
       <%= link_to t('defaults.sort.likes_desc'), combined_videos_path(q: @search_params.to_h, sort_key: 'likes_count', sort_order: 'desc'), class: "btn btn-accent mb-2" %>
       <%= link_to t('defaults.sort.notes_desc'), combined_videos_path(q: @search_params.to_h, sort_key: 'notes_count', sort_order: 'desc'), class: "btn btn-accent mb-2" %>
       <%= link_to t('defaults.sort.created_at_desc'), combined_videos_path(sort_key: 'created_at', sort_order: 'desc'), class: "btn btn-accent mb-2" %>
