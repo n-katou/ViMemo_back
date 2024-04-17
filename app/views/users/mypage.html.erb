@@ -49,9 +49,6 @@
         <div class="mt-4">
           <%= paginate @likes %>
         </div>
-        <div class="mb-3">
-          <%= link_to 'いいねしたビデオ一覧へ', favorites_videos_path, class: "btn btn-outline btn-secondary" %>
-        </div>
       <% else %>
         <p>いいねした動画がありません。</p>
       <% end %>
