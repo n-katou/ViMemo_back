@@ -28,4 +28,9 @@ module NotesHelper
       root_path
     end
   end
+
+  def extract_minutes_and_seconds(timestamp)
+    parts = timestamp.split(':')
+    { minutes: parts[0].to_i, seconds: parts[1].to_i }
+  end
 end

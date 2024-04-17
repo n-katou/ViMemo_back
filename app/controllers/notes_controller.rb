@@ -39,11 +39,15 @@ class NotesController < ApplicationController
   end
 
   def update
+    minutes = params[:video_timestamp_minutes].to_i
+    seconds = params[:video_timestamp_seconds].to_i
+    @note.video_timestamp = format("%02d:%02d", minutes, seconds)
+  
     if @note.update(note_params)
       redirect_to youtube_video_path(@note.youtube_video), notice: t('notes.updated_successfully')
     else
-      flash.now[:alert] = t('notes.update_failed')
-      render :edit
+      Rails.logger.debug @note.errors.full_messages
+      render :edit, status: :unprocessable_entity
     end
   end
 

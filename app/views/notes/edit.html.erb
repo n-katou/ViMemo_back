@@ -1,13 +1,20 @@
 <h2 class="text-2xl font-bold mb-6">メモの編集</h2>
 <% video = @youtube_video || @video %>
+<% ts_parts = extract_minutes_and_seconds(@note.video_timestamp) %>
 
 <%= form_with model: [video, @note], id: "edit_note-#{@note.id}", class: 'form p-4 shadow-lg rounded-lg', local: true do |f| %>
   <div id="errors">
     <%= render 'shared/error_messages', object: @note %>
   </div>
-  <div class="form-control">
+  <div class="form-control mb-4">
     <%= f.label :video_timestamp, "タイムスタンプ", class: 'label' %>
-    <%= f.text_field :video_timestamp, class: 'input input-bordered' %>
+    <div class="flex space-x-2 mt-2">
+      <input type="number" id="video_timestamp_minutes" name="video_timestamp_minutes" value="<%= ts_parts[:minutes] %>" min="0" max="59" class="input input-bordered w-20" onchange="timeChanged();">
+      <label for="video_timestamp_minutes" class="label px-2">分</label>
+      <input type="number" id="video_timestamp_seconds" name="video_timestamp_seconds" value="<%= ts_parts[:seconds] %>" min="0" max="59" class="input input-bordered w-20" onchange="timeChanged();">
+      <label for="video_timestamp_seconds" class="label px-2">秒</label>
+      <%= f.hidden_field :video_timestamp, id: 'note_video_timestamp' %>
+    </div>
   </div>
 
   <div class="form-control mt-4">
@@ -26,3 +33,11 @@
 <% end %>
 
 <%= link_to '戻る', back_path, class: 'btn btn-secondary mt-2' %>
+
+<script>
+  function timeChanged() {
+    const minutes = parseInt(document.getElementById('video_timestamp_minutes').value) || 0;
+    const seconds = parseInt(document.getElementById('video_timestamp_seconds').value) || 0;
+    document.getElementById('note_video_timestamp').value = `${minutes}:${seconds.toString().padStart(2, '0')}`; // フォーマット "分:秒"
+  }
+</script>
