@@ -88,8 +88,8 @@ ja:
   authorization:
     access_denied: "あなたはこのページにアクセスする権限がありません。"
   auth:
-    login_success: "ログインしました！"
-    login_failed: "ログインに失敗しました！"
+    login_success: "ログインしました"
+    login_failed: "ログインに失敗しました"
   likes:
     liked: "いいね！"
     unliked: "いいね解除"

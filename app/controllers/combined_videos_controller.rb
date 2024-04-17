@@ -1,20 +1,21 @@
 class CombinedVideosController < ApplicationController
   def index
     @search_params = search_params
+  
     @q = YoutubeVideo.ransack(@search_params)
     @youtube_videos = @q.result(distinct: true)
-
+  
     @up_q = Video.ransack(@search_params)
     @videos = @up_q.result(distinct: true)
-
+  
     combined_videos = (@youtube_videos.to_a + @videos.to_a)
-
-    sort_key = params[:sort_key] || 'created_at'
-    sort_order = params[:sort_order] || 'desc'
-    combined_videos.sort_by! { |video| video.send(sort_key) }
-    combined_videos.reverse! if sort_order == 'desc'
-
-    @paginated_videos = Kaminari.paginate_array(combined_videos).page(params[:page]).per(10)
+  
+    sort_key = params[:q][:sort_key] || 'created_at'
+    sort_order = params[:q][:sort_order] || 'desc'
+  
+    sorted_videos = combined_videos.sort_by { |video| video.send(sort_key.to_sym) || 0 }
+    sorted_videos.reverse! if sort_order == 'desc'
+    @paginated_videos = Kaminari.paginate_array(sorted_videos).page(params[:page]).per(10)
   end
 
 
@@ -43,6 +44,6 @@ class CombinedVideosController < ApplicationController
   private
   
   def search_params
-    params.fetch(:q, {}).permit(:title_cont, :created_at, :likes_count, :notes_count)
+    params.fetch(:q, {}).permit(:title_cont, :created_at, :likes_count, :notes_count, :sort_key, :sort_order)
   end
 end

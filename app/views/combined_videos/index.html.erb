@@ -5,9 +5,9 @@
       ソートオプション
     </div>
     <div class="mb-4" style="display: none; flex-direction: column; padding: 10px;">
-      <%= link_to t('defaults.sort.likes_desc'), combined_videos_path(q: @search_params.to_h, sort_key: 'likes_count', sort_order: 'desc'), class: "btn btn-accent mb-2" %>
-      <%= link_to t('defaults.sort.notes_desc'), combined_videos_path(q: @search_params.to_h, sort_key: 'notes_count', sort_order: 'desc'), class: "btn btn-accent mb-2" %>
-      <%= link_to t('defaults.sort.created_at_desc'), combined_videos_path(sort_key: 'created_at', sort_order: 'desc'), class: "btn btn-accent mb-2" %>
+      <%= link_to t('defaults.sort.likes_desc'), combined_videos_path(q: @search_params.to_h.merge({sort_key: 'likes_count', sort_order: 'desc'})), class: "btn btn-accent mb-2" %>
+      <%= link_to t('defaults.sort.notes_desc'), combined_videos_path(q: @search_params.to_h.merge({sort_key: 'notes_count', sort_order: 'desc'})), class: "btn btn-accent mb-2" %>
+      <%= link_to t('defaults.sort.created_at_desc'), combined_videos_path(q: @search_params.to_h.merge({sort_key: 'created_at', sort_order: 'desc'})), class: "btn btn-accent mb-2" %>
     </div>
   </div>
   <div class="col-md-12">

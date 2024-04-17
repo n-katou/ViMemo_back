@@ -1,4 +1,43 @@
-<h1 class="text-3xl font-bold">Topページ</h1>
-<div>
-    <%= link_to 'youtube一覧', youtube_videos_path, class: "text-blue-500 hover:text-red-700" %>
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-full sm:max-w-xl md:max-w-2xl lg:max-w-4xl">
+    <h1 class="text-3xl font-bold mb-4 text-left">サービス概要</h1>
+    <p class="mb-4">動画視聴中に時間軸上で直感的にメモを追加し、共有できるサービスになります。</p>
+    
+    <h2 class="text-2xl font-bold mb-4 text-left">主な機能</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="card bg-base-100 shadow-xl p-6 mb-6">
+            <h3 class="font-semibold">アカウント管理</h3>
+            Googleアカウントを利用すれば、登録不要でログインが出来ます。
+            <video controls width="100%">
+                <source src="/videos/login.mp4" type="video/mp4">
+                お使いのブラウザはビデオタグをサポートしていません。
+            </video>
+        </div>
+
+        <div class="card bg-base-100 shadow-xl p-6 mb-6">
+            <h3 class="font-semibold">広告なしで動画視聴</h3>
+            Youtubeの広告がないため、ストレスフリーで動画を視聴できます。
+            <video controls width="100%">
+                <source src="/videos/youtube.mp4" type="video/mp4">
+                お使いのブラウザはビデオタグをサポートしていません。
+            </video>
+        </div>
+
+        <div class="card bg-base-100 shadow-xl p-6 mb-6">
+            <h3 class="font-semibold">動画とメモの同時操作</h3>
+            動画再生中にタイムライン上でメモを追加し重要なポイントを即座に記録し、後で簡単にアクセス可能です。
+            <video controls width="100%">
+                <source src="/videos/memo.mp4" type="video/mp4">
+                お使いのブラウザはビデオタグをサポートしていません。
+            </video>
+        </div>
+
+        <div class="card bg-base-100 shadow-xl p-6 mb-6">
+            <h3 class="font-semibold">メモの共有と管理</h3>
+            作成したメモは編集・削除・Xで共有ができます。
+            <video controls width="100%">
+                <source src="/videos/X.mp4" type="video/mp4">
+                お使いのブラウザはビデオタグをサポートしていません。
+            </video>
+        </div>
+    </div>
 </div>
