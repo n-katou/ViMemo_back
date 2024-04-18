@@ -50,6 +50,7 @@ Rails.application.routes.draw do
     post 'login' => "user_sessions#create"
     delete 'logout' => 'user_sessions#destroy', :as => :logout
     resources :users, only: %i[index edit update show destroy]
+    resources :videos, only: %i[index show]
   end
   
 end

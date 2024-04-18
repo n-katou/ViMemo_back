@@ -1,0 +1,19 @@
+<div class="mb-4 btn btn-outline btn-info">
+  <h1>
+    <%= link_to youtube_video.title, admin_video_path(youtube_video) %>
+  </h1>
+</div>
+<div class="flex">
+  <div class="mb-6 text-left w-full">
+    <div class="video-wrapper">
+      <iframe src="https://www.youtube.com/embed/<%= youtube_video.youtube_id %>" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"></iframe>
+    </div>
+    <p>公開日: <%= l(youtube_video.published_at, format: :long) %></p>
+    <p>動画時間: <%= format_duration(youtube_video.duration) %></p>
+    <p>メモ数: <%= youtube_video.notes.count %></p>
+    <%= link_to '削除', youtube_video_path(youtube_video), 
+            data: { turbo_method: :delete, 
+                    turbo_confirm: 'この動画を削除してよろしいですか？'}, 
+            class: 'btn btn-danger' %>
+  </div>
+</div>

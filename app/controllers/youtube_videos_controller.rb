@@ -91,7 +91,7 @@ class YoutubeVideosController < ApplicationController
     @youtube_video = YoutubeVideo.find_by(id: params[:id])
     if @youtube_video
       @youtube_video.destroy
-      redirect_to youtube_videos_path, success: t('defaults.flash_message.deleted', item: YoutubeVideo.model_name.human), status: :see_other
+      redirect_to admin_videos_path, success: t('defaults.flash_message.deleted', item: YoutubeVideo.model_name.human), status: :see_other
     else
       # ビデオが見つからない場合の処理
       redirect_to youtube_videos_path, alert: 'Video not found', status: :not_found
