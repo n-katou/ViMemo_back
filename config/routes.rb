@@ -18,7 +18,7 @@ Rails.application.routes.draw do
   # ユーザー登録機能用のルーティング
   get 'users/mypage', to: 'users#mypage'
   get 'users/edit_mypage', to: 'users#edit', as: 'edit_mypage'
-  resources :users, except: [:edit, :show]
+  resources :users, except: [:edit, :show, :index]
   resources :password_resets, only: %i[new create edit update]
 
   # セッション管理用のルーティング

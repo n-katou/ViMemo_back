@@ -1,7 +1,7 @@
 class User < ApplicationRecord
   authenticates_with_sorcery!
   mount_uploader :avatar, UserImageUploader
-  has_one_attached :avatar
+  # has_one_attached :avatar
   has_many :authentications, dependent: :destroy
   has_many :likes
   has_many :youtube_videos, dependent: :destroy
@@ -16,6 +16,7 @@ class User < ApplicationRecord
   validates :password, confirmation: true, if: -> { new_record? || changes[:crypted_password] }
   validates :password_confirmation, presence: true, if: -> { new_record? || changes[:crypted_password] }
   validates :email, presence: true, uniqueness: true
+  validates :name, presence: true
 
   validates :reset_password_token, uniqueness: true, allow_nil: true
 
