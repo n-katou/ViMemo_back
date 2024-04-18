@@ -38,19 +38,28 @@
 
     <!-- 右側コンテンツエリア -->
     <div class="flex-1 flex-auto lg:pr-4 md:pr-2 pr-1">
-      <h1 class="text-xl font-bold mb-4">「いいね」した動画一覧</h1>
-      <% if @likes.any? %>
+      <h1 class="text-xl font-bold mb-4">最新「いいね」した動画</h1>
+      <% if @youtube_video_likes.any? %>
         <div class="mb-4">
-          <% @likes.each do |like| %>
+          <% @youtube_video_likes.each do |like| %>
             <%= render like.likeable %>
           <% end %>
         </div>
-        <!-- ページネーション -->
-        <div class="mt-4">
-          <%= paginate @likes %>
-        </div>
       <% else %>
         <p>いいねした動画がありません。</p>
+      <% end %>
+
+      <h1 class="text-xl font-bold mb-4">最新「いいね」したメモ一覧</h1>
+      <% if @note_likes.any? %>
+        <div class="grid grid-cols-3 gap-4 mb-4">
+          <% @note_likes.each do |like| %>
+            <div class="col-span-1">
+              <%= render like.likeable %>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p>いいねしたメモがありません。</p>
       <% end %>
     </div>
   </div>
