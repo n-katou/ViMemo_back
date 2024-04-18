@@ -11,6 +11,7 @@
     <p>公開日: <%= l(@video.published_at, format: :long) %></p>
     <p>動画時間: <%= format_duration(@video.duration) %></p>
     <p>メモ数: <%= @video.notes.count %></p>
+    <p>いいね数: <%= @video.likes.count %></p>
     <%= link_to '削除', youtube_video_path(@video), 
             data: { turbo_method: :delete, 
                     turbo_confirm: 'この動画を削除してよろしいですか？'}, 
