@@ -1,7 +1,12 @@
 <div class="container mb-5 pt-2 px-4 sm:px-6 lg:px-8 max-w-full sm:max-w-xl md:max-w-2xl lg:max-w-4xl">
   <h1 class="text-3xl font-bold mb-4 text-left">Youtube&投稿ビデオ一覧</h1>
   <div class="col-md-12">
+    <%= search_form_for @q, url: admin_videos_path, method: :get, class: "flex items-center space-x-4 flex-grow mx-4 search-bar mb-3" do |f| %>
+      <%= f.search_field :title_cont, placeholder: "タイトルを検索", class: "input input-bordered flex-grow" %>
+      <%= f.submit "検索", class: "btn" %>
+    <% end %>
     <%= render partial: 'admin/videos/video', collection: @paginated_videos, as: :youtube_video %>
     <%= paginate @paginated_videos %>
   </div>
+  <%= link_to '会員一覧', admin_users_path(@user), class: 'btn btn-success' %>
 </div>
