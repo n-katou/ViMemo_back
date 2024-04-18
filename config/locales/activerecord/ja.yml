@@ -2,7 +2,7 @@ ja:
   activerecord:
     models:
       user: ユーザー
-      viedo: ビデオ
+      video: ビデオ
       note: ノート
     attributes:
       user:
@@ -14,28 +14,26 @@ ja:
         role: 権限
       note:
         content: メモ
-  attributes:
-    id: ID
-    created_at: 作成日時
-    updated_at: 更新日時
+      id: ID
+      created_at: 作成日時
+      updated_at: 更新日時
   enums:
     user:
       role:
         general: 一般
         admin: 管理者
   errors:
-      models:
-        user:
-          attributes:
-            password:
-              too_short: "パスワードは最低 %{count} 文字必要です。"
-            password_confirmation:
-              blank: "パスワード確認を入力してください。"
-            email:
-              blank: "メールアドレスを入力してください。"
-        note:
-          attributes:
-            content:
-              blank: "メモを入力してください。"
-      messages:
-        blank: "を入力してください。"
+    models:
+      user:
+        attributes:
+          password_confirmation:
+            blank: "パスワード確認を入力してください。"
+          email:
+            blank: "メールアドレスを入力してください。"
+            taken: "このメールアドレスはすでに登録されています。"
+      note:
+        attributes:
+          content:
+            blank: "メモを入力してください。"
+    messages:
+      blank: "を入力してください。"

@@ -3,6 +3,9 @@
     <div class="col-md-10 col-lg-8">
       <h1 class="text-3xl font-bold text-center mb-6">ユーザー登録</h1>
       <%= form_with(model: @user, data: { turbo: false }) do |f| %>
+      <div id="errors">
+        <%= render 'shared/error_messages', object: @user %>
+      </div>
         <div class="form-control">
           <%= f.label :name, class: "label" %>
           <div class="input-group">
