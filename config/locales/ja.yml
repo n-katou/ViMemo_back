@@ -1,4 +1,7 @@
- ja:
-   errors:
+ja:
+  errors:
     messages:
       too_short: は%{count}文字以上で入力してください
+  defaults:
+    flash_message:
+      deleted: "%{item}を削除しました。"
