@@ -19,7 +19,8 @@ class UsersController < ApplicationController
 
   def mypage
     @user = current_user
-    @likes = @user.likes.includes(:likeable).order(created_at: :desc).page(params[:page])
+    @youtube_video_likes = @user.likes.includes(:likeable).where(likeable_type: 'YoutubeVideo').order(created_at: :desc).limit(3)
+    @note_likes = @user.likes.includes(:likeable).where(likeable_type: 'Note').order(created_at: :desc).limit(3)
   end
 
   def edit; end

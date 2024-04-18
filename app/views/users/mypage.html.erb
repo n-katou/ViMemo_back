@@ -38,19 +38,52 @@
 
     <!-- 右側コンテンツエリア -->
     <div class="flex-1 flex-auto lg:pr-4 md:pr-2 pr-1">
-      <h1 class="text-xl font-bold mb-4">「いいね」した動画一覧</h1>
-      <% if @likes.any? %>
+      <h1 class="text-xl font-bold mb-4">最新「いいね」した動画</h1>
+      <% if @youtube_video_likes.any? %>
         <div class="mb-4">
-          <% @likes.each do |like| %>
+          <% @youtube_video_likes.each do |like| %>
             <%= render like.likeable %>
           <% end %>
         </div>
-        <!-- ページネーション -->
-        <div class="mt-4">
-          <%= paginate @likes %>
-        </div>
       <% else %>
         <p>いいねした動画がありません。</p>
+      <% end %>
+
+      <h1 class="text-xl font-bold mb-4">最新「いいね」したメモ一覧</h1>
+      <% if @note_likes.any? %>
+        <div class="grid grid-cols-3 gap-4 mb-4">
+          <% @note_likes.each do |like| %>
+            <% note = like.likeable %>
+            <div class="col-span-1">
+              <!-- Card for the note -->
+              <div class="card bg-base-100 shadow-xl mb-3">
+                <div class="card-body">
+                  <h2 class="card-title">
+                    <p><%= note.content %></p>
+                  </h2>
+                  <p><%= note.video_timestamp %></p>
+                  <p>
+                    <%= render 'likes/like_count', likeable: note %>
+                  </p>
+                  <% unless note.is_visible %>
+                    <p><span class="badge badge-error">非表示中</span></p>
+                  <% end %>
+                  <% if current_user %>
+                    <%= render 'likes/like_button', likeable: note %>
+                  <% end %>
+                  <% if note.youtube_video %>
+                    <!-- Link inside the card -->
+                    <div class="card-actions justify-end">
+                      <%= link_to 'この動画を見る', youtube_video_path(note.youtube_video), class: "btn btn-primary" %>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p>いいねしたメモがありません。</p>
       <% end %>
     </div>
   </div>

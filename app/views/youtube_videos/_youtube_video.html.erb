@@ -11,7 +11,7 @@
     <p>公開日: <%= l(youtube_video.published_at, format: :long) %></p>
     <p>動画時間: <%= format_duration(youtube_video.duration) %></p>
     <p>メモ数: <%= youtube_video.notes.count %></p>
-    <p id="like_count_<%= youtube_video.id %>">いいね数: <%= youtube_video.likes.count %></p>
+    <p id="like_count_<%= youtube_video.id %>">動画いいね数: <%= youtube_video.likes.count %></p>
     <div id="like_button_<%= youtube_video.id %>">
       <% user_like = youtube_video.likes.find_by(user: current_user) %>
       <% if user_like %>
