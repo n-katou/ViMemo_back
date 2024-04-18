@@ -17,7 +17,6 @@
         <%= note.content %>
       </p>
       <p>
-        <span class="font-bold">いいね:</span>
         <%= render 'likes/like_count', likeable: note %>
       </p>
       <% unless note.is_visible %>
