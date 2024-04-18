@@ -53,8 +53,32 @@
       <% if @note_likes.any? %>
         <div class="grid grid-cols-3 gap-4 mb-4">
           <% @note_likes.each do |like| %>
+            <% note = like.likeable %>
             <div class="col-span-1">
-              <%= render like.likeable %>
+              <!-- Card for the note -->
+              <div class="card bg-base-100 shadow-xl mb-3">
+                <div class="card-body">
+                  <h2 class="card-title">
+                    <p><%= note.content %></p>
+                  </h2>
+                  <p><%= note.video_timestamp %></p>
+                  <p>
+                    <%= render 'likes/like_count', likeable: note %>
+                  </p>
+                  <% unless note.is_visible %>
+                    <p><span class="badge badge-error">非表示中</span></p>
+                  <% end %>
+                  <% if current_user %>
+                    <%= render 'likes/like_button', likeable: note %>
+                  <% end %>
+                  <% if note.youtube_video %>
+                    <!-- Link inside the card -->
+                    <div class="card-actions justify-end">
+                      <%= link_to 'この動画を見る', youtube_video_path(note.youtube_video), class: "btn btn-primary" %>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
             </div>
           <% end %>
         </div>
