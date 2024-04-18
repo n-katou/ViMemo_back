@@ -33,8 +33,10 @@ Rails.application.routes.draw do
 
   resources :youtube_videos, only: [:index, :show, :destroy] do
     get 'fetch_videos_by_genre', on: :collection
-    resources :notes, only: [:create, :destroy, :update, :edit]
-    resources :likes, only: [:create, :destroy]
+    resources :likes, only: [:create, :destroy] # YouTubeビデオにいいねを付けるため
+    resources :notes, only: [:create, :destroy, :update, :edit] do
+      resources :likes, only: [:create, :destroy] # ノートにいいねを付けるため
+    end
   end
   
   resources :videos do
