@@ -1,5 +1,5 @@
 <div class="p-2 flex-1 lg:max-w-1/3">
-  <div id="<%= dom_id(note) %>" class="card w-96 bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 mb-3">
+  <div id="<%= dom_id(note) %>" class="card max-w-full bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 mb-3">
     <div class="card-body">
       <%= image_tag(note.user.avatar.url, width: '100', height: '100') %>
       <p>
@@ -23,15 +23,15 @@
         <p><span class="badge badge-error">非表示中</span></p>
       <% end %>
       <% if note.persisted? && current_user == note.user %>
-        <div class="card-actions justify-end">
+        <div class="card-actions justify-bitween">
           <% if note.youtube_video.present? %>
+            <% if current_user %>
+              <%= render 'likes/like_button', likeable: note %>
+            <% end %>
             <%= link_to 'Xでシェア', "https://x.com/share?url=#{request.url}&text=#{ERB::Util.url_encode("【シェア】\nタイムスタンプ: #{note.video_timestamp} \nメモ: #{note.content} \nYouTube: https://www.youtube.com/watch?v=#{note.youtube_video.youtube_id}&t=#{video_timestamp_to_seconds(note.video_timestamp)}s")}", target: '_blank', class: 'btn btn-outline btn-primary' %>
           <% end %>
           <%= link_to '編集', edit_path_for(note), data: { turbo_frame: dom_id(note) }, class: 'btn btn-outline btn-info' %>
           <%= link_to '削除', delete_path_for(note), data: { turbo_method: :delete, turbo_confirm: t('defaults.delete_confirm')}, class: 'btn btn-outline btn-error' %>
-          <% if current_user %>
-            <%= render 'likes/like_button', likeable: note %>
-          <% end %>
         </div>
       <% end %>
     </div>
