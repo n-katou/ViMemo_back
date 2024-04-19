@@ -9,8 +9,8 @@
     </div>
   <% end %>
     <!-- 左側ナビゲーションバー -->
-  <div class="flex">
-    <div class="flex mr-10">
+  <div class="flex flex-col md:flex-row">
+    <div class="mr-10 mb-3">
       <ul class="nav flex-col">
         <li class="nav-item mb-3">
           <%= User.human_attribute_name(:avatar) %>
@@ -51,7 +51,7 @@
 
       <h1 class="text-xl font-bold mb-4">最新「いいね」したメモ一覧</h1>
       <% if @note_likes.any? %>
-        <div class="grid grid-cols-3 gap-4 mb-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <% @note_likes.each do |like| %>
             <% note = like.likeable %>
             <div class="col-span-1">
