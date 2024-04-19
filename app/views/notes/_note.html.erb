@@ -22,16 +22,16 @@
       <% unless note.is_visible %>
         <p><span class="badge badge-error">非表示中</span></p>
       <% end %>
-      <% if note.persisted? && current_user == note.user %>
-        <div class="card-actions justify-bitween">
+      <% if note.persisted? %>
+        <div class="card-actions justify-between">
           <% if note.youtube_video.present? %>
-            <% if current_user %>
-              <%= render 'likes/like_button', likeable: note %>
-            <% end %>
-            <%= link_to 'Xでシェア', "https://x.com/share?url=#{request.url}&text=#{ERB::Util.url_encode("【シェア】\nタイムスタンプ: #{note.video_timestamp} \nメモ: #{note.content} \nYouTube: https://www.youtube.com/watch?v=#{note.youtube_video.youtube_id}&t=#{video_timestamp_to_seconds(note.video_timestamp)}s")}", target: '_blank', class: 'btn btn-outline btn-primary' %>
+            <%= render 'likes/like_button', likeable: note %>
           <% end %>
-          <%= link_to '編集', edit_path_for(note), data: { turbo_frame: dom_id(note) }, class: 'btn btn-outline btn-info' %>
-          <%= link_to '削除', delete_path_for(note), data: { turbo_method: :delete, turbo_confirm: t('defaults.delete_confirm')}, class: 'btn btn-outline btn-error' %>
+          <% if current_user == note.user %>
+            <%= link_to 'Xでシェア', "https://x.com/share?url=#{request.url}&text=#{ERB::Util.url_encode("【シェア】\nタイムスタンプ: #{note.video_timestamp} \nメモ: #{note.content} \nYouTube: https://www.youtube.com/watch?v=#{note.youtube_video.youtube_id}&t=#{video_timestamp_to_seconds(note.video_timestamp)}s")}", target: '_blank', class: 'btn btn-outline btn-primary' %>
+            <%= link_to '編集', edit_path_for(note), data: { turbo_frame: dom_id(note) }, class: 'btn btn-outline btn-info' %>
+            <%= link_to '削除', delete_path_for(note), data: { turbo_method: :delete, turbo_confirm: t('defaults.delete_confirm')}, class: 'btn btn-outline btn-error' %>
+          <% end %>
         </div>
       <% end %>
     </div>
