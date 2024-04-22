@@ -1,41 +1,41 @@
-<div class="container">
-  <div class="row">
-    <div class="col-md-10 col-lg-8">
+<div class="container mx-auto px-6 py-8">  <!-- コンテナとパディング -->
+  <div class="flex justify-center">  <!-- 中央配置 -->
+    <div class="card w-full lg:max-w-lg md:max-w-md bg-base-100 shadow-xl p-6">  <!-- 最大幅を設定 -->
       <h1 class="text-3xl font-bold text-center mb-6">ユーザー登録</h1>
+
       <%= form_with(model: @user, data: { turbo: false }) do |f| %>
-      <div id="errors">
-        <%= render 'shared/error_messages', object: @user %>
-      </div>
-        <div class="form-control">
-          <%= f.label :name, class: "label" %>
-          <div class="input-group">
-            <%= f.text_field :name, class: "input input-bordered" %>
+        <% if @user.errors.any? %>
+          <div class="alert alert-error mb-4">  <!-- エラーメッセージのスタイル -->
+            <%= render 'shared/error_messages', object: @user %>
           </div>
+        <% end %>
+        <div class="form-control mb-4">  <!-- フォームフィールド -->
+          <%= f.label :name, class: "label-text" %>
+          <%= f.text_field :name, class: "input input-bordered w-full" %>  <!-- 入力フィールド -->
         </div>
-        <div class="form-control">
-          <%= f.label :email, class: "label" %>
-          <div class="input-group">
-            <%= f.email_field :email, class: "input input-bordered" %>
-          </div>
+
+        <div class="form-control mb-4">  <!-- フォームフィールド -->
+          <%= f.label :email, class: "label-text" %>
+          <%= f.email_field :email, class: "input input-bordered w-full" %>
         </div>
-        <div class="form-control">
-          <%= f.label :password, class: "label" %>
-          <div class="input-group">
-            <%= f.password_field :password, class: "input input-bordered" %>
-          </div>
+
+        <div class="form-control mb-4">  <!-- フォームフィールド -->
+          <%= f.label :password, class: "label-text" %>
+          <%= f.password_field :password, class: "input input-bordered w-full" %>
         </div>
-        <div class="form-control mb-3">
-          <%= f.label :password_confirmation, class: "label" %>
-          <div class="input-group">
-            <%= f.password_field :password_confirmation, class: "input input-bordered" %>
-          </div>
+
+        <div class="form-control mb-4">  <!-- フォームフィールド -->
+          <%= f.label :password_confirmation, class: "label-text" %>
+          <%= f.password_field :password_confirmation, class: "input input-bordered w-full" %>
         </div>
-        <div class="form-control mt-6">
-          <%= f.submit "登録", class: "btn btn-primary" %>
+
+        <div class="form-control mt-6">  <!-- ボタン -->
+          <%= f.submit "登録", class: "btn btn-primary" %>  <!-- 全幅ボタン -->
         </div>
       <% end %>
-      <div class='text-center mt-4'>
-        <%= link_to 'ログインページへ', login_path, class: "link link-hover" %>
+
+      <div class='text-center mt-4'>  <!-- 中央配置のリンク -->
+        <%= link_to 'ログインページへ', login_path, class: "link link-hover text-blue-500" %>
       </div>
     </div>
   </div>

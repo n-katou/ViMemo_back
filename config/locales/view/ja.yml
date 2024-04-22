@@ -52,6 +52,8 @@ ja:
     create:
       success: ユーザー登録が完了しました
       failure: ユーザー登録に失敗しました
+    edit:
+      title: ユーザー編集
   header:
     login: ログイン
     logout: ログアウト
