@@ -1,29 +1,29 @@
 <% content_for(:title, t('.title')) %>
-<div class="container mb-5 pt-2">
-  <h1><%= t('.title') %></h1>
-  <div class="row">
-    <div class="col-md-12">
-      <table class="table table-striped">
-        <thead>
+<div class="container mx-auto px-4 py-6">  <!-- コンテナスタイル -->
+  <h1 class="text-2xl font-bold mb-4"><%= t('.title') %></h1>  <!-- タイトルスタイル -->
+
+  <div class="overflow-x-auto">  <!-- テーブルの横スクロール -->
+    <table class="table w-full">  <!-- DaisyUIのテーブルスタイル -->
+      <thead>
         <tr>
-          <th scope="col"><%= User.human_attribute_name(:id) %></th>
-          <th scope="col"><%= User.human_attribute_name(:name) %></th>
-          <th scope="col"><%= User.human_attribute_name(:role) %></th>
-          <th scope="col"><%= User.human_attribute_name(:created_at) %></th>
-          <th scope="col"></th>
+          <th><%= User.human_attribute_name(:id) %></th>  <!-- テーブルヘッダー -->
+          <th><%= User.human_attribute_name(:name) %></th>
+          <th><%= User.human_attribute_name(:role) %></th>
+          <th><%= User.human_attribute_name(:created_at) %></th>
+          <th></th>  <!-- アクションカラム -->
         </tr>
-        </thead>
-        <tbody>
-        <%= render @users %>
-        </tbody>
-      </table>
-    </div>
+      </thead>
+      <tbody>
+        <%= render @users %>  <!-- ユーザーのレンダリング -->
+      </tbody>
+    </table>
   </div>
-  <div class="row">
-    <div class="col-md-12">
-      <!-- ページネーション -->
-      <%= paginate @users %>
-    </div>
+
+  <div class="flex justify-center mt-6">  <!-- ページネーション -->
+    <%= paginate @users, class: "btn-group" %>  <!-- DaisyUIのボタンスタイルでページネーション -->
   </div>
-  <%= link_to 'ビデオ一覧', admin_videos_path(@video), class: 'btn btn-success' %>
+
+  <div class="mt-6">  <!-- ビデオ一覧へのリンク -->
+    <%= link_to 'ビデオ一覧', admin_videos_path(@video), class: 'btn btn-success' %>  <!-- DaisyUIのボタンスタイル -->
+  </div>
 </div>
