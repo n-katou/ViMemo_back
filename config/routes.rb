@@ -39,10 +39,10 @@ Rails.application.routes.draw do
     end
   end
   
-  resources :videos do
-    resources :notes, only: [:create, :update, :destroy, :edit]
-    resources :likes, only: [:create, :destroy]
-  end
+  # resources :videos do
+  #   resources :notes, only: [:create, :update, :destroy, :edit]
+  #   resources :likes, only: [:create, :destroy]
+  # end
 
   get 'favorites', to: 'combined_videos#favorites', as: 'favorites_videos'
   resources :combined_videos, only: %i[index]
