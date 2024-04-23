@@ -1,5 +1,13 @@
 <tr>
   <td>
+    <!-- アバター画像を表示 -->
+    <% if user.avatar.present? %>
+      <%= image_tag(user.avatar.url, alt: "Avatar", width: 50, height: 50) %>
+    <% else %>
+      <span>No Avatar</span>  <!-- 画像がない場合のテキスト -->
+    <% end %>
+  </td>
+  <td>
     <%= user.id %>
   </td>
   <td>

@@ -6,6 +6,7 @@
     <table class="table w-full">  <!-- DaisyUIのテーブルスタイル -->
       <thead>
         <tr>
+          <th><%= User.human_attribute_name(:avatar) %></th>
           <th><%= User.human_attribute_name(:id) %></th>  <!-- テーブルヘッダー -->
           <th><%= User.human_attribute_name(:name) %></th>
           <th><%= User.human_attribute_name(:role) %></th>
