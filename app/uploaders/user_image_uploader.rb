@@ -4,14 +4,23 @@ class UserImageUploader < CarrierWave::Uploader::Base
   # include CarrierWave::MiniMagick
 
   # Choose what kind of storage to use for this uploader:
-  storage :file
-  # storage :fog
+  # storage :file
+  if Rails.env.development?
+    storage :fog
+  elsif Rails.env.test?
+    storage :fog
+  else
+    storage :fog
+  end
 
   # Override the directory where uploaded files will be stored.
   # This is a sensible default for uploaders that are meant to be mounted:
   def store_dir
     "uploads/#{model.class.to_s.underscore}/#{mounted_as}/#{model.id}"
   end
+
+  include CarrierWave::MiniMagick
+  process resize_to_limit: [500, 500]
 
   def default_url
     'default-avatar.jpg'
@@ -20,6 +29,11 @@ class UserImageUploader < CarrierWave::Uploader::Base
   def extension_allowlist
     %w[jpg jpeg gif png]
   end
+
+  def filename
+    original_filename if original_filename
+  end
+
 
   # Provide a default URL as a default if there hasn't been a file uploaded:
   # def default_url(*args)
