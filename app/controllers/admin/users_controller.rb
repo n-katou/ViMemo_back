@@ -4,7 +4,7 @@ class Admin::UsersController < Admin::BaseController
   def index
     @q = Video.ransack(params[:q])
     @videos = @q.result(distinct: true).order(created_at: :desc).page(params[:page])
-    @users = User.all.page(params[:page]).per(10)
+    @users = User.all.order(id: :asc).page(params[:page]).per(10)
   end
 
   def edit; end
