@@ -12,12 +12,7 @@
           <li class="card bg-base-100 shadow-md p-4 mb-4">
             <div class="flex justify-between items-center">
               <div class="card-body">
-                <%= render 'notes/note', note: note %> 
-                <% if note.youtube_video %>
-                  <div class="card-actions justify-end">
-                    <%= link_to 'この動画を見る', youtube_video_path(note.youtube_video), class: 'btn btn-sm btn-primary' %>
-                  </div>
-                <% end %>
+                <%= render 'notes/note_list', note: note %> 
               </div>
             </div>
           </li>
