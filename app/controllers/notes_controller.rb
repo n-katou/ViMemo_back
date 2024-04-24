@@ -58,6 +58,17 @@ class NotesController < ApplicationController
     end
   end
 
+  def index
+    filter = params[:filter]
+    if filter == 'my_notes'
+      # 現在のユーザーのノートを作成日時の最新順にソート
+      @notes = current_user.notes.order(created_at: :desc).page(params[:page]).per(10)
+    else
+      # 全員のノートを作成日時の最新順にソート
+      @notes = Note.all.order(created_at: :desc).page(params[:page]).per(10)
+    end
+  end
+
   private
 
   def set_video

@@ -39,7 +39,7 @@
       <h1 class="text-xl font-bold mb-4">「いいね」した動画プレイリスト</h1>
       <% if @youtube_video_likes.any? %>
         <div class="mb-4 video-wrapper">
-          <iframe class="aspect-video" src="<%= @youtube_playlist_url %>" frameborder="0" allow="autoplay" allowfullscreen></iframe>
+          <iframe class="aspect-video" src="<%= @youtube_playlist_url %>" frameborder="0" allowfullscreen></iframe>
         </div>
       <% else %>
         <p>いいねした動画がありません。</p>
@@ -54,10 +54,12 @@
               <!-- Card for the note -->
               <div class="card bg-base-100 shadow-xl mb-3">
                 <div class="card-body">
-                  <h2 class="card-title">
-                    <p><%= note.content %></p>
-                  </h2>
-                  <p><%= note.video_timestamp %></p>
+                  <%= image_tag(note.user.avatar.url, width: '100', height: '100') %>
+                  <p>
+                    <span class="font-bold">ユーザー名:</span>
+                    <%= note.user.name %>
+                  </p>
+                  <p>メモ内容：<%= note.content %></p>
                   <p>
                     <%= render 'likes/like_count', likeable: note %>
                   </p>
@@ -69,7 +71,7 @@
                   <% end %>
                   <% if note.youtube_video %>
                     <!-- Link inside the card -->
-                    <div class="card-actions justify-end">
+                    <div class="card-actions">
                       <%= link_to 'この動画を見る', youtube_video_path(note.youtube_video), class: "btn btn-primary" %>
                     </div>
                   <% end %>

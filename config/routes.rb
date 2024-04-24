@@ -38,6 +38,8 @@ Rails.application.routes.draw do
       resources :likes, only: [:create, :destroy] # ノートにいいねを付けるため
     end
   end
+
+  get 'notes/index', to: 'notes#index', as: :notes
   
   # resources :videos do
   #   resources :notes, only: [:create, :update, :destroy, :edit]

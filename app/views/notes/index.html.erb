@@ -1,0 +1,35 @@
+<div class="container px-4 w-full">
+  <div class="btn-group mt-4">
+    <%= link_to '自分のメモを表示', notes_path(filter: 'my_notes'), class: 'btn btn-primary' %>
+    <%= link_to '全員のメモを表示', notes_path(filter: 'all_notes'), class: 'btn btn-secondary' %>
+  </div>
+
+  <%# ノートのリスト表示 %>
+  <div class="m-4">
+    <% if @notes.present? %>
+      <ul class="list-disc list-inside space-y-4">
+        <% @notes.each do |note| %>
+          <li class="card bg-base-100 shadow-md p-4 mb-4">
+            <div class="flex justify-between items-center">
+              <div class="card-body">
+                <%= render 'notes/note', note: note %> 
+                <% if note.youtube_video %>
+                  <div class="card-actions justify-end">
+                    <%= link_to 'この動画を見る', youtube_video_path(note.youtube_video), class: 'btn btn-sm btn-primary' %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+      <div class="text-center">
+        <%= paginate @notes %>
+      </div>
+    <% else %>
+      <div class="alert alert-info">
+        ノートはありません。
+      </div>
+    <% end %>
+  </div>
+</div>
