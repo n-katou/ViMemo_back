@@ -19,7 +19,10 @@ class UsersController < ApplicationController
 
   def mypage
     @user = current_user
-    @youtube_video_likes = @user.likes.includes(:likeable).where(likeable_type: 'YoutubeVideo').order(created_at: :desc).limit(3)
+    @youtube_video_likes = @user.likes.includes(:likeable).where(likeable_type: 'YoutubeVideo').order(created_at: :desc)
+    youtube_video_ids = @youtube_video_likes.map { |like| like.likeable.youtube_id }
+    @youtube_playlist_url = "https://www.youtube.com/embed?playlist=#{youtube_video_ids.join(',')}&autoplay=1&loop=1"
+
     @note_likes = @user.likes.includes(:likeable).where(likeable_type: 'Note').order(created_at: :desc).limit(3)
   end
 
