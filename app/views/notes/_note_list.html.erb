@@ -1,0 +1,42 @@
+<div class="p-2 flex-1 lg:max-w-1/3">
+  <div id="<%= dom_id(note) %>" class="card mx-auto w-full bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 mb-3">
+    <div class="card-body">
+      <%= image_tag(note.user.avatar.url, width: '100', height: '100') %>
+      <p>
+        <span class="font-bold">ユーザー名:</span>
+        <%= note.user.name %>
+      </p>
+      <p>
+        <span class="font-bold">タイムスタンプ:</span>
+        <%= link_to note.video_timestamp, '#',
+                    onclick: "playFromTimestamp(#{video_timestamp_to_seconds(note.video_timestamp)}); return false;",
+                    class: "btn btn-outline link-hover" %>
+      </p>
+      <p>
+        <span class="font-bold">メモ:</span>
+        <%= note.content %>
+      </p>
+      <p>
+        <%= render 'likes/like_count', likeable: note %>
+      </p>
+      <% unless note.is_visible %>
+        <p><span class="badge badge-error">非表示中</span></p>
+      <% end %>
+      <% if note.persisted? %>
+        <div class="card-actions">
+          <% if note.youtube_video.present? %>
+            <%= render 'likes/like_button', likeable: note %>
+          <% end %>
+          <% if current_user == note.user %>
+            <%= link_to 'Xでシェア', "https://x.com/share?url=#{request.url}&text=#{ERB::Util.url_encode("【シェア】\nタイムスタンプ: #{note.video_timestamp} \nメモ: #{note.content} \nYouTube: https://www.youtube.com/watch?v=#{note.youtube_video.youtube_id}&t=#{video_timestamp_to_seconds(note.video_timestamp)}s")}", target: '_blank', class: 'btn btn-outline btn-primary' %>
+            <%= link_to '編集', edit_path_for(note), data: { turbo_frame: dom_id(note) }, class: 'btn btn-outline btn-info' %>
+            <%= link_to '削除', delete_path_for(note), data: { turbo_method: :delete, turbo_confirm: t('defaults.delete_confirm')}, class: 'btn btn-outline btn-error' %>
+          <% end %>
+        </div>
+        <div class="card-actions justify-end">
+          <%= link_to 'この動画を見る', youtube_video_path(note.youtube_video), class: 'btn btn-sm btn-primary' %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
