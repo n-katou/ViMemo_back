@@ -36,12 +36,10 @@
 
     <!-- 右側コンテンツエリア -->
     <div class="flex-1 flex-auto lg:pr-4 md:pr-2 pr-1">
-      <h1 class="text-xl font-bold mb-4">最新「いいね」した動画プレイリスト</h1>
+      <h1 class="text-xl font-bold mb-4">「いいね」した動画プレイリスト</h1>
       <% if @youtube_video_likes.any? %>
         <div class="mb-4 video-wrapper">
-          <iframe class="aspect-video" src="<%= @youtube_playlist_url %>" frameborder="0" allowfullscreen></iframe>
-        </div>
-    </div>
+          <iframe class="aspect-video" src="<%= @youtube_playlist_url %>" frameborder="0" allow="autoplay" allowfullscreen></iframe>
         </div>
       <% else %>
         <p>いいねした動画がありません。</p>
