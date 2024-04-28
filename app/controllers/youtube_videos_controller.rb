@@ -84,8 +84,7 @@ class YoutubeVideosController < ApplicationController
       format.json do
         # JSON形式のレスポンス
         # ページングを適用せずに全てのデータを返す
-        full_result = @youtube_videos.to_a
-        render json: full_result, status: :ok
+        render json: @youtube_videos, status: :ok
       end
     end
   end
