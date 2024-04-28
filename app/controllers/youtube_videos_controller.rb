@@ -73,19 +73,19 @@ class YoutubeVideosController < ApplicationController
                         @youtube_videos.order(created_at: :desc) # デフォルト
                       end
   
-    # ページング
-    @youtube_videos = @youtube_videos.page(params[:page])
-  
-    # リクエスト形式に基づいてレスポンスを返す
     respond_to do |format|
       format.html do
         # HTMLビュー用の処理
+        @youtube_videos = @youtube_videos.page(params[:page]) # ページング
         @filtered_q_params = params[:q]&.permit(:notes_content_cont)
         render 'index'  # 対応するビューをレンダリング
       end
+  
       format.json do
         # JSON形式のレスポンス
-        render json: @youtube_videos, status: :ok
+        # ページングを適用せずに全てのデータを返す
+        full_result = @youtube_videos.to_a
+        render json: full_result, status: :ok
       end
     end
   end
