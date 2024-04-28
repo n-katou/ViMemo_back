@@ -97,6 +97,7 @@ class YoutubeVideosController < ApplicationController
       end
     end
   end
+  
   # 特定のビデオを表示するアクション
   def show
     @youtube_video = YoutubeVideo.find(params[:id])
@@ -128,16 +129,6 @@ class YoutubeVideosController < ApplicationController
           notes: @notes.map { |note| { id: note.id, content: note.content, is_visible: note.is_visible } }
         }
       end
-    end
-  rescue ActiveRecord::RecordNotFound
-    respond_to do |format|
-      format.html { render file: 'public/404.html', status: 404, layout: false } # 404エラーページ
-      format.json { render json: { error: "YoutubeVideo not found" }, status: 404 }
-    end
-  rescue => e
-    respond_to do |format|
-      format.html { render file: 'public/500.html', status: 500, layout: false } # 500エラーページ
-      format.json { render json: { error: e.message }, status: 500 }
     end
   end
 
