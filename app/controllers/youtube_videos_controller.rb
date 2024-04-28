@@ -75,6 +75,14 @@ class YoutubeVideosController < ApplicationController
   
     # ページング
     @youtube_videos = @youtube_videos.page(params[:page])
+
+    # ページングメタデータを生成
+    pagination_metadata = {
+      current_page: @youtube_videos.current_page,
+      total_pages: @youtube_videos.total_pages,
+      next_page: @youtube_videos.next_page,
+      prev_page: @youtube_videos.prev_page
+    }
   
     # リクエスト形式に基づいてレスポンスを返す
     respond_to do |format|
@@ -85,7 +93,7 @@ class YoutubeVideosController < ApplicationController
       end
       format.json do
         # JSON形式のレスポンス
-        render json: @youtube_videos, status: :ok
+        render json: { videos: @youtube_videos, pagination: pagination_metadata }, status: :ok
       end
     end
   end
