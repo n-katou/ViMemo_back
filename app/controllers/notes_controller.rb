@@ -60,12 +60,16 @@ class NotesController < ApplicationController
 
   def index
     filter = params[:filter]
+  
     if filter == 'my_notes'
-      # 現在のユーザーのノートを作成日時の最新順にソート
+      # 自分のノートを取得
       @notes = current_user.notes.order(created_at: :desc).page(params[:page]).per(10)
+    elsif filter == 'all_notes'
+      # 全員のノートから、表示可能なものだけを取得
+      @notes = Note.where(is_visible: true).order(created_at: :desc).page(params[:page]).per(10)
     else
-      # 全員のノートを作成日時の最新順にソート
-      @notes = Note.all.order(created_at: :desc).page(params[:page]).per(10)
+      # フィルタなしで、アクセス権を確認
+      @notes = current_user.notes.order(created_at: :desc).page(params[:page]).per(10)
     end
   end
 

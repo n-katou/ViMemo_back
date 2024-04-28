@@ -2,7 +2,7 @@ class YoutubeVideosController < ApplicationController
   require 'httparty'
   require 'cgi'
 
-  skip_before_action :require_login, only: [:index] #FEで認証できるようになったら消す。
+  skip_before_action :require_login, only: [:index,:show] #FEで認証できるようになったら消す。
 
   def fetch_videos_by_genre
     genre = params[:genre]
@@ -101,11 +101,43 @@ class YoutubeVideosController < ApplicationController
   def show
     @youtube_video = YoutubeVideo.find(params[:id])
   
-    # ログインしているかどうかを確認
-    if current_user
-      @notes = @youtube_video.notes
-    else
-      @notes = @youtube_video.notes.where(is_visible: true)
+    # ログインしているかどうかによってノートの取得条件を分ける
+    @notes = if current_user
+               @youtube_video.notes
+             else
+               @youtube_video.notes.where(is_visible: true)
+             end
+  
+    respond_to do |format|
+      # HTML形式のレスポンス
+      format.html do
+        # HTMLビューを表示 (例えば、show.html.erb)
+        render 'show'
+      end
+  
+      # JSON形式のレスポンス
+      format.json do
+        render json: {
+          youtube_video: {
+            id: @youtube_video.id,
+            title: @youtube_video.title,
+            published_at: @youtube_video.published_at,
+            youtube_id: @youtube_video.youtube_id,
+            duration: @youtube_video.duration,
+          },
+          notes: @notes.map { |note| { id: note.id, content: note.content, is_visible: note.is_visible } }
+        }
+      end
+    end
+  rescue ActiveRecord::RecordNotFound
+    respond_to do |format|
+      format.html { render file: 'public/404.html', status: 404, layout: false } # 404エラーページ
+      format.json { render json: { error: "YoutubeVideo not found" }, status: 404 }
+    end
+  rescue => e
+    respond_to do |format|
+      format.html { render file: 'public/500.html', status: 500, layout: false } # 500エラーページ
+      format.json { render json: { error: e.message }, status: 500 }
     end
   end
 

@@ -4,18 +4,19 @@
     <%= link_to '全員のメモを表示', notes_path(filter: 'all_notes'), class: 'btn btn-secondary' %>
   </div>
 
-  <%# ノートのリスト表示 %>
   <div class="m-4">
     <% if @notes.present? %>
       <ul class="list-disc list-inside space-y-4">
         <% @notes.each do |note| %>
-          <li class="card bg-base-100 shadow-md p-4 mb-4">
-            <div class="flex justify-between items-center">
-              <div class="card-body">
-                <%= render 'notes/note_list', note: note %> 
+          <% if note.is_visible || note.user == current_user %> <!-- アクセス権の確認 -->
+            <li class="card bg-base-100 shadow-md p-4 mb-4">
+              <div class="flex justify-between items-center">
+                <div class="card-body">
+                  <%= render 'notes/note_list', note: note %>
+                </div>
               </div>
-            </div>
-          </li>
+            </li>
+          <% end %>
         <% end %>
       </ul>
       <div class="text-center">
