@@ -2,6 +2,8 @@ class YoutubeVideosController < ApplicationController
   require 'httparty'
   require 'cgi'
 
+  skip_before_action :require_login, only: [:index] #FEで認証できるようになったら消す。
+
   def fetch_videos_by_genre
     genre = params[:genre]
     api_key = ENV['YOUTUBE_API_KEY']
@@ -58,7 +60,8 @@ class YoutubeVideosController < ApplicationController
   def index
     @q = YoutubeVideo.ransack(params[:q])
     @youtube_videos = @q.result(distinct: true).includes(:notes)
-
+  
+    # ソートロジック
     @youtube_videos = case params[:sort]
                       when 'likes_desc'
                         @youtube_videos.order(likes_count: :desc)
@@ -67,12 +70,24 @@ class YoutubeVideosController < ApplicationController
                       when 'created_at_desc'
                         @youtube_videos.order(created_at: :desc)
                       else
-                        @youtube_videos.order(created_at: :desc) # デフォルトでも新しい投稿順
+                        @youtube_videos.order(created_at: :desc) # デフォルト
                       end
-
+  
+    # ページング
     @youtube_videos = @youtube_videos.page(params[:page])
-
-    @filtered_q_params = params[:q]&.permit(:notes_content_cont)
+  
+    # リクエスト形式に基づいてレスポンスを返す
+    respond_to do |format|
+      format.html do
+        # HTMLビュー用の処理
+        @filtered_q_params = params[:q]&.permit(:notes_content_cont)
+        render 'index'  # 対応するビューをレンダリング
+      end
+      format.json do
+        # JSON形式のレスポンス
+        render json: @youtube_videos, status: :ok
+      end
+    end
   end
 
   # 特定のビデオを表示するアクション

@@ -89,3 +89,5 @@ gem 'ransack', "3.2.1"
 gem 'kaminari'
 gem 'aws-sdk-s3', require: false
 gem 'fog-aws', '~> 3.0'
+
+gem 'rack-cors'
