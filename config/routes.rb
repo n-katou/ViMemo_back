@@ -55,4 +55,6 @@ Rails.application.routes.draw do
     resources :videos, only: %i[index show]
   end
   
+  get '/csrf', to: 'csrf#index'
+  
 end
