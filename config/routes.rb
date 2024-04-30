@@ -54,7 +54,4 @@ Rails.application.routes.draw do
     resources :users, only: %i[index edit update show destroy]
     resources :videos, only: %i[index show]
   end
-  
-  get '/csrf', to: 'csrf#index'
-  
 end
