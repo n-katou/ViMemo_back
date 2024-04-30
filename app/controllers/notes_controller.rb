@@ -3,8 +3,6 @@ class NotesController < ApplicationController
   before_action :set_youtube_video, only: [:edit, :update, :show]
   before_action :set_note, only: [:update]
 
-  skip_before_action :require_login, only: [:create] #FEで認証できるようになったら消す。
-
   def create
     if @video
       @note = @video.notes.build(note_params)
