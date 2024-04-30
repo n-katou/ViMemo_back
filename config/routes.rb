@@ -54,4 +54,10 @@ Rails.application.routes.draw do
     resources :users, only: %i[index edit update show destroy]
     resources :videos, only: %i[index show]
   end
+
+  namespace :api do
+    namespace :v1 do
+      post 'sessions', to: 'sessions#create'
+    end
+  end
 end
