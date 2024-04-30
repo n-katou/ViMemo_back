@@ -15,15 +15,18 @@ class NotesController < ApplicationController
         if @note.save
           format.turbo_stream { render "create", locals: { note: @note, video: @video } }
           format.html { redirect_to redirect_path, notice: t('notes.created_successfully') }
+          format.json { render json: @note, status: :created }
         else
           format.turbo_stream { render turbo_stream: turbo_stream.replace("errors", partial: "shared/error_messages", locals: { object: @note }) }
           format.html { render 'youtube_videos/show', status: :unprocessable_entity }
+          format.json { render json: @note.errors, status: :unprocessable_entity }
         end
       end
     else
       respond_to do |format|
         format.turbo_stream { render turbo_stream: turbo_stream.replace("errors", partial: "shared/error_messages", locals: { object: @video, default_message: t('notes.video_not_found') }) }
         format.html { redirect_to youtube_videos_path, alert: t('notes.video_not_found') }
+        format.json { render json: { error: "Video not found." }, status: :not_found } 
       end
     end
   end
@@ -35,6 +38,7 @@ class NotesController < ApplicationController
     respond_to do |format|
       format.turbo_stream
       format.html { redirect_to youtube_video_path(@youtube_video), notice: t('notes.destroyed_successfully') }
+      format.json { render json: { message: "Note destroyed successfully." }, status: :ok }
     end
   end
 
