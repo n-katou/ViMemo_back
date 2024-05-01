@@ -54,9 +54,4 @@ Rails.application.routes.draw do
     resources :users, only: %i[index edit update show destroy]
     resources :videos, only: %i[index show]
   end
-
-  namespace :api do
-    post 'auth', to: 'auth#create'
-  end
-
 end
