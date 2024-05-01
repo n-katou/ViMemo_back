@@ -53,4 +53,4 @@ production:
   database: vimemo_production
   username: katounaoto
   password: <%= ENV['POSTGRES_PASSWORD'] %>
-  url: <%= ENV['DATABASE_URL'] %>
+  # url: <%= ENV['DATABASE_URL'] %>
