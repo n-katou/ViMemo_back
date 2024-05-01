@@ -1,5 +1,5 @@
 class GoogleOauthsController < ApplicationController
-  skip_before_action :require_login
+  skip_before_action :require_login, :verify_authenticity_token, only: [:callback]
 
   def oauth
     client_id = ENV['GOOGLE_CLIENT_ID']
