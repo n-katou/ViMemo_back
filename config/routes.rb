@@ -55,4 +55,8 @@ Rails.application.routes.draw do
     resources :videos, only: %i[index show]
   end
 
+  namespace :api do
+    post 'auth', to: 'auth#create'
+  end
+
 end
