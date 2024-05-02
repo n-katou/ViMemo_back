@@ -3,6 +3,8 @@ require 'uri'
 require 'json'
 
 class GoogleOauthService
+  attr_reader :error_message
+  
   def initialize(code)
     @code = code
     @client_id = ENV['GOOGLE_CLIENT_ID']
@@ -11,9 +13,15 @@ class GoogleOauthService
   end
 
   def authenticate
-    access_token = fetch_access_token
-    user_info = fetch_user_info(access_token)
-    find_or_create_user(user_info) if user_info
+    begin
+      access_token = fetch_access_token
+      user_info = fetch_user_info(access_token)
+      find_or_create_user(user_info) if user_info
+    rescue StandardError => e
+      @error_message = e.message
+      Rails.logger.error("Google OAuthサービスでエラーが発生しました: #{e.message}")
+      nil
+    end
   end
 
   private
