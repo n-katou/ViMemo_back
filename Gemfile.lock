@@ -371,6 +371,7 @@ DEPENDENCIES
   httparty
   jbuilder
   jsbundling-rails
+  jwt
   kaminari
   letter_opener_web (~> 2.0)
   omniauth-google-oauth2
