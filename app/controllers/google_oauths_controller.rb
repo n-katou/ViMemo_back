@@ -14,18 +14,17 @@ class GoogleOauthsController < ApplicationController
   end
 
   def callback
-    Rails.logger.info "Received code: #{params[:code]}"
     service = GoogleOauthService.new(params[:code])
     @user = service.authenticate
-
+  
     if @user
       reset_session
       auto_login(@user)
       redirect_to root_path, notice: t('auth.login_success')
     else
-      Rails.logger.error { "ログイン処理中にエラーが発生しました: #{@user.error_message}" }
+      error_message = service&.error_message || "未知のエラーが発生しました"
+      Rails.logger.error { "ログイン処理中にエラーが発生しました: #{error_message}" }
       redirect_to login_path, alert: t('auth.login_failed')
     end
   end
-  
 end
