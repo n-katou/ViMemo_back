@@ -15,7 +15,7 @@ class GoogleOauthsController < ApplicationController
 
   def callback
     Rails.logger.info "Received params: #{params.inspect}"
-    service = GoogleOauthService.new(params[:code])
+    service = GoogleOauthService.new(params[:code], params[:code_verifier])
     @user = service.authenticate
   
     if @user
