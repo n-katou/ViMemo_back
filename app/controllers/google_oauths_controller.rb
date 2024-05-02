@@ -1,6 +1,6 @@
 class GoogleOauthsController < ApplicationController
   skip_before_action :require_login
-  protect_from_forgery with: :null_session
+  skip_before_action :verify_authenticity_token, only: [:callback]  # CSRF検証をcallbackのみスキップ
 
   def oauth
     client_id = ENV['GOOGLE_CLIENT_ID']
