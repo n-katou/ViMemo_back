@@ -30,12 +30,12 @@ class GoogleOauthService
   def fetch_access_token
     uri = URI("https://oauth2.googleapis.com/token")
     response = Net::HTTP.post_form(uri, {
-      code: @code,
       client_id: @client_id,
       client_secret: @client_secret,
+      code: @code,
+      code_verifier: @code_verifier,  # PKCEコードベリファイアをリクエストに追加
       redirect_uri: @redirect_uri,
       grant_type: "authorization_code",
-      code_verifier: @code_verifier  # PKCEコードベリファイアをリクエストに追加
     })
     result = JSON.parse(response.body)
     if result["error"]
