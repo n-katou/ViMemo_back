@@ -36,6 +36,9 @@ class GoogleOauthService
       grant_type: "authorization_code"
     })
     result = JSON.parse(response.body)
+    if result["error"]
+      raise "アクセストークンの取得に失敗: #{result['error_description'] || result['error']}"
+    end
     result["access_token"]
   end
 
