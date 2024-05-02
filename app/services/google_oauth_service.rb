@@ -1,8 +1,9 @@
 class GoogleOauthService
   attr_reader :error_message
 
-  def initialize(code)
+  def initialize(code, code_verifier)
     @code = code
+    @code_verifier = code_verifier
     @client_id = ENV['GOOGLE_CLIENT_ID']
     @client_secret = ENV['GOOGLE_CLIENT_SECRET']
     @redirect_uri = "https://vimemo.fly.dev/oauth/callback?provider=google"
@@ -33,7 +34,8 @@ class GoogleOauthService
       client_id: @client_id,
       client_secret: @client_secret,
       redirect_uri: @redirect_uri,
-      grant_type: "authorization_code"
+      grant_type: "authorization_code",
+      code_verifier: @code_verifier  # PKCEコードベリファイアをリクエストに追加
     })
     result = JSON.parse(response.body)
     if result["error"]
