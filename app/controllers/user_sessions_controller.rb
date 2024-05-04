@@ -1,6 +1,7 @@
 class UserSessionsController < ApplicationController
   skip_before_action :require_login, only: %i[new create]
-
+  protect_from_forgery except: :destroy 
+  
   def new; end
 
   def create
