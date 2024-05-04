@@ -4,7 +4,8 @@ class GoogleOauthsController < ApplicationController
 
   def oauth
     client_id = ENV['GOOGLE_CLIENT_ID']
-    redirect_uri = "https://vimemo.fly.dev/oauth/callback?provider=google"
+    redirect_uri = ENV['GOOGLE_REDIRECT_URI']
+    # redirect_uri = "https://vimemo.fly.dev/oauth/callback?provider=google"
     # redirect_uri = "http://localhost:3000/oauth/callback?provider=google"
     scope = "email profile"
     state = "SOME_STATE_VALUE"
@@ -44,6 +45,7 @@ class GoogleOauthsController < ApplicationController
       if @user&.persisted?
         reset_session
         auto_login(@user)
+        Rails.logger.info "Session after login: #{session.to_hash}"
         Rails.logger.info "Login successful for user: #{@user.email}"
         format.html { redirect_to root_path, notice: t('auth.login_success') }
         format.json { render json: { status: 'success', message: 'Logged in successfully', user: { email: @user.email, name: @user.name } } }
