@@ -22,11 +22,14 @@ class ApplicationController < ActionController::Base
 
   # セッション検証メソッドを追加
   def validate_session
-    # session[:user_id]が存在し、対応するユーザーがデータベースに存在するか確認
+    Rails.logger.debug "Checking session: #{session.to_hash.inspect}"  # セッションの状態をログ出力
+
     unless session[:user_id] && User.exists?(session[:user_id])
-      # セッションが無効な場合、ユーザーをログインページにリダイレクト
+      Rails.logger.debug "Invalid session. Redirecting to login page."  # セッションが無効であることをログに記録
       flash[:alert] = "ログインしてください。"
       redirect_to login_path
+    else
+      Rails.logger.debug "Valid session for user_id: #{session[:user_id]}"  # 有効なセッションであることをログに記録
     end
   end
 end
