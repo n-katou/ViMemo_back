@@ -12,6 +12,44 @@ class GoogleOauthsController < ApplicationController
     oauth_url = "https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=#{client_id}&redirect_uri=#{CGI.escape(redirect_uri)}&scope=#{CGI.escape(scope)}&state=#{state}&access_type=offline&prompt=consent"
     redirect_to oauth_url, allow_other_host: true
   end
+
+  def callback
+    Rails.logger.info "Received params: #{params.inspect}"
+
+    # GoogleOAuthServiceを使用するフローと、JSONデータによるユーザー認証を組み合わせる
+    if params[:code].present?
+      # Google認証コードがある場合、GoogleOauthServiceを使用
+      service = GoogleOauthService.new(params[:code], params[:code_verifier])
+      @user = service.authenticate
+    else
+      # パラメータから直接ユーザーデータを取得し、ユーザーを探すまたは作成
+      user_data = params.fetch(:user, {}).permit(:email, :name, :id, :image)
+      access_token = params[:accessToken]
+      refresh_token = params[:refreshToken]
+
+      @user = User.find_or_create_by(email: user_data[:email]) do |u|
+        u.name = user_data[:name]
+        u.password = SecureRandom.hex(10)  # 安全なランダムパスワードを生成
+        u.password_confirmation = u.password
+      end
+    end
+
+    # ユーザーの認証処理の結果に応じて応答
+    respond_to do |format|
+      if @user&.persisted?
+        reset_session
+        auto_login(@user)
+        format.html { redirect_to root_path, notice: t('auth.login_success') }
+        format.json { render json: { status: 'success', message: 'Logged in successfully' } }
+      else
+        # エラーメッセージの取得
+        error_message = @user&.errors&.full_messages&.join(", ") || service&.error_message || "未知のエラーが発生しました"
+        Rails.logger.error("ログイン処理中にエラーが発生しました: #{error_message}")
+        format.html { redirect_to login_path, alert: t('auth.login_failed') }
+        format.json { render json: { status: 'error', message: error_message }, status: :unauthorized }
+      end
+    end
+  end
   
   # def callback
   #   Rails.logger.info "Received params: #{params.inspect}"
@@ -31,40 +69,41 @@ class GoogleOauthsController < ApplicationController
   #       format.json { render json: { status: 'error', message: error_message }, status: :unauthorized }
   #     end
   #   end
+  # end
 
-  def callback
-    # 受け取ったJSONデータのログを記録
-    Rails.logger.info "Received params: #{params.inspect}"
+  # def callback
+  #   # 受け取ったJSONデータのログを記録
+  #   Rails.logger.info "Received params: #{params.inspect}"
 
-    # 受け取ったユーザーデータを処理
-    user_data = params.require(:user).permit(:email, :name)
-    access_token = params[:accessToken]
-    refresh_token = params[:refreshToken]
+  #   # 受け取ったユーザーデータを処理
+  #   user_data = params.require(:user).permit(:email, :name, :id, :image)
+  #   access_token = params[:accessToken]
+  #   refresh_token = params[:refreshToken]
 
-    # ユーザーの検索または作成
-    user = User.find_or_create_by(email: user_data[:email]) do |u|
-      u.name = user_data[:name]
-      u.password = SecureRandom.hex(10)  # 安全なランダムパスワードを生成
-      u.password_confirmation = u.password
-    end
+  #   # ユーザーの検索または作成
+  #   user = User.find_or_create_by(email: user_data[:email]) do |u|
+  #     u.name = user_data[:name]
+  #     u.password = SecureRandom.hex(10)  # 安全なランダムパスワードを生成
+  #     u.password_confirmation = u.password
+  #   end
 
-    if user.persisted?
-      # セッションリセットと自動ログイン
-      reset_session
-      auto_login(user)
-      # 成功レスポンス
-      respond_to do |format|
-        format.html { redirect_to root_path, notice: t('auth.login_success') }
-        format.json { render json: { status: 'success', message: 'Logged in successfully' } }
-      end
-    else
-      # エラーメッセージの処理
-      error_message = user.errors.full_messages.join(", ") || "未知のエラーが発生しました"
-      Rails.logger.error("ログイン処理中にエラーが発生しました: #{error_message}")
-      respond_to do |format|
-        format.html { redirect_to login_path, alert: t('auth.login_failed') }
-        format.json { render json: { status: 'error', message: error_message }, status: :unauthorized }
-      end
-    end
-  end
+  #   if user.persisted?
+  #     # セッションリセットと自動ログイン
+  #     reset_session
+  #     auto_login(user)
+  #     # 成功レスポンス
+  #     respond_to do |format|
+  #       format.html { redirect_to root_path, notice: t('auth.login_success') }
+  #       format.json { render json: { status: 'success', message: 'Logged in successfully' } }
+  #     end
+  #   else
+  #     # エラーメッセージの処理
+  #     error_message = user.errors.full_messages.join(", ") || "未知のエラーが発生しました"
+  #     Rails.logger.error("ログイン処理中にエラーが発生しました: #{error_message}")
+  #     respond_to do |format|
+  #       format.html { redirect_to login_path, alert: t('auth.login_failed') }
+  #       format.json { render json: { status: 'error', message: error_message }, status: :unauthorized }
+  #     end
+  #   end
+  # end
 end
