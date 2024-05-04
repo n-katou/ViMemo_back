@@ -2,8 +2,6 @@ class YoutubeVideosController < ApplicationController
   require 'httparty'
   require 'cgi'
 
-  skip_before_action :require_login, only: [:index,:show] #FEで認証できるようになったら消す。
-
   def fetch_videos_by_genre
     genre = params[:genre]
     api_key = ENV['YOUTUBE_API_KEY']
