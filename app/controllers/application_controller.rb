@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::Base
-  before_action :require_login, :set_ransack_search_object, :validate_session
+  before_action :set_ransack_search_object, :validate_session
   before_action :prevent_double_login, only: [:login, :login_form]
   layout 'layouts/application'
   add_flash_types :success, :danger

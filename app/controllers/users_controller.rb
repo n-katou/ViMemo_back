@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  skip_before_action :require_login, :validate_session, only: %i[new create]
+  skip_before_action :validate_session, only: %i[new create]
   before_action :set_user, only: %i[update]
   before_action :set_current_user, only: %i[edit mypage]
 

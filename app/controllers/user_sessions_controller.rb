@@ -1,5 +1,5 @@
 class UserSessionsController < ApplicationController
-  skip_before_action :require_login, :validate_session, only: [:new, :create, :destroy]
+  skip_before_action :validate_session, only: [:new, :create, :destroy]
   protect_from_forgery except: :destroy 
 
   def new

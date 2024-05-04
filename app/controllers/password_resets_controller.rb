@@ -1,5 +1,5 @@
 class PasswordResetsController < ApplicationController
-  skip_before_action :require_login,:validate_session
+  skip_before_action :validate_session
 
   def new; end
 
