@@ -2,7 +2,12 @@ class UserSessionsController < ApplicationController
   skip_before_action :require_login, only: [:new, :create, :destroy]
   protect_from_forgery except: :destroy 
 
-  def new; end
+  def new
+    respond_to do |format|
+      format.html # new.html.erb
+      format.json { render json: { message: "ログインが必要です" } }
+    end
+  end
 
   def create
     @user = login(params[:email], params[:password])
