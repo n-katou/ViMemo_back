@@ -12,20 +12,24 @@ class GoogleOauthsController < ApplicationController
     oauth_url = "https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=#{client_id}&redirect_uri=#{CGI.escape(redirect_uri)}&scope=#{CGI.escape(scope)}&state=#{state}&access_type=offline&prompt=consent"
     redirect_to oauth_url, allow_other_host: true
   end
-
+  
   def callback
     Rails.logger.info "Received params: #{params.inspect}"
     service = GoogleOauthService.new(params[:code], params[:code_verifier])
     @user = service.authenticate
   
-    if @user
-      reset_session
-      auto_login(@user)
-      redirect_to root_path, notice: t('auth.login_success')
-    else
-      error_message = service&.error_message || "未知のエラーが発生しました"
-      Rails.logger.error { "ログイン処理中にエラーが発生しました: #{error_message}" }
-      redirect_to login_path, alert: t('auth.login_failed')
+    respond_to do |format|
+      if @user
+        reset_session
+        auto_login(@user)
+        format.html { redirect_to root_path, notice: t('auth.login_success') }
+        format.json { render json: { status: 'success', message: 'Logged in successfully' } }
+      else
+        error_message = service.error_message || "未知のエラーが発生しました"
+        Rails.logger.error("ログイン処理中にエラーが発生しました: #{error_message}")
+        format.html { redirect_to login_path, alert: t('auth.login_failed') }
+        format.json { render json: { status: 'error', message: error_message }, status: :unauthorized }
+      end
     end
   end
 end
