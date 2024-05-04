@@ -15,13 +15,16 @@ class GoogleOauthsController < ApplicationController
   end
 
   def callback
+    # ログイン前にセッションをリセット
+    reset_session
+  
     if logged_in?
       redirect_to root_path, notice: 'You are already logged in.'
       return
     end
-    
+  
     Rails.logger.info "Received params: #{params.inspect}"
-
+  
     # GoogleOAuthServiceを使用するフローと、JSONデータによるユーザー認証を組み合わせる
     if params[:code].present?
       # Google認証コードがある場合、GoogleOauthServiceを使用
@@ -32,20 +35,20 @@ class GoogleOauthsController < ApplicationController
       user_data = params.fetch(:user, {}).permit(:email, :name, :id, :image)
       access_token = params[:accessToken]
       refresh_token = params[:refreshToken]
-
+  
       @user = User.find_or_create_by(email: user_data[:email]) do |u|
         u.name = user_data[:name]
         u.password = SecureRandom.hex(10)  # 安全なランダムパスワードを生成
         u.password_confirmation = u.password
       end
     end
-
+  
     # ユーザーの認証処理の結果に応じて応答
     respond_to do |format|
       if @user&.persisted?
-        reset_session
-        auto_login(@user)
-        Rails.logger.info "Session after login: #{session.to_hash}"
+        # ログイン成功後、セッションにユーザーIDを保存
+        session[:user_id] = @user.id
+        Rails.logger.info "Session after login: #{session.to_hash.inspect}"
         Rails.logger.info "Login successful for user: #{@user.email}"
         format.html { redirect_to root_path, notice: t('auth.login_success') }
         format.json { render json: { status: 'success', message: 'Logged in successfully', user: { email: @user.email, name: @user.name } } }
