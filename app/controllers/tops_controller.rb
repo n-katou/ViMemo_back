@@ -1,5 +1,5 @@
 class TopsController < ApplicationController
-  skip_before_action :require_login, :validate_session, only: [:index, :agreement, :privacy]
+  skip_before_action :validate_session, only: [:index, :agreement, :privacy]
 
   def index; end
 

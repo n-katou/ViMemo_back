@@ -1,5 +1,5 @@
 class GoogleOauthsController < ApplicationController
-  skip_before_action :require_login, :validate_session
+  skip_before_action :validate_session
   skip_before_action :verify_authenticity_token, only: [:callback]  # CSRF検証をcallbackのみスキップ
 
   def oauth
