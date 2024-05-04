@@ -6,7 +6,7 @@ class GoogleOauthService
     @code_verifier = code_verifier
     @client_id = ENV['GOOGLE_CLIENT_ID']
     @client_secret = ENV['GOOGLE_CLIENT_SECRET']
-    @redirect_uri = "https://vimemo.fly.dev/oauth/callback?provider=google"
+    @redirect_uri = ENV['GOOGLE_REDIRECT_URI']
   end
 
   def authenticate
