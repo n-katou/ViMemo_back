@@ -14,6 +14,11 @@ class GoogleOauthsController < ApplicationController
   end
 
   def callback
+    if logged_in?
+      redirect_to root_path, notice: 'You are already logged in.'
+      return
+    end
+    
     Rails.logger.info "Received params: #{params.inspect}"
 
     # GoogleOAuthServiceを使用するフローと、JSONデータによるユーザー認証を組み合わせる
