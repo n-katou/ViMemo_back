@@ -94,3 +94,4 @@ gem 'rack-cors'
 gem 'jwt'
 
 gem 'redis-rails'
+gem 'redis'
