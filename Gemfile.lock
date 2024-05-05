@@ -403,6 +403,7 @@ DEPENDENCIES
   rack-cors
   rails (~> 7.0.3, >= 7.0.3.1)
   ransack (= 3.2.1)
+  redis
   redis-rails
   selenium-webdriver
   sorcery (= 0.16.3)
