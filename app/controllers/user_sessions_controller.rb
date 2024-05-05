@@ -22,6 +22,7 @@ class UserSessionsController < ApplicationController
 
   def destroy
     logout
+    reset_session
     redirect_to root_path, notice: t('user_sessions.destroy.success'), status: :see_other
   end
 end

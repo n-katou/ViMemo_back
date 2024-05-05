@@ -1,12 +1,10 @@
 class GoogleOauthsController < ApplicationController
   skip_before_action :validate_session
-  skip_before_action :verify_authenticity_token, only: [:callback]  # CSRF検証をcallbackのみスキップ
+  # skip_before_action :verify_authenticity_token, only: [:callback]  # CSRF検証をcallbackのみスキップ
 
   def oauth
     client_id = ENV['GOOGLE_CLIENT_ID']
     redirect_uri = ENV['GOOGLE_REDIRECT_URI']
-    # redirect_uri = "https://vimemo.fly.dev/oauth/callback?provider=google"
-    # redirect_uri = "http://localhost:3000/oauth/callback?provider=google"
     scope = "email profile"
     state = "SOME_STATE_VALUE"
 
