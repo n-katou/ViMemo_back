@@ -24,7 +24,25 @@ class UsersController < ApplicationController
     @youtube_playlist_url = "https://www.youtube.com/embed?playlist=#{youtube_video_ids.join(',')}&loop=1"
 
     @note_likes = @user.likes.includes(:likeable).where(likeable_type: 'Note').order(created_at: :desc).limit(6)
+
+    respond_to do |format|
+      format.html # mypage.html.erb
+      format.json do
+        render json: {
+          name: @user.name,
+          email: @user.email,
+          youtube_playlist_url: @youtube_playlist_url,
+          note_likes: @note_likes.map { |like| 
+            { 
+              id: like.likeable.id, 
+              content: like.likeable.content 
+            } 
+          }
+        }
+      end
+    end
   end
+
 
   def edit; end
 
