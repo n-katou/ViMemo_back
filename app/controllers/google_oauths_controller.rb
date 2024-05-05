@@ -1,5 +1,5 @@
 class GoogleOauthsController < ApplicationController
-  skip_before_action :validate_session
+  skip_before_action :require_login
   skip_before_action :verify_authenticity_token, only: [:callback]  # CSRF検証をcallbackのみスキップ
 
   def oauth
@@ -46,8 +46,8 @@ class GoogleOauthsController < ApplicationController
       if @user&.persisted?
         # ログイン成功後、セッションにユーザーIDを保存
         session[:user_id] = @user.id
-        Rails.logger.info "Session after login: #{session.to_hash.inspect}"
-        Rails.logger.info "Login successful for user: #{@user.email}"
+        session_id = request.session_options[:id]  # セッションIDを取得
+        Rails.logger.info "Session after login: #{session.to_hash.inspect}, session ID: #{session_id}"
         format.html { redirect_to root_path, notice: t('auth.login_success') }
         format.json { render json: { status: 'success', message: 'Logged in successfully', user: { email: @user.email, name: @user.name } } }
       else

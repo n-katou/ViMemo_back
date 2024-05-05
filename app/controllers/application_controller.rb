@@ -1,9 +1,9 @@
 class ApplicationController < ActionController::Base
-  before_action :set_ransack_search_object, :validate_session
+  before_action :set_ransack_search_object, :log_session_details, :require_login
   before_action :prevent_double_login, only: [:login, :login_form]
   layout 'layouts/application'
   add_flash_types :success, :danger
-  before_action :log_session_details
+  # before_action :validate_session
 
   private
 
@@ -36,5 +36,6 @@ class ApplicationController < ActionController::Base
 
   def log_session_details
     Rails.logger.info "Session details: #{session.to_hash.inspect}"
+    Rails.logger.info "Session ID: #{request.session_options[:id]}"
   end
 end
