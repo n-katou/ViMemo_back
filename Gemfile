@@ -92,3 +92,5 @@ gem 'fog-aws', '~> 3.0'
 
 gem 'rack-cors'
 gem 'jwt'
+
+gem 'redis-rails'
