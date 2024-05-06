@@ -4,57 +4,41 @@ class GoogleOauthsController < ApplicationController
 
   def oauth
     client_id = ENV['GOOGLE_CLIENT_ID']
-    redirect_uri = ENV['GOOGLE_REDIRECT_URI']
+    redirect_uri = ENV['GOOGLE_REDIRECT_URI_BACKEND']
     scope = "email profile"
-    state = "SOME_STATE_VALUE"
+    state = SecureRandom.hex(16)
 
     oauth_url = "https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=#{client_id}&redirect_uri=#{CGI.escape(redirect_uri)}&scope=#{CGI.escape(scope)}&state=#{state}&access_type=offline&prompt=consent"
-    redirect_to oauth_url, allow_other_host: true
+
+    if request.headers['Frontend-Request'] == 'true'
+      render json: { oauthUrl: oauth_url }, status: :ok
+    else
+      redirect_to oauth_url, allow_other_host: true
+    end
   end
 
   def callback
-    # ログイン前にセッションをリセット
     reset_session
+    is_frontend = request.headers['Frontend-Request'] == 'true'
   
     if logged_in?
       redirect_to root_path, notice: 'You are already logged in.'
       return
     end
   
-    Rails.logger.info "Received params: #{params.inspect}"
+    service = GoogleOauthService.new(params[:code], params[:code_verifier], is_frontend)
+    @user = service.authenticate
   
-    # GoogleOAuthServiceを使用するフローと、JSONデータによるユーザー認証を組み合わせる
-    if params[:code].present?
-      # Google認証コードがある場合、GoogleOauthServiceを使用
-      service = GoogleOauthService.new(params[:code], params[:code_verifier])
-      @user = service.authenticate
-    else
-      # パラメータから直接ユーザーデータを取得し、ユーザーを探すまたは作成
-      user_data = params.fetch(:user, {}).permit(:email, :name, :id, :image)
-      access_token = params[:accessToken]
-      refresh_token = params[:refreshToken]
-  
-      @user = User.find_or_create_by(email: user_data[:email]) do |u|
-        u.name = user_data[:name]
-        u.password = SecureRandom.hex(10)  # 安全なランダムパスワードを生成
-        u.password_confirmation = u.password
-      end
-    end
-  
-    # ユーザーの認証処理の結果に応じて応答
     respond_to do |format|
-      if @user&.persisted?
-        # ログイン成功後、セッションにユーザーIDを保存
+      if @user && @user.persisted?
         session[:user_id] = @user.id
-        session_id = request.session_options[:id]  # セッションIDを取得
-        Rails.logger.info "Session after login: #{session.to_hash.inspect}, session ID: #{session_id}"
-        format.html { redirect_to root_path, notice: t('auth.login_success') }
-        format.json { render json: { status: 'success', message: 'Logged in successfully', user: { email: @user.email, name: @user.name } } }
+        session_id = request.session_options[:id]
+        redirect_url = is_frontend ? "http://localhost:4000?session_id=#{session_id}" : users_mypage_path
+        format.html { redirect_to redirect_url, notice: 'Logged in successfully.' }
       else
-        # エラーメッセージの取得
-        error_message = @user&.errors&.full_messages&.join(", ") || service&.error_message || "Unknown error occurred"
+        error_message = @user ? @user.errors.full_messages.join(", ") : "Authentication failed"
         Rails.logger.error("Login process failed: #{error_message}")
-        format.html { redirect_to login_path, alert: t('auth.login_failed') }
+        format.html { redirect_to login_path, alert: error_message }
         format.json { render json: { status: 'error', message: error_message }, status: :unauthorized }
       end
     end
