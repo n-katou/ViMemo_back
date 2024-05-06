@@ -1,13 +1,14 @@
 class GoogleOauthService
   attr_reader :error_message
 
-  def initialize(code, code_verifier)
+  def initialize(code, code_verifier, is_frontend)
     @code = code
     @code_verifier = code_verifier
     @client_id = ENV['GOOGLE_CLIENT_ID']
     @client_secret = ENV['GOOGLE_CLIENT_SECRET']
-    @redirect_uri = ENV['GOOGLE_REDIRECT_URI']
+    @redirect_uri = is_frontend ? ENV['GOOGLE_REDIRECT_URI_FRONTEND'] : ENV['GOOGLE_REDIRECT_URI_BACKEND']
   end
+
 
   def authenticate
     begin
