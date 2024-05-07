@@ -46,7 +46,7 @@ class GoogleOauthsController < ApplicationController
         session_id = request.session_options[:id]
         Rails.logger.info "Session after login: #{session.to_hash.inspect}, session ID: #{session_id}"
         redirect_url = is_frontend ? "http://localhost:4000?session_id=#{session_id}" : users_mypage_path
-        format.html { redirect_to redirect_url, notice: 'Logged in successfully.' }
+        format.html { redirect_to redirect_url, notice: t('auth.login_success') }
         format.json { render json: { status: 'success', message: 'Logged in successfully', user: { email: @user.email, name: @user.name } } }
       else
         error_message = @user ? @user.errors.full_messages.join(", ") : "Authentication failed"
