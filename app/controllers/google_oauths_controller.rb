@@ -25,16 +25,29 @@ class GoogleOauthsController < ApplicationController
       redirect_to root_path, notice: 'You are already logged in.'
       return
     end
-  
-    service = GoogleOauthService.new(params[:code], params[:code_verifier], is_frontend)
-    @user = service.authenticate
-  
+    # GoogleOAuthServiceを使用するフローと、JSONデータによるユーザー認証を組み合わせる
+    if params[:code].present?
+      service = GoogleOauthService.new(params[:code], params[:code_verifier], is_frontend)
+      @user = service.authenticate
+    else
+      # パラメータから直接ユーザーデータを取得し、ユーザーを探すまたは作成
+      user_data = params.fetch(:user, {}).permit(:email, :name, :id, :image)
+      access_token = params[:accessToken]
+      refresh_token = params[:refreshToken]
+      @user = User.find_or_create_by(email: user_data[:email]) do |u|
+        u.name = user_data[:name]
+        u.password = SecureRandom.hex(10)  # 安全なランダムパスワードを生成
+        u.password_confirmation = u.password
+      end
+    end
     respond_to do |format|
       if @user && @user.persisted?
         session[:user_id] = @user.id
         session_id = request.session_options[:id]
+        Rails.logger.info "Session after login: #{session.to_hash.inspect}, session ID: #{session_id}"
         redirect_url = is_frontend ? "http://localhost:4000?session_id=#{session_id}" : users_mypage_path
         format.html { redirect_to redirect_url, notice: 'Logged in successfully.' }
+        format.json { render json: { status: 'success', message: 'Logged in successfully', user: { email: @user.email, name: @user.name } } }
       else
         error_message = @user ? @user.errors.full_messages.join(", ") : "Authentication failed"
         Rails.logger.error("Login process failed: #{error_message}")
