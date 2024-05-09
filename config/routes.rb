@@ -56,6 +56,12 @@ Rails.application.routes.draw do
   end
 
   namespace :api do
-    post 'authenticate', to: 'authentication#authenticate'
+    namespace :v1 do
+      resources :users, only: [:create]
+      post 'userdata', to: 'authentication#userdata'
+      resources :youtube_videos, only: [:index, :show, :destroy] do
+        get 'fetch_videos_by_genre', on: :collection
+      end
+    end
   end
 end

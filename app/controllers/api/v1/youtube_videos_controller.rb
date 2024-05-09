@@ -1,7 +1,8 @@
-class YoutubeVideosController < ApplicationController
+class Api::V1::YoutubeVideosController < ApplicationController
   require 'httparty'
   require 'cgi'
 
+  skip_before_action :require_login, only: [:index,:show]
   def fetch_videos_by_genre
     genre = params[:genre]
     api_key = ENV['YOUTUBE_API_KEY']
@@ -58,7 +59,8 @@ class YoutubeVideosController < ApplicationController
   def index
     @q = YoutubeVideo.ransack(params[:q])
     @youtube_videos = @q.result(distinct: true).includes(:notes)
-
+  
+    # ソートロジック
     @youtube_videos = case params[:sort]
                       when 'likes_desc'
                         @youtube_videos.order(likes_count: :desc)
@@ -67,24 +69,42 @@ class YoutubeVideosController < ApplicationController
                       when 'created_at_desc'
                         @youtube_videos.order(created_at: :desc)
                       else
-                        @youtube_videos.order(created_at: :desc) # デフォルトでも新しい投稿順
+                        @youtube_videos.order(created_at: :desc) # デフォルト
                       end
-
+  
+    # ページング
     @youtube_videos = @youtube_videos.page(params[:page])
 
-    @filtered_q_params = params[:q]&.permit(:notes_content_cont)
+    # ページングメタデータを生成
+    pagination_metadata = {
+      current_page: @youtube_videos.current_page,
+      total_pages: @youtube_videos.total_pages,
+      next_page: @youtube_videos.next_page,
+      prev_page: @youtube_videos.prev_page
+    }
+    render json: { videos: @youtube_videos, pagination: pagination_metadata }, status: :ok
   end
-
+  
   # 特定のビデオを表示するアクション
   def show
     @youtube_video = YoutubeVideo.find(params[:id])
   
-    # ログインしているかどうかを確認
-    if current_user
-      @notes = @youtube_video.notes
-    else
-      @notes = @youtube_video.notes.where(is_visible: true)
-    end
+    # ログインしているかどうかによってノートの取得条件を分ける
+    @notes = if current_user
+               @youtube_video.notes
+             else
+               @youtube_video.notes.where(is_visible: true)
+             end
+    render json: {
+      youtube_video: {
+        id: @youtube_video.id,
+        title: @youtube_video.title,
+        published_at: @youtube_video.published_at,
+        youtube_id: @youtube_video.youtube_id,
+        duration: @youtube_video.duration,
+      },
+      notes: @notes.map { |note| { id: note.id, content: note.content, is_visible: note.is_visible } }
+    }
   end
 
   def destroy
