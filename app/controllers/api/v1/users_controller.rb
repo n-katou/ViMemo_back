@@ -17,26 +17,24 @@ class Api::V1::UsersController < ApplicationController
   private
 
   def create_user(auth)
-    if auth.nil? || auth[:uid].nil? || auth[:email].nil?
-      Rails.logger.error "Invalid authentication data: #{auth.inspect}"
+    if auth.nil?
       render json: { error: 'Invalid authentication data' }, status: :unprocessable_entity
       return
     end
   
     uid = auth[:uid]
-    email = auth[:email]
-    Rails.logger.debug "Creating user with UID: #{uid} and Email: #{email}"
+    email = auth[:email]  # email を直接参照する
+    user = User.find_by(uid: uid)
   
-    user = User.find_or_initialize_by(uid: uid)
-    user.email = email if user.new_record?
-  
-    if user.valid?
-      user.save
-      Rails.logger.info "User saved successfully: #{user.inspect}"
-      render json: { message: '登録しました', user: user.as_json }, status: :created
+    if user
+      render json: { message: '登録済みです' }, status: :ok
     else
-      Rails.logger.error "Validation failed: #{user.errors.full_messages}"
-      render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
+      user = User.new(uid: uid, email: email)  # User オブジェクトの生成時に email も設定
+      if user.save
+        render json: { message: '登録しました' }, status: :created
+      else
+        render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
+      end
     end
   end
 
