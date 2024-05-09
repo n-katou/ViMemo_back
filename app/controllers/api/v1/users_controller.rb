@@ -5,25 +5,43 @@ class Api::V1::UsersController < ApplicationController
   skip_before_action :require_login
 
   def create
-    create_user(@auth)
+    Rails.logger.debug "Received auth: #{@auth}"
+    if @auth.nil? || @auth[:error]
+      Rails.logger.error "Authentication failed with: #{@auth[:error]}"
+      render json: { error: 'Authentication failed' }, status: :unauthorized
+    else
+      create_user(@auth)
+    end
   end
 
   private
 
   def create_user(auth)
-    render json: auth, status: :unauthorized and return unless auth[:data]
-    uid = auth[:data][:uid]
-    render json: { message: '登録済みです' } and return if User.find_by(uid: uid)
-
-    user = User.new(uid: uid)
-    if user.save
-      render json: { message: '登録しましました' }
+    if auth.nil? || auth[:uid].nil? || auth[:email].nil?
+      Rails.logger.error "Invalid authentication data: #{auth.inspect}"
+      render json: { error: 'Invalid authentication data' }, status: :unprocessable_entity
+      return
+    end
+  
+    uid = auth[:uid]
+    email = auth[:email]
+    Rails.logger.debug "Creating user with UID: #{uid} and Email: #{email}"
+  
+    user = User.find_or_initialize_by(uid: uid)
+    user.email = email if user.new_record?
+  
+    if user.valid?
+      user.save
+      Rails.logger.info "User saved successfully: #{user.inspect}"
+      render json: { message: '登録しました', user: user.as_json }, status: :created
     else
-      render json: user.errors.messages, status: :unprocessable_entity
+      Rails.logger.error "Validation failed: #{user.errors.full_messages}"
+      render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
   def set_auth
     @auth = authenticate_token
+    Rails.logger.debug "Auth set with: #{@auth}"
   end
 end
