@@ -12,6 +12,9 @@ module FirebaseAuthConcern
         verified_data = verify_id_token(token)
         Rails.logger.debug "Verification result: #{verified_data}"
         verified_data
+      rescue JWT::DecodeError => e
+        Rails.logger.error "JWT Decode Error: #{e.message}"
+        render json: { error: 'Invalid token' }, status: :unauthorized
       rescue StandardError => e
         Rails.logger.error "Authentication failed: #{e.message}"
         render json: { error: e.message }, status: :unauthorized
@@ -21,46 +24,37 @@ module FirebaseAuthConcern
 
     private
 
-    def verify_id_token(token)
-      decoded_token = decode_jwt(token, false)
-      header = decoded_token[0]  # JWTの最初の部分がヘッダー
-      payload = decoded_token[1] # 2番目の部分がペイロード
-    
-      Rails.logger.debug "Decoded header: #{header.inspect}"
-      Rails.logger.debug "Decoded payload: #{payload.inspect}"
-      
-      raise 'トークンが正しくありません。' if header.nil? || payload.nil?
-      
-      Rails.logger.debug "Issuer from token: #{payload['iss'].inspect}"
-      raise "発行者が不正です。期待される発行者: #{ISS_URL}, 受け取った発行者: #{payload['iss'].inspect}" unless payload['iss'] == ISS_URL
-      
-      public_key = fetch_public_keys[header['kid']]
-      raise '無効な公開鍵です。' unless public_key
-      
-      certificate = OpenSSL::X509::Certificate.new(public_key)
-      decoded_token = decode_jwt(token, true, { algorithm: ALGORITHM, verify_iat: true }, certificate.public_key)
-      
-      { uid: decoded_token[0]['sub'], decoded_token: decoded_token }
-    end
-
-    def decode_jwt(token, verify, options = {}, key = nil)
-      JWT.decode(token, key, verify, options)
-    end
-
     def fetch_public_keys
       response = HTTParty.get(CERT_URL)
       raise 'Failed to fetch public keys' unless response.success?
       JSON.parse(response.body)
+    rescue HTTParty::Error, JSON::ParserError => e
+      raise "Public key fetch error: #{e.message}"
     end
 
-    def valid_token?(header, payload)
+    def verify_id_token(token)
+      decoded_token = decode_jwt(token, false)
+      header = decoded_token[1]
+      payload = decoded_token[0]
+
       unless payload['iss'] == ISS_URL
-        raise "発行者が不正です。期待される発行者: #{ISS_URL}, 受け取った発行者: #{payload['iss']}"
+        error_message = "Expected issuer #{ISS_URL}, but got #{payload['iss']}"
+        Rails.logger.error "Authentication failed: #{error_message}"
+        raise "発行者が不正です。#{error_message}"
       end
-      unless payload['aud'] == 'vimemo-63237'
-        raise "トークンの対象者が不正です。期待される対象者: vimemo-63237, 受け取った対象者: #{payload['aud']}"
-      end
-      true
+
+      public_keys = fetch_public_keys
+      public_key = public_keys[header['kid']]
+      raise '無効な公開鍵です。' unless public_key
+
+      certificate = OpenSSL::X509::Certificate.new(public_key)
+      final_decoded_token = decode_jwt(token, true, { algorithm: ALGORITHM, verify_iat: true }, certificate.public_key)
+
+      { uid: final_decoded_token[0]['sub'], decoded_token: final_decoded_token }
+    end
+
+    def decode_jwt(token, verify, options = {}, key = nil)
+      JWT.decode(token, key, verify, options)
     end
   end
 end
