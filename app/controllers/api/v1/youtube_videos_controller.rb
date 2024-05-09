@@ -1,4 +1,4 @@
-class Api::YoutubeVideosController < ApplicationController
+class Api::V1::YoutubeVideosController < ApplicationController
   require 'httparty'
   require 'cgi'
 

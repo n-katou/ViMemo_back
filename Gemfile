@@ -97,3 +97,4 @@ gem 'redis-rails'
 gem 'redis'
 
 gem 'google-id-token'
+gem 'firebase-admin-sdk'
