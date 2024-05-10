@@ -14,27 +14,40 @@ class Api::V1::UsersController < ApplicationController
     end
   end
 
+  def verify_token
+    id_token = params[:idToken]
+    begin
+      # Firebase Admin SDKの設定
+      firebase_project_id = "vimemo-63237"
+      validator = Google::Auth::IDTokens::Validator.new
+      claims = validator.check id_token, firebase_project_id
+      # ユーザー情報の取得
+      user_email = claims['email']
+      # 以降、ユーザー情報をもとに自身のデータベースのユーザーと照合または登録
+      @user = User.find_or_create_by(email: user_email)
+      render json: { status: 'success', user: @user.as_json }
+    rescue Google::Auth::IDTokens::ValidationError => e
+      render json: { status: 'error', message: 'Invalid token' }, status: :unauthorized
+    end
+  end
+
   private
 
   def create_user(auth)
-    if auth.nil?
+    if auth[:uid].nil? || auth[:email].nil?
+      Rails.logger.error "Invalid authentication data: #{auth.inspect}"
       render json: { error: 'Invalid authentication data' }, status: :unprocessable_entity
       return
     end
-  
-    uid = auth[:uid]
-    email = auth[:email]  # email を直接参照する
-    user = User.find_by(uid: uid)
-  
-    if user
-      render json: { message: '登録済みです' }, status: :ok
+    
+    user = User.find_or_create_by_uid(auth)
+    
+    if user.persisted?
+      Rails.logger.info "User created or found: #{user.inspect}"
+      render json: { message: '登録しました', user: user.as_json }, status: :created
     else
-      user = User.new(uid: uid, email: email)  # User オブジェクトの生成時に email も設定
-      if user.save
-        render json: { message: '登録しました' }, status: :created
-      else
-        render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
-      end
+      Rails.logger.error "User validation failed: #{user.errors.full_messages}"
+      render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
