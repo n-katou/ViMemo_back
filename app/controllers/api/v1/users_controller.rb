@@ -35,7 +35,7 @@ module Api
       private
 
       def decode_firebase_token(token)
-        jwks_uri = URI("https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com")
+        jwks_uri = URI("https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com")
         jwks_raw = Net::HTTP.get(jwks_uri)
         jwks_keys = Array(JSON.parse(jwks_raw)['keys'])
         decoded_token = nil
