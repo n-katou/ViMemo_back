@@ -57,7 +57,11 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :users, only: [:create]
+      resources :users, only: [:create] do
+        collection do
+          delete :logout
+        end
+      end
       resources :youtube_videos, only: [:index, :show, :destroy] do
         get 'fetch_videos_by_genre', on: :collection
         resources :notes, only: [:create, :destroy, :update, :edit]
