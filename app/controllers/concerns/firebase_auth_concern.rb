@@ -8,15 +8,15 @@ module FirebaseAuthConcern
   included do
     def authenticate_token
       authenticate_with_http_token do |token, _options|
-        Rails.logger.debug "Token received: #{token}"
+        # Rails.logger.debug "Token received: #{token}"
         verified_data = verify_id_token(token)
-        Rails.logger.debug "Verification result: #{verified_data}"
+        # Rails.logger.debug "Verification result: #{verified_data}"
         verified_data
       rescue JWT::DecodeError => e
-        Rails.logger.error "JWT Decode Error: #{e.message}"
+        # Rails.logger.error "JWT Decode Error: #{e.message}"
         render json: { error: 'Invalid token' }, status: :unauthorized
       rescue StandardError => e
-        Rails.logger.error "Authentication failed: #{e.message}"
+        # Rails.logger.error "Authentication failed: #{e.message}"
         render json: { error: e.message }, status: :unauthorized
         nil
       end
