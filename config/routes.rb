@@ -58,10 +58,9 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resources :users, only: [:create]
-      post 'verify_token', to: 'users#verify_token'
-      post 'userdata', to: 'authentication#userdata'
       resources :youtube_videos, only: [:index, :show, :destroy] do
         get 'fetch_videos_by_genre', on: :collection
+        resources :notes, only: [:create, :destroy, :update, :edit]
       end
     end
   end

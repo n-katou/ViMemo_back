@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  before_create :generate_auth_token
   authenticates_with_sorcery!
   mount_uploader :avatar, UserImageUploader
 
@@ -29,6 +30,10 @@ class User < ApplicationRecord
     YoutubeVideo.joins(:likes).where(likes: { user_id: id })
   end
 
+  def generate_auth_token
+    self.auth_token = SecureRandom.hex
+  end
+  
   def self.find_or_create_by_uid(auth_hash)
     find_or_create_by(uid: auth_hash[:uid]) do |user|
       user.email = auth_hash[:info][:email]
