@@ -48,7 +48,7 @@ class GoogleOauthsController < ApplicationController
     end
   end
 
-  #バックエンド用
+  # バックエンド用
   # def callback
   #   reset_session
   #   is_frontend = request.headers['Frontend-Request'] == 'true'
@@ -87,5 +87,5 @@ class GoogleOauthsController < ApplicationController
   #       format.json { render json: { status: 'error', message: error_message }, status: :unauthorized }
   #     end
   #   end
-  end
+  # end
 end
