@@ -6,8 +6,18 @@ module Api
   module V1
     class UsersController < ApiController
       include JwtHandler  # JWT処理のモジュールをインクルード
+      skip_before_action :authenticate_user!, only: [:create, :auth_create]
 
       def create
+        @user = User.new(user_params)
+        if @user.save
+          render json: { message: I18n.t('users.create.success'), user: @user }, status: :created
+        else
+          render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
+        end
+      end
+
+      def auth_create
         user = User.find_by(email: user_params[:email])
       
         if user
