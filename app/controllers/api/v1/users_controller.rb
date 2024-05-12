@@ -38,14 +38,6 @@ module Api
         end
       end
 
-      def logout
-        if current_user.update(auth_token: nil)  # 現在のユーザーのauth_tokenをクリア
-          render json: { message: "Logged out successfully." }, status: :ok
-        else
-          render json: { errors: current_user.errors.full_messages }, status: :unprocessable_entity
-        end
-      end
-
       private
 
       def user_params

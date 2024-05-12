@@ -60,9 +60,10 @@ Rails.application.routes.draw do
       resources :users, only: [:create] do
         collection do
           post :auth_create
-          delete :logout
         end
       end
+      get 'login', to: 'user_sessions#new'
+      post 'login', to: 'user_sessions#create'
       resources :youtube_videos, only: [:index, :show, :destroy] do
         get 'fetch_videos_by_genre', on: :collection
         resources :notes, only: [:create, :destroy, :update, :edit]
