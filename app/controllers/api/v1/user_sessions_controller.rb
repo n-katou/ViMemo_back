@@ -8,7 +8,13 @@ module Api
       def create
         user = login(params[:email], params[:password])
         if user
-          render json: { success: true, message: 'ログインに成功しました。', user: user.as_json(only: [:id, :email, :name]) }, status: :ok
+          session[:user_id] = user.id # セッションにユーザーIDを保存
+          render json: {
+            success: true,
+            message: 'ログインに成功しました。',
+            user: user.as_json(only: [:id, :email, :name]),
+            token: form_authenticity_token # CSRFトークンまたはセッションIDを返す
+          }, status: :ok
         else
           render json: { success: false, error: 'ログインに失敗しました。メールアドレスまたはパスワードが間違っています。' }, status: :unauthorized
         end
