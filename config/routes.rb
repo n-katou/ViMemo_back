@@ -59,13 +59,18 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :users, only: [:create] do
         collection do
-          delete :logout
+          post :auth_create
         end
       end
+      get 'login', to: 'user_sessions#new'
+      post 'login', to: 'user_sessions#create'
       resources :youtube_videos, only: [:index, :show, :destroy] do
         get 'fetch_videos_by_genre', on: :collection
         resources :notes, only: [:create, :destroy, :update, :edit]
       end
+      post 'oauth/callback', to: 'google_oauths#callback', as: :oauth_callback_post_api
+      get 'oauth/callback', to: 'google_oauths#callback', as: :oauth_callback_get_api
+      get 'oauth/:provider', to: 'google_oauths#oauth', as: :auth_at_provider_api
     end
   end
 end

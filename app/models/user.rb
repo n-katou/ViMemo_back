@@ -19,7 +19,6 @@ class User < ApplicationRecord
 
   validates :email, presence: true, uniqueness: true
   validates :name, presence: true
-  validates :uid, uniqueness: { allow_blank: true }
 
   def deliver_reset_password_instructions!
     generate_reset_password_token!
