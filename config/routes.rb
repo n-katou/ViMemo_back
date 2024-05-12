@@ -68,6 +68,9 @@ Rails.application.routes.draw do
         get 'fetch_videos_by_genre', on: :collection
         resources :notes, only: [:create, :destroy, :update, :edit]
       end
+      post 'oauth/callback', to: 'google_oauths#callback', as: :oauth_callback_post_api
+      get 'oauth/callback', to: 'google_oauths#callback', as: :oauth_callback_get_api
+      get 'oauth/:provider', to: 'google_oauths#oauth', as: :auth_at_provider_api
     end
   end
 end
