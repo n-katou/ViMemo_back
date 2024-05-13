@@ -1,4 +1,5 @@
 class GoogleOauthsController < ApplicationController
+  include JwtHandler
   skip_before_action :require_login
   skip_before_action :verify_authenticity_token, only: [:callback]  # CSRF検証をcallbackのみスキップ
 
@@ -34,6 +35,9 @@ class GoogleOauthsController < ApplicationController
     if @user && @user.persisted?
       session[:user_id] = @user.id
       session_id = request.session_options[:id]
+      token = generate_jwt(@user.id)  # JWTトークン生成
+      decoded_token = decode_jwt(token)  # トークンをデコード
+      Rails.logger.info "Decoded JWT: #{decoded_token}"
       Rails.logger.info "Session after login: #{session.to_hash.inspect}, session ID: #{session_id}"
       # ここでフロントエンドのURLにリダイレクト
       redirect_url = "https://vimemo.vercel.app/mypage?session_id=#{session_id}"
