@@ -11,7 +11,8 @@ module Api
       def create
         @user = User.new(user_params)
         if @user.save
-          token = generate_token(@user.id)  # トークン生成のメソッド、適宜実装が必要
+          token = generate_jwt(@user.id)  
+          decoded_token = decode_jwt(token) # トークン生成のメソッド、適宜実装が必要
           Rails.logger.info "Generated Token: #{token}"
           render json: { success: true, token: token, user: @user.slice(:id, :email, :name) }, status: :created
         else
