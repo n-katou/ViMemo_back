@@ -11,7 +11,9 @@ module Api
       def create
         @user = User.new(user_params)
         if @user.save
-          render json: { message: I18n.t('users.create.success'), user: @user }, status: :created
+          token = generate_token(@user.id)  # トークン生成のメソッド、適宜実装が必要
+          Rails.logger.info "Generated Token: #{token}"
+          render json: { success: true, token: token, user: @user.slice(:id, :email, :name) }, status: :created
         else
           render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
         end
@@ -23,7 +25,8 @@ module Api
         if user
           if user.valid_password?(user_params[:password])
             token = generate_jwt(user.id)  # JWTを生成
-            render json: { message: "ログイン成功", token: token }, status: :ok
+            Rails.logger.info "Generated Token: #{token}"
+            render json: { success: true, token: token, user: user.slice(:id, :email, :name) }, status: :ok
           else
             render json: { error: "パスワードが間違っています" }, status: :unprocessable_entity
           end
@@ -31,10 +34,18 @@ module Api
           user = User.new(user_params)
           if user.save
             token = generate_jwt(user.id)  # JWTを生成
-            render json: { message: "登録成功", token: token }, status: :created
+            render json: { success: true, token: token, user: user.slice(:id, :email, :name) }, status: :ok
           else
             render json: { error: user.errors.full_messages }, status: :unprocessable_entity
           end
+        end
+      end
+
+      def show
+        if current_user
+          render json: current_user.as_json(only: [:id, :email, :name])
+        else
+          render json: { error: 'Unauthorized' }, status: :unauthorized
         end
       end
 

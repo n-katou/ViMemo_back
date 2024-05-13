@@ -13,6 +13,8 @@ Rails.application.configure do
   config.hosts << "front"
   config.hosts << "back"
 
+  config.log_level = :debug
+
   
   #本番環境用の設定
   config.action_mailer.delivery_method = :smtp
