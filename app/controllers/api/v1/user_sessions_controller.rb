@@ -20,7 +20,7 @@ module Api
             token: token
           }, status: :ok
         else
-          render json: { success: false, error: 'Invalid credentials' }, status: :unauthorized
+          render json: { success: false, error: 'ログインに失敗しました。メールアドレスまたはパスワードが間違っています。' }, status: :unauthorized
         end
       end
 

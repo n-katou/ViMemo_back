@@ -11,7 +11,8 @@ module Api
       def create
         @user = User.new(user_params)
         if @user.save
-          token = generate_token(@user.id)  # トークン生成のメソッド、適宜実装が必要
+          token = generate_jwt(@user.id)  
+          decoded_token = decode_jwt(token) # トークン生成のメソッド、適宜実装が必要
           Rails.logger.info "Generated Token: #{token}"
           render json: { success: true, token: token, user: @user.slice(:id, :email, :name) }, status: :created
         else
@@ -42,11 +43,7 @@ module Api
       end
 
       def show
-        if current_user
-          render json: current_user.as_json(only: [:id, :email, :name])
-        else
-          render json: { error: 'Unauthorized' }, status: :unauthorized
-        end
+        render json: current_user.as_json(only: [:id, :email, :name]), status: :ok
       end
 
       private
@@ -54,6 +51,7 @@ module Api
       def user_params
         params.require(:user).permit(:name, :email, :password, :password_confirmation)
       end
+
     end
   end
 end
