@@ -40,7 +40,8 @@ class GoogleOauthsController < ApplicationController
       Rails.logger.info "Decoded JWT: #{decoded_token}"
       Rails.logger.info "Session after login: #{session.to_hash.inspect}, session ID: #{session_id}"
       # ここでフロントエンドのURLにリダイレクト
-      redirect_url = "https://vimemo.vercel.app/mypage?session_id=#{session_id}"
+      redirect_url = "https://vimemo.vercel.app/mypage?session_id=#{token}"
+      # redirect_url = "http://localhost:4000/mypage?session_id=#{token}"
       redirect_to redirect_url, allow_other_host: true
     else
       error_message = @user.errors.full_messages.join(", ") if @user

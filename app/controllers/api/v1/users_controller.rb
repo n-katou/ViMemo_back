@@ -43,11 +43,7 @@ module Api
       end
 
       def show
-        if current_user
-          render json: current_user.as_json(only: [:id, :email, :name])
-        else
-          render json: { error: 'Unauthorized' }, status: :unauthorized
-        end
+        render json: current_user.as_json(only: [:id, :email, :name]), status: :ok
       end
 
       private
@@ -55,6 +51,7 @@ module Api
       def user_params
         params.require(:user).permit(:name, :email, :password, :password_confirmation)
       end
+
     end
   end
 end
