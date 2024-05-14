@@ -64,6 +64,7 @@ Rails.application.routes.draw do
       end
       get 'login', to: 'user_sessions#new'
       post 'login', to: 'user_sessions#create'
+      delete 'logout', to: 'user_sessions#destroy'
       resources :youtube_videos, only: [:index, :show, :destroy] do
         get 'fetch_videos_by_genre', on: :collection
         resources :notes, only: [:create, :destroy, :update, :edit]

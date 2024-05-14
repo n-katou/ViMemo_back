@@ -26,13 +26,13 @@ module Api
 
       # ユーザーログアウト処理
       def destroy
-        if current_user&.update(auth_token: nil)
-          logout
-          render json: { success: true, message: 'ログアウトに成功しました。' }, status: :ok
+        if current_user.update(auth_token: nil)  # 現在のユーザーのauth_tokenをクリア
+          render json: { message: "Logged out successfully." }, status: :ok
         else
-          render json: { success: false, error: 'ログアウトに失敗しました。' }, status: :unprocessable_entity
+          render json: { errors: current_user.errors.full_messages }, status: :unprocessable_entity
         end
       end
+
       
     end
   end

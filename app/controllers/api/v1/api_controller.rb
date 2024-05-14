@@ -1,6 +1,7 @@
 module Api
   module V1
     class ApiController < ActionController::API
+      include JwtHandler
       before_action :authenticate_user!
 
 
