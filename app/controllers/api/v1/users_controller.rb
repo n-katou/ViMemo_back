@@ -1,7 +1,6 @@
 require 'jwt'
 require 'net/http'
 require 'openssl'
-require 'firebase_id_token'
 
 module Api
   module V1
@@ -51,16 +50,13 @@ module Api
 
       def authenticate_user!
         token = request.headers['Authorization']&.split(' ')&.last
-        if token.present?
-          FirebaseIdToken::Certificates.request
-          payload = FirebaseIdToken::Signature.verify(token)
-          @current_user = User.find_by(uid: payload['user_id']) # UIDフィールドでユーザーを探します
+        decoded_token = decode_jwt(token)
+        if decoded_token.present?
+          @current_user = User.find_by(id: decoded_token[:user_id])
           render json: { error: 'User not found' }, status: :not_found unless @current_user
         else
           render json: { error: 'Unauthorized' }, status: :unauthorized
         end
-      rescue => e
-        render json: { error: e.message }, status: :unauthorized
       end
 
       def current_user
