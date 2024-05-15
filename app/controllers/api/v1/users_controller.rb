@@ -48,22 +48,6 @@ module Api
 
       private
 
-      def authenticate_user!
-        token = request.headers['Authorization']&.split(' ')&.last
-        decoded_token = decode_jwt(token)
-        if decoded_token.present?
-          @current_user = User.find_by(id: decoded_token[:user_id])
-          render json: { error: 'User not found' }, status: :not_found unless @current_user
-        else
-          render json: { error: 'Unauthorized' }, status: :unauthorized
-        end
-      end
-
-      def current_user
-        @current_user
-      end
-
-
       def user_params
         params.require(:user).permit(:name, :email, :password, :password_confirmation)
       end
