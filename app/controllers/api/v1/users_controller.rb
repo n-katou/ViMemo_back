@@ -50,9 +50,10 @@ module Api
 
       def authenticate_user!
         token = request.headers['Authorization']&.split(' ')&.last
-        if token.present?
-          decoded_token = decode_jwt(token)
-          @current_user = User.find(decoded_token[:user_id])
+        decoded_token = decode_jwt(token)
+        if decoded_token.present?
+          @current_user = User.find_by(id: decoded_token[:user_id])
+          render json: { error: 'User not found' }, status: :not_found unless @current_user
         else
           render json: { error: 'Unauthorized' }, status: :unauthorized
         end

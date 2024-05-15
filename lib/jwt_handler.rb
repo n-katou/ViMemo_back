@@ -17,7 +17,8 @@ module JwtHandler
   end
 
   def decode_jwt(token)
-    JWT.decode(token, HMAC_SECRET, true, { algorithm: 'HS256' }).first
+    decoded_token = JWT.decode(token, HMAC_SECRET, true, { algorithm: 'HS256' }).first
+    HashWithIndifferentAccess.new(decoded_token)
   rescue JWT::DecodeError => e
     Rails.logger.error "JWT Decode Error: #{e.message}"
     nil
