@@ -100,5 +100,3 @@ gem 'google-id-token'
 gem 'firebase-admin-sdk'
 
 gem 'google-cloud-firestore', require: 'google/cloud/firestore'
-
-gem 'firebase_id_token'
