@@ -6,7 +6,7 @@ module Api
   module V1
     class UsersController < ApiController
       include JwtHandler  # JWT処理のモジュールをインクルード
-      skip_before_action :authenticate_user!, only: [:create, :auth_create]
+      before_action :authenticate_user!, except: [:create, :auth_create]
 
       def create
         @user = User.new(user_params)
@@ -47,6 +47,21 @@ module Api
       end
 
       private
+
+      def authenticate_user!
+        token = request.headers['Authorization']&.split(' ')&.last
+        if token.present?
+          decoded_token = decode_jwt(token)
+          @current_user = User.find(decoded_token[:user_id])
+        else
+          render json: { error: 'Unauthorized' }, status: :unauthorized
+        end
+      end
+
+      def current_user
+        @current_user
+      end
+
 
       def user_params
         params.require(:user).permit(:name, :email, :password, :password_confirmation)
