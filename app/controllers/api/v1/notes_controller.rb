@@ -16,7 +16,7 @@ module Api
       
           if @note.save
             Rails.logger.debug "Note saved successfully: #{@note}"
-            render json: @note, status: :created
+            render json: @note.as_json(include: { user: { only: [:id, :name, :avatar] } }), status: :created
           else
             Rails.logger.error "Note save failed: #{@note.errors.full_messages}"
             render json: @note.errors, status: :unprocessable_entity
@@ -47,7 +47,7 @@ module Api
       
         if @note.update(note_params)
           Rails.logger.debug "Note updated successfully: #{@note}"
-          render json: @note, status: :ok
+          render json: @note.as_json(include: { user: { only: [:id, :name, :avatar] } }), status: :ok
         else
           Rails.logger.error "Note update failed: #{@note.errors.full_messages}"
           render json: @note.errors, status: :unprocessable_entity
@@ -66,7 +66,7 @@ module Api
         else
           @notes = current_user.notes.order(created_at: :desc).page(params[:page]).per(10)
         end
-        render json: @notes
+        render json: @notes.as_json(include: { user: { only: [:id, :name, :avatar] } })
       end
 
       private
