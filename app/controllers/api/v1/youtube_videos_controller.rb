@@ -115,7 +115,7 @@ class Api::V1::YoutubeVideosController < ApplicationController
         user: {
           id: note.user.id,
           name: note.user.name,
-          avatar: avatar_url(note.user.avatar.url) # S3 URLを生成
+          avatar: note.user.avatar.url # S3 URLを生成
         }
       } }
     }
