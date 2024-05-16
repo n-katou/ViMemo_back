@@ -89,7 +89,7 @@ class Api::V1::YoutubeVideosController < ApplicationController
              else
                @youtube_video.notes.where(is_visible: true)
              end
-
+  
     render json: {
       youtube_video: {
         id: @youtube_video.id,
@@ -103,7 +103,7 @@ class Api::V1::YoutubeVideosController < ApplicationController
         user: {
           id: @youtube_video.user.id,
           name: @youtube_video.user.name,
-          avatar: avatar_url(@youtube_video.user.avatar.url) # S3 URLを生成
+          avatar: @youtube_video.user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
         }
       },
       notes: @notes.map { |note| {
@@ -115,7 +115,7 @@ class Api::V1::YoutubeVideosController < ApplicationController
         user: {
           id: note.user.id,
           name: note.user.name,
-          avatar: note.user.avatar.url # S3 URLを生成
+          avatar: note.user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
         }
       } }
     }
@@ -129,11 +129,5 @@ class Api::V1::YoutubeVideosController < ApplicationController
     else
       redirect_to youtube_videos_path, alert: 'Video not found', status: :not_found
     end
-  end
-
-  private
-
-  def avatar_url(path)
-    "#{ENV['S3_BASE_URL']}/#{path}"
   end
 end
