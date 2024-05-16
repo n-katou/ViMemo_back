@@ -2,7 +2,8 @@ class Api::V1::YoutubeVideosController < ApplicationController
   require 'httparty'
   require 'cgi'
 
-  skip_before_action :require_login, only: [:index,:show]
+  skip_before_action :require_login, only: [:index, :show]
+
   def fetch_videos_by_genre
     genre = params[:genre]
     api_key = ENV['YOUTUBE_API_KEY']
@@ -43,7 +44,6 @@ class Api::V1::YoutubeVideosController < ApplicationController
     end
   end
   
-  # ISO 8601持続時間形式（PT#H#M#S）を秒に変換
   def parse_duration(duration)
     match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/)
     return 0 unless match # matchがnilの場合は0を返す
@@ -55,12 +55,10 @@ class Api::V1::YoutubeVideosController < ApplicationController
     hours + minutes + seconds
   end
 
-  # ビデオの一覧を表示するアクション
   def index
     @q = YoutubeVideo.ransack(params[:q])
     @youtube_videos = @q.result(distinct: true).includes(:notes)
   
-    # ソートロジック
     @youtube_videos = case params[:sort]
                       when 'likes_desc'
                         @youtube_videos.order(likes_count: :desc)
@@ -72,10 +70,8 @@ class Api::V1::YoutubeVideosController < ApplicationController
                         @youtube_videos.order(created_at: :desc) # デフォルト
                       end
   
-    # ページング
     @youtube_videos = @youtube_videos.page(params[:page])
 
-    # ページングメタデータを生成
     pagination_metadata = {
       current_page: @youtube_videos.current_page,
       total_pages: @youtube_videos.total_pages,
@@ -85,25 +81,43 @@ class Api::V1::YoutubeVideosController < ApplicationController
     render json: { videos: @youtube_videos, pagination: pagination_metadata }, status: :ok
   end
   
-  # 特定のビデオを表示するアクション
   def show
-    @youtube_video = YoutubeVideo.find(params[:id])
+    @youtube_video = YoutubeVideo.includes(:user, notes: :user).find(params[:id])
   
-    # ログインしているかどうかによってノートの取得条件を分ける
     @notes = if current_user
                @youtube_video.notes
              else
                @youtube_video.notes.where(is_visible: true)
              end
+
     render json: {
       youtube_video: {
         id: @youtube_video.id,
         title: @youtube_video.title,
+        description: @youtube_video.description,
         published_at: @youtube_video.published_at,
         youtube_id: @youtube_video.youtube_id,
         duration: @youtube_video.duration,
+        likes_count: @youtube_video.likes_count,
+        notes_count: @youtube_video.notes_count,
+        user: {
+          id: @youtube_video.user.id,
+          name: @youtube_video.user.name,
+          avatar: @youtube_video.user.avatar.url # CarrierWaveの場合
+        }
       },
-      notes: @notes.map { |note| { id: note.id, content: note.content, is_visible: note.is_visible } }
+      notes: @notes.map { |note| {
+        id: note.id,
+        content: note.content,
+        video_timestamp: note.video_timestamp,
+        is_visible: note.is_visible,
+        likes_count: note.likes_count,
+        user: {
+          id: note.user.id,
+          name: note.user.name,
+          avatar: note.user.avatar.url # CarrierWaveの場合
+        }
+      } }
     }
   end
 
@@ -113,7 +127,6 @@ class Api::V1::YoutubeVideosController < ApplicationController
       @youtube_video.destroy
       redirect_to admin_videos_path, success: t('defaults.flash_message.deleted', item: YoutubeVideo.model_name.human), status: :see_other
     else
-      # ビデオが見つからない場合の処理
       redirect_to youtube_videos_path, alert: 'Video not found', status: :not_found
     end
   end
