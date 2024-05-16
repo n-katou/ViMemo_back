@@ -1,5 +1,5 @@
 # ベースイメージの指定
-FROM ruby:3.1.4
+FROM ruby:3.1.5
 ENV LANG C.UTF-8
 ENV TZ Asia/Tokyo
 
