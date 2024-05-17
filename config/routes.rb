@@ -66,8 +66,11 @@ Rails.application.routes.draw do
       post 'login', to: 'user_sessions#create'
       delete 'logout', to: 'user_sessions#destroy'
       resources :youtube_videos, only: [:index, :show, :destroy] do
+        resources :likes, only: [:create, :destroy]
         get 'fetch_videos_by_genre', on: :collection
-        resources :notes, only: [:create, :destroy, :update, :edit]
+        resources :notes, only: [:create, :destroy, :update, :edit] do
+          resources :likes, only: [:create, :destroy] 
+        end
       end
       post 'oauth/callback', to: 'google_oauths#callback', as: :oauth_callback_post_api
       get 'oauth/callback', to: 'google_oauths#callback', as: :oauth_callback_get_api
