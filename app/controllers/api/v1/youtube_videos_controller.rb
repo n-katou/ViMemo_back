@@ -1,8 +1,8 @@
 module Api
   module V1
     class YoutubeVideosController < ApiController
-      skip_before_action :authenticate_user!, only: [:index, :show]
-
+      skip_before_action :authenticate_user!, only: [:index]
+      
       def fetch_videos_by_genre
         genre = params[:genre]
         api_key = ENV['YOUTUBE_API_KEY']
@@ -57,7 +57,7 @@ module Api
       def index
         @q = YoutubeVideo.ransack(params[:q])
         @youtube_videos = @q.result(distinct: true).includes(:notes)
-      
+    
         @youtube_videos = case params[:sort]
                           when 'likes_desc'
                             @youtube_videos.order(likes_count: :desc)
@@ -68,7 +68,7 @@ module Api
                           else
                             @youtube_videos.order(created_at: :desc) # デフォルト
                           end
-      
+    
         @youtube_videos = @youtube_videos.page(params[:page])
     
         pagination_metadata = {
@@ -79,19 +79,18 @@ module Api
         }
         render json: { videos: @youtube_videos, pagination: pagination_metadata }, status: :ok
       end
-      
+    
       def show
         @youtube_video = YoutubeVideo.includes(:user, notes: :user).find(params[:id])
     
-        puts "Current User: #{current_user.inspect}" # 追加: current_userをデバッグ出力
+        Rails.logger.debug "Current User in show action: #{current_user.inspect}" # デバッグメッセージを追加
     
-      
         @notes = if current_user
-                   @youtube_video.notes
+                   @youtube_video.notes.where('is_visible = ? OR user_id = ?', true, current_user.id)
                  else
                    @youtube_video.notes.where(is_visible: true)
                  end
-      
+    
         render json: {
           youtube_video: {
             id: @youtube_video.id,

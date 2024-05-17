@@ -3,6 +3,7 @@ module Api
     class NotesController < ApiController
       before_action :set_video, only: [:create]
       before_action :set_note, only: [:update, :destroy]
+      before_action :authorize_user!, only: [:update, :destroy]
 
       # POST /api/notes
       def create
@@ -13,7 +14,7 @@ module Api
           minutes = params[:video_timestamp_minutes].to_i
           seconds = params[:video_timestamp_seconds].to_i
           @note.video_timestamp = format("%02d:%02d", minutes, seconds)
-      
+
           if @note.save
             Rails.logger.debug "Note saved successfully: #{@note}"
             render json: @note.as_json(include: { user: { only: [:id, :name, :avatar] } }), status: :created
@@ -44,7 +45,7 @@ module Api
         minutes = params[:video_timestamp_minutes].to_i
         seconds = params[:video_timestamp_seconds].to_i
         @note.video_timestamp = format("%02d:%02d", minutes, seconds)
-      
+
         if @note.update(note_params)
           Rails.logger.debug "Note updated successfully: #{@note}"
           render json: @note.as_json(include: { user: { only: [:id, :name, :avatar] } }), status: :ok
@@ -58,7 +59,7 @@ module Api
       def index
         filter = params[:filter]
         Rails.logger.debug "Listing notes with filter: #{filter}"
-      
+
         if filter == 'my_notes'
           @notes = current_user.notes.order(created_at: :desc).page(params[:page]).per(10)
         elsif filter == 'all_notes'
@@ -75,10 +76,17 @@ module Api
         @video = params[:youtube_video_id] ? YoutubeVideo.find_by(id: params[:youtube_video_id]) : Video.find_by(id: params[:video_id])
         Rails.logger.debug "Video set for note operations: #{@video&.id}"
       end
-      
+
       def set_note
         @note = Note.find(params[:id])
         Rails.logger.debug "Note set for operations: #{@note&.id}"
+      end
+
+      def authorize_user!
+        unless @note.user_id == current_user.id
+          Rails.logger.error "Unauthorized access attempt by user ID: #{current_user&.id}"
+          render json: { error: 'Not Authorized' }, status: :unauthorized
+        end
       end
 
       def note_params
