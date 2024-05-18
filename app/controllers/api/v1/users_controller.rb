@@ -52,13 +52,34 @@ module Api
         youtube_video_ids = youtube_video_likes.map { |like| like.likeable.youtube_id }
         youtube_playlist_url = "https://www.youtube.com/embed?playlist=#{youtube_video_ids.join(',')}&loop=1"
       
-        note_likes = user.likes.includes(:likeable).where(likeable_type: 'Note').order(created_at: :desc).limit(6)
+        note_likes = user.likes.includes(likeable: :user).where(likeable_type: 'Note').order(created_at: :desc).limit(6)
       
         render json: {
           youtube_video_likes: youtube_video_likes,
-          note_likes: note_likes,
+          note_likes: note_likes.map { |like| 
+            {
+              id: like.id,
+              likeable_id: like.likeable_id,
+              likeable_type: like.likeable_type,
+              created_at: like.created_at,
+              updated_at: like.updated_at,
+              user_id: like.user_id,
+              likeable: {
+                id: like.likeable.id,
+                content: like.likeable.content,
+                video_timestamp: like.likeable.video_timestamp,
+                is_visible: like.likeable.is_visible,
+                likes_count: like.likeable.likes_count,
+                user: {
+                  id: like.likeable.user.id,
+                  name: like.likeable.user.name,
+                  avatar_url: like.likeable.user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
+                }
+              }
+            }
+          },
           youtube_playlist_url: youtube_playlist_url,
-          avatar_url: user.avatar_url  # ここに追加
+          avatar_url: user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
         }
       end
 
