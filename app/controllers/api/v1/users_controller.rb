@@ -51,13 +51,14 @@ module Api
         youtube_video_likes = user.likes.includes(:likeable).where(likeable_type: 'YoutubeVideo').order(created_at: :desc)
         youtube_video_ids = youtube_video_likes.map { |like| like.likeable.youtube_id }
         youtube_playlist_url = "https://www.youtube.com/embed?playlist=#{youtube_video_ids.join(',')}&loop=1"
-
+      
         note_likes = user.likes.includes(:likeable).where(likeable_type: 'Note').order(created_at: :desc).limit(6)
-
+      
         render json: {
           youtube_video_likes: youtube_video_likes,
           note_likes: note_likes,
-          youtube_playlist_url: youtube_playlist_url
+          youtube_playlist_url: youtube_playlist_url,
+          avatar_url: user.avatar_url  # ここに追加
         }
       end
 
