@@ -69,7 +69,11 @@ Rails.application.routes.draw do
         resources :likes, only: [:create, :destroy]
         get 'fetch_videos_by_genre', on: :collection
         resources :notes, only: [:create, :destroy, :update, :edit] do
-          resources :likes, only: [:create, :destroy] 
+          resources :likes, only: [:create, :destroy] do
+            collection do
+              get 'current_user_like', to: 'likes#current_user_like'
+            end
+          end
         end
       end
       post 'oauth/callback', to: 'google_oauths#callback', as: :oauth_callback_post_api
