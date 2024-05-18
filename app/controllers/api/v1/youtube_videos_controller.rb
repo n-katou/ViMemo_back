@@ -2,7 +2,7 @@ module Api
   module V1
     class YoutubeVideosController < ApiController
       skip_before_action :authenticate_user!, only: [:index]
-      
+
       def fetch_videos_by_genre
         genre = params[:genre]
         api_key = ENV['YOUTUBE_API_KEY']
@@ -81,16 +81,16 @@ module Api
       end
     
       def show
-        @youtube_video = YoutubeVideo.includes(:user, notes: :user).find(params[:id])
-    
+        @youtube_video = YoutubeVideo.includes(:user, notes: :user, likes: :user).find(params[:id])
+        
         Rails.logger.debug "Current User in show action: #{current_user.inspect}" # デバッグメッセージを追加
-    
+        
         @notes = if current_user
                    @youtube_video.notes.where('is_visible = ? OR user_id = ?', true, current_user.id)
                  else
                    @youtube_video.notes.where(is_visible: true)
                  end
-    
+      
         render json: {
           youtube_video: {
             id: @youtube_video.id,
@@ -105,7 +105,8 @@ module Api
               id: @youtube_video.user.id,
               name: @youtube_video.user.name,
               avatar: @youtube_video.user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
-            }
+            },
+            likes: @youtube_video.likes.map { |like| { id: like.id, user_id: like.user_id } }  # いいね情報にidを追加
           },
           notes: @notes.map { |note| {
             id: note.id,
