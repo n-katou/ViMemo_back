@@ -2,7 +2,16 @@ module Api
   module V1
     class LikesController < ApiController
       before_action :authenticate_user!
-      before_action :find_likeable, only: [:create, :destroy]
+      before_action :find_likeable, only: [:create, :destroy, :current_user_like]
+
+      def current_user_like
+        @like = @likeable.likes.find_by(user: current_user)
+        if @like
+          render json: { like_id: @like.id }, status: :ok
+        else
+          render json: { like_id: nil }, status: :ok
+        end
+      end
 
       def create
         existing_like = @likeable.likes.find_by(user: current_user)
