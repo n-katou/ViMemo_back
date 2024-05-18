@@ -57,7 +57,8 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resource :users, only: [:create,:show] do
+      get 'mypage', to: 'users#mypage'
+      resource :users, only: [:create, :show] do
         collection do
           post :auth_create
         end
