@@ -1,19 +1,19 @@
 module Api
   module V1
     class LikesController < ApiController
-      before_action :find_likeable, only: [:create, :destroy]
       before_action :authenticate_user!
+      before_action :find_likeable, only: [:create, :destroy]
 
       def create
         existing_like = @likeable.likes.find_by(user: current_user)
         if existing_like
-          render json: { success: false, error: 'You have already liked this video.' }, status: :unprocessable_entity
+          render json: { success: false, error: 'You have already liked this item.' }, status: :unprocessable_entity
         else
           @like = @likeable.likes.new(user: current_user)
           if @like.save
             render json: { success: true, likes_count: @likeable.likes.count }, status: :created
           else
-            render json: { success: false, error: 'Unable to like the video.' }, status: :unprocessable_entity
+            render json: { success: false, error: 'Unable to like the item.' }, status: :unprocessable_entity
           end
         end
       end

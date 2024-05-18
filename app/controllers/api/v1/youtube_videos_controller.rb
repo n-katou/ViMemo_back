@@ -106,7 +106,7 @@ module Api
               name: @youtube_video.user.name,
               avatar: @youtube_video.user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
             },
-            likes: @youtube_video.likes.map { |like| { id: like.id, user_id: like.user_id } }  # いいね情報にidを追加
+            likes: @youtube_video.likes.map { |like| { id: like.id, user_id: like.user_id, likeable_id: like.likeable_id, likeable_type: like.likeable_type } }  # いいね情報にidを追加
           },
           notes: @notes.map { |note| {
             id: note.id,
@@ -118,10 +118,11 @@ module Api
               id: note.user.id,
               name: note.user.name,
               avatar: note.user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
-            }
+            },
+            likes: note.likes.map { |like| { id: like.id, user_id: like.user_id, likeable_id: like.likeable_id, likeable_type: like.likeable_type } }  # Noteのいいね情報にidを追加
           } }
         }
-      end
+      end      
     end
   end
 end
