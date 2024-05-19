@@ -34,26 +34,24 @@ module Api
               end
             end
           end
-      
-          flash[:success] = t('flash_messages.videos_fetched_success', count: newly_created_count)
-          redirect_to youtube_videos_path
+
+          render json: youtube_videos_data, status: :ok
         else
-          flash[:error] = t('flash_messages.fetch_videos_failed')
-          redirect_to youtube_videos_path
+          render json: { error: 'Failed to fetch YouTube videos' }, status: :bad_request
         end
       end
       
       def parse_duration(duration)
         match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/)
         return 0 unless match # matchがnilの場合は0を返す
-      
+
         hours = (match[1]&.chomp('H')&.to_i || 0) * 3600
         minutes = (match[2]&.chomp('M')&.to_i || 0) * 60
         seconds = (match[3]&.chomp('S')&.to_i || 0)
-      
+
         hours + minutes + seconds
       end
-    
+      
       def index
         @q = YoutubeVideo.ransack(params[:q])
         @youtube_videos = @q.result(distinct: true).includes(:notes)
