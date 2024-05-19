@@ -1,7 +1,3 @@
-require 'jwt'
-require 'net/http'
-require 'openssl'
-
 module Api
   module V1
     class UsersController < ApiController
@@ -43,7 +39,7 @@ module Api
       end
 
       def show
-        render json: current_user.as_json(only: [:id, :email, :name]), status: :ok
+        render json: current_user.as_json(only: [:id, :email, :name, :role]), status: :ok
       end
 
       def mypage
@@ -80,17 +76,24 @@ module Api
             }
           },
           youtube_playlist_url: youtube_playlist_url,
-          avatar_url: user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
+          avatar_url: user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg",
+          role: user.role  # roleを追加して返す
         }
       end
-      
+
+      def update
+        if current_user.update(user_params)
+          render json: { success: true, user: current_user.slice(:id, :email, :name, :avatar_url, :role) }, status: :ok
+        else
+          render json: { errors: current_user.errors.full_messages }, status: :unprocessable_entity
+        end
+      end
 
       private
 
       def user_params
-        params.require(:user).permit(:name, :email, :password, :password_confirmation)
+        params.require(:user).permit(:name, :email, :password, :password_confirmation, :avatar)
       end
-
     end
   end
 end
