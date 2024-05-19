@@ -58,9 +58,10 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       get 'mypage', to: 'users#mypage'
-      resource :users, only: [:create, :show] do
+      resource :users, only: [:create, :show, :update] do
         collection do
           post :auth_create
+          patch :update # PATCHリクエスト用のルートを追加
         end
       end
       get 'login', to: 'user_sessions#new'
