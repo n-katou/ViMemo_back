@@ -80,7 +80,8 @@ module Api
             }
           },
           youtube_playlist_url: youtube_playlist_url,
-          avatar_url: user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
+          avatar_url: user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg",
+          role: user.role  # roleを追加して返す
         }
       end
       
