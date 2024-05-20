@@ -9,16 +9,16 @@ module Api
         encoded_genre = CGI.escape(genre)
         search_url = "https://www.googleapis.com/youtube/v3/search?part=snippet&q=#{encoded_genre}&type=video&key=#{api_key}&maxResults=10"
         search_response = HTTParty.get(search_url)
-      
+
         if search_response.success?
           youtube_videos_data = search_response.parsed_response["items"]
           newly_created_count = 0
-      
+
           youtube_videos_data.each do |item|
             youtube_id = item["id"]["videoId"]
             video_url = "https://www.googleapis.com/youtube/v3/videos?id=#{youtube_id}&part=contentDetails&key=#{api_key}"
             video_response = HTTParty.get(video_url)
-          
+
             if video_response.success?
               duration = video_response.parsed_response["items"].first["contentDetails"]["duration"]
               snippet = item["snippet"]
@@ -40,7 +40,7 @@ module Api
           render json: { error: 'Failed to fetch YouTube videos' }, status: :bad_request
         end
       end
-      
+
       def parse_duration(duration)
         match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/)
         return 0 unless match # matchがnilの場合は0を返す
@@ -51,11 +51,11 @@ module Api
 
         hours + minutes + seconds
       end
-      
+
       def index
         @q = YoutubeVideo.ransack(params[:q])
         @youtube_videos = @q.result(distinct: true).includes(:notes)
-    
+
         @youtube_videos = case params[:sort]
                           when 'likes_desc'
                             @youtube_videos.order(likes_count: :desc)
@@ -66,9 +66,9 @@ module Api
                           else
                             @youtube_videos.order(created_at: :desc) # デフォルト
                           end
-    
+
         @youtube_videos = @youtube_videos.page(params[:page]).per(params[:per_page] || 9)
-    
+
         pagination_metadata = {
           current_page: @youtube_videos.current_page,
           total_pages: @youtube_videos.total_pages,
@@ -77,18 +77,18 @@ module Api
         }
         render json: { videos: @youtube_videos, pagination: pagination_metadata }, status: :ok
       end
-    
+
       def show
         @youtube_video = YoutubeVideo.includes(:user, notes: :user, likes: :user).find(params[:id])
-        
+
         Rails.logger.debug "Current User in show action: #{current_user.inspect}" # デバッグメッセージを追加
-        
+
         @notes = if current_user
                    @youtube_video.notes.where('is_visible = ? OR user_id = ?', true, current_user.id)
                  else
                    @youtube_video.notes.where(is_visible: true)
                  end
-      
+
         render json: {
           youtube_video: {
             id: @youtube_video.id,
