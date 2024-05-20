@@ -28,7 +28,9 @@ module Api
       end
 
       def destroy
-        @like = @likeable.likes.find(params[:id])
+        Rails.logger.debug "Destroy params: #{params.inspect}" if Rails.env.development?
+        @like = @likeable.likes.find_by(id: params[:id], user: current_user)
+        Rails.logger.debug "Found like: #{@like.inspect}" if Rails.env.development?
         if @like
           @like.destroy
           render json: { success: true, likes_count: @likeable.likes.count }, status: :ok
@@ -36,13 +38,18 @@ module Api
           render json: { success: false, error: 'Like not found.' }, status: :not_found
         end
       end
-
+      
       private
 
       def find_likeable
-        Rails.logger.debug "Params: #{params.inspect}" # デバッグ用
+        unless params[:likeable_type] && params[:likeable_id]
+          render json: { success: false, error: 'Invalid parameters.' }, status: :unprocessable_entity
+          return
+        end
+      
         klass = params[:likeable_type].safe_constantize
-        @likeable = klass.find(params[:likeable_id])
+        @likeable = klass.find_by(id: params[:likeable_id])
+        Rails.logger.debug "Found likeable: #{@likeable.inspect}" if Rails.env.development?
         unless @likeable
           render json: { success: false, error: 'Invalid operation.' }, status: :not_found
         end
