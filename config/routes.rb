@@ -57,6 +57,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
+      get 'favorites', to: 'combined_videos#favorites', as: 'favorites_videos'
       get 'mypage', to: 'users#mypage'
       resource :users, only: [:create, :show, :update] do
         collection do
