@@ -67,7 +67,7 @@ module Api
                             @youtube_videos.order(created_at: :desc) # デフォルト
                           end
       
-        @youtube_videos = @youtube_videos.page(params[:page]).per(12) # 1ページあたり12動画を設定
+        @youtube_videos = @youtube_videos.page(params[:page]).per(9) # 1ページあたり9動画を設定
       
         pagination_metadata = {
           current_page: @youtube_videos.current_page,
