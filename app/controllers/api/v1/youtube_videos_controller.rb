@@ -55,7 +55,7 @@ module Api
       def index
         @q = YoutubeVideo.ransack(params[:q])
         @youtube_videos = @q.result(distinct: true).includes(:notes)
-    
+      
         @youtube_videos = case params[:sort]
                           when 'likes_desc'
                             @youtube_videos.order(likes_count: :desc)
@@ -66,9 +66,9 @@ module Api
                           else
                             @youtube_videos.order(created_at: :desc) # デフォルト
                           end
-    
-        @youtube_videos = @youtube_videos.page(params[:page])
-    
+      
+        @youtube_videos = @youtube_videos.page(params[:page]).per(12) # 1ページあたり12動画を設定
+      
         pagination_metadata = {
           current_page: @youtube_videos.current_page,
           total_pages: @youtube_videos.total_pages,
