@@ -54,17 +54,24 @@ module Api
 
       def index
         @q = YoutubeVideo.ransack(params[:q])
-        @youtube_videos = @q.result(distinct: true).includes(:notes)
+        @youtube_videos = @q.result(distinct: true).includes(:notes, :likes)
 
+        # likes_count と notes_count を取得するためのサブクエリを使用
+        @youtube_videos = @youtube_videos
+                          .select('youtube_videos.*, COUNT(likes.id) AS likes_count, COUNT(notes.id) AS notes_count')
+                          .left_joins(:likes, :notes)
+                          .group('youtube_videos.id')
+
+        # ソートオプションに基づくソート
         @youtube_videos = case params[:sort]
                           when 'likes_desc'
-                            @youtube_videos.order(likes_count: :desc)
+                            @youtube_videos.order('likes_count DESC')
                           when 'notes_desc'
-                            @youtube_videos.order(notes_count: :desc)
+                            @youtube_videos.order('notes_count DESC')
                           when 'created_at_desc'
-                            @youtube_videos.order(created_at: :desc)
+                            @youtube_videos.order('created_at DESC')
                           else
-                            @youtube_videos.order(created_at: :desc) # デフォルト
+                            @youtube_videos.order('created_at DESC') # デフォルト
                           end
 
         @youtube_videos = @youtube_videos.page(params[:page]).per(params[:per_page] || 9)
@@ -75,7 +82,11 @@ module Api
           next_page: @youtube_videos.next_page,
           prev_page: @youtube_videos.prev_page
         }
-        render json: { videos: @youtube_videos, pagination: pagination_metadata }, status: :ok
+
+        render json: {
+          videos: @youtube_videos.as_json(methods: [:likes_count, :notes_count]),
+          pagination: pagination_metadata
+        }, status: :ok
       end
 
       def show
