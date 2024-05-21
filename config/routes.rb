@@ -57,6 +57,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
+      get 'favorites', to: 'combined_videos#favorites', as: 'favorites_videos'
       get 'mypage', to: 'users#mypage'
       resource :users, only: [:create, :show, :update] do
         collection do
@@ -68,6 +69,9 @@ Rails.application.routes.draw do
       post 'login', to: 'user_sessions#create'
       delete 'logout', to: 'user_sessions#destroy'
       resources :youtube_videos, only: [:index, :show, :destroy] do
+        member do
+          get 'likes' # 追加：特定のYouTubeビデオのいいね情報を取得する
+        end
         resources :likes, only: [:create, :destroy]
         get 'fetch_videos_by_genre', on: :collection
         resources :notes, only: [:create, :destroy, :update, :edit] do
