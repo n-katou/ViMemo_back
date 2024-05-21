@@ -48,7 +48,7 @@ module Api
         youtube_video_ids = youtube_video_likes.map { |like| like.likeable.youtube_id }
         youtube_playlist_url = "https://www.youtube.com/embed?playlist=#{youtube_video_ids.join(',')}&loop=1"
         
-        note_likes = user.likes.includes(likeable: { user: {}, youtube_video: {} }).where(likeable_type: 'Note').order(created_at: :desc).limit(6)
+        note_likes = user.likes.includes(likeable: { user: {}, youtube_video: {} }).where(likeable_type: 'Note').order(created_at: :desc).limit(9)
         
         response_data = {
           youtube_video_likes: youtube_video_likes,
