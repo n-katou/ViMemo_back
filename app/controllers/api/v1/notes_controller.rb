@@ -1,5 +1,3 @@
-# app/controllers/api/v1/notes_controller.rb
-
 module Api
   module V1
     class NotesController < ApiController
@@ -64,16 +62,20 @@ module Api
         Rails.logger.debug "Listing notes with filter: #{filter}"
 
         if filter == 'my_notes'
-          @notes = current_user.notes.includes(:youtube_video).order(created_at: :desc).page(params[:page]).per(10)
+          @notes = current_user.notes.includes(:youtube_video).order(created_at: :desc).page(params[:page]).per(12)
         else
-          @notes = Note.where(is_visible: true).includes(:youtube_video).order(created_at: :desc).page(params[:page]).per(10)
+          @notes = Note.where(is_visible: true).includes(:youtube_video).order(created_at: :desc).page(params[:page]).per(12)
         end
 
         Rails.logger.debug "Notes found: #{@notes.pluck(:id)}"
-        render json: @notes.as_json(include: { 
-          user: { only: [:id, :name, :avatar] },
-          youtube_video: { only: [:id, :title] }
-        })
+        render json: {
+          notes: @notes.as_json(include: {
+            user: { only: [:id, :name, :avatar] },
+            youtube_video: { only: [:id, :title] }
+          }),
+          current_page: @notes.current_page,
+          total_pages: @notes.total_pages
+        }
       end
 
       private
