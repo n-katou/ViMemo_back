@@ -55,25 +55,26 @@ module Api
         end
       end
 
-      # GET /api/notes
+      # GET /api/v1/notes
       def index
+        Rails.logger.debug "Request received to list user notes"
         filter = params[:filter]
         Rails.logger.debug "Listing notes with filter: #{filter}"
 
         if filter == 'my_notes'
           @notes = current_user.notes.order(created_at: :desc).page(params[:page]).per(10)
-        elsif filter == 'all_notes'
-          @notes = Note.where(is_visible: true).order(created_at: :desc).page(params[:page]).per(10)
         else
-          @notes = current_user.notes.order(created_at: :desc).page(params[:page]).per(10)
+          @notes = Note.where(is_visible: true).order(created_at: :desc).page(params[:page]).per(10)
         end
+
+        Rails.logger.debug "Notes found: #{@notes.pluck(:id)}"
         render json: @notes.as_json(include: { user: { only: [:id, :name, :avatar] } })
       end
 
       private
 
       def set_video
-        @video = params[:youtube_video_id] ? YoutubeVideo.find_by(id: params[:youtube_video_id]) : Video.find_by(id: params[:video_id])
+        @video = YoutubeVideo.find_by(id: params[:youtube_video_id])
         Rails.logger.debug "Video set for note operations: #{@video&.id}"
       end
 
