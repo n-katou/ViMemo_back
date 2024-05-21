@@ -135,6 +135,7 @@ module Api
             video_timestamp: note.video_timestamp,
             is_visible: note.is_visible,
             likes_count: note.likes_count,
+            created_at: note.created_at,
             user: {
               id: note.user.id,
               name: note.user.name,
