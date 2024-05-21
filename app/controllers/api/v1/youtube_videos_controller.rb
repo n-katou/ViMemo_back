@@ -1,7 +1,7 @@
 module Api
   module V1
     class YoutubeVideosController < ApiController
-      skip_before_action :authenticate_user!, only: [:index]
+      skip_before_action :authenticate_user!, only: [:index, :likes]
 
       def fetch_videos_by_genre
         genre = params[:genre]
@@ -143,7 +143,15 @@ module Api
             likes: note.likes.map { |like| { id: like.id, user_id: like.user_id, likeable_id: like.likeable_id, likeable_type: like.likeable_type } }  # Noteのいいね情報にidを追加
           } }
         }
-      end      
+      end
+
+      def likes
+        video = YoutubeVideo.find(params[:id])
+        likes = video.likes.map { |like| 
+          { id: like.id, user_id: like.user_id, likeable_id: like.likeable_id, likeable_type: like.likeable_type }
+        }
+        render json: { likes_count: video.likes_count, likes: likes }, status: :ok
+      end
     end
   end
 end

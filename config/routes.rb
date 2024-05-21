@@ -69,6 +69,9 @@ Rails.application.routes.draw do
       post 'login', to: 'user_sessions#create'
       delete 'logout', to: 'user_sessions#destroy'
       resources :youtube_videos, only: [:index, :show, :destroy] do
+        member do
+          get 'likes' # 追加：特定のYouTubeビデオのいいね情報を取得する
+        end
         resources :likes, only: [:create, :destroy]
         get 'fetch_videos_by_genre', on: :collection
         resources :notes, only: [:create, :destroy, :update, :edit] do
