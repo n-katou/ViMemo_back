@@ -1,16 +1,4 @@
 Rails.application.routes.draw do
-  get 'videos/new'
-  get 'videos/create'
-  if Rails.env.development?
-    if ENV['ACTUAL_EMAIL_SENDING'] == 'true'
-      # 実際のメール送信を行う設定
-      # このブロックは空にしておくか、実際のメール送信に関連する設定をここに記述します
-    else
-      # LetterOpenerWebを使ってメールをプレビューする
-      mount LetterOpenerWeb::Engine, at: "/letter_opener"
-    end
-  end
-
   root 'tops#index'
   get 'tops/agreement', to: 'tops#agreement', as: 'agreement'
   get 'tops/privacy', to: 'tops#privacy', as: 'privacy'
@@ -25,7 +13,6 @@ Rails.application.routes.draw do
   get 'login', to: 'user_sessions#new'
   post 'login', to: 'user_sessions#create'
   delete 'logout', to: 'user_sessions#destroy'
-  
 
   post 'oauth/callback', to: 'google_oauths#callback', as: :oauth_callback_post
   get 'oauth/callback', to: 'google_oauths#callback', as: :oauth_callback_get
@@ -33,18 +20,11 @@ Rails.application.routes.draw do
 
   resources :youtube_videos, only: [:index, :show, :destroy] do
     get 'fetch_videos_by_genre', on: :collection
-    resources :likes, only: [:create, :destroy] # YouTubeビデオにいいねを付けるため
-    resources :notes, only: [:create, :destroy, :update, :edit] do
-      resources :likes, only: [:create, :destroy] # ノートにいいねを付けるため
-    end
+    resources :likes, only: [:create, :destroy]
+    resources :notes, only: [:create, :destroy, :update, :edit]
   end
 
   get 'notes/index', to: 'notes#index', as: :notes
-  
-  # resources :videos do
-  #   resources :notes, only: [:create, :update, :destroy, :edit]
-  #   resources :likes, only: [:create, :destroy]
-  # end
 
   get 'favorites', to: 'combined_videos#favorites', as: 'favorites_videos'
   resources :combined_videos, only: %i[index]
@@ -62,7 +42,7 @@ Rails.application.routes.draw do
       resource :users, only: [:create, :show, :update] do
         collection do
           post :auth_create
-          patch :update # PATCHリクエスト用のルートを追加
+          patch :update
         end
       end
       get 'login', to: 'user_sessions#new'
@@ -70,11 +50,11 @@ Rails.application.routes.draw do
       delete 'logout', to: 'user_sessions#destroy'
       resources :youtube_videos, only: [:index, :show, :destroy] do
         member do
-          get 'likes' # 追加：特定のYouTubeビデオのいいね情報を取得する
+          get 'likes'
         end
         resources :likes, only: [:create, :destroy]
         get 'fetch_videos_by_genre', on: :collection
-        resources :notes, only: [:create, :destroy, :update, :edit] do
+        resources :notes, only: [:index, :create, :destroy, :update, :edit] do
           resources :likes, only: [:create, :destroy] do
             collection do
               get 'current_user_like', to: 'likes#current_user_like'
@@ -82,6 +62,7 @@ Rails.application.routes.draw do
           end
         end
       end
+      resources :notes, only: [:index, :create, :update, :destroy]  # この行を追加
       post 'oauth/callback', to: 'google_oauths#callback', as: :oauth_callback_post_api
       get 'oauth/callback', to: 'google_oauths#callback', as: :oauth_callback_get_api
       get 'oauth/:provider', to: 'google_oauths#oauth', as: :auth_at_provider_api
