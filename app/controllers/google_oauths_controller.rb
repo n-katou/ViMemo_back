@@ -27,6 +27,7 @@ class GoogleOauthsController < ApplicationController
       render json: { message: 'You are already logged in.' }, status: :ok
       return
     end
+
     if params[:code].present?
       service = GoogleOauthService.new(params[:code], params[:code_verifier], is_frontend)
       @user = service.authenticate
@@ -39,10 +40,8 @@ class GoogleOauthsController < ApplicationController
       decoded_token = decode_jwt(token)  # トークンをデコード
       Rails.logger.info "Decoded JWT: #{decoded_token}"
       Rails.logger.info "Session after login: #{session.to_hash.inspect}, session ID: #{session_id}"
-      redirect_url = "#{ENV['NEXTAUTH_URL']}/oauth/return?session_id=#{token}"
-      # ここでフロントエンドのURLにリダイレクト
-      # redirect_url = "https://vimemo.vercel.app/mypage?session_id=#{token}"
-      # redirect_url = "http://localhost:4000/mypage?session_id=#{token}"
+      flash_message = CGI.escape('ログインに成功しました')
+      redirect_url = "#{ENV['NEXTAUTH_URL']}/oauth/return?session_id=#{token}&flash_message=#{flash_message}"
       redirect_to redirect_url, allow_other_host: true
     else
       error_message = @user.errors.full_messages.join(", ") if @user
