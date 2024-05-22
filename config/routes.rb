@@ -66,6 +66,9 @@ Rails.application.routes.draw do
       post 'oauth/callback', to: 'google_oauths#callback', as: :oauth_callback_post_api
       get 'oauth/callback', to: 'google_oauths#callback', as: :oauth_callback_get_api
       get 'oauth/:provider', to: 'google_oauths#oauth', as: :auth_at_provider_api
+
+      # シャッフルプレイリストURLを生成するエンドポイントを追加
+      get 'generate_shuffle_playlist', to: 'users#generate_shuffle_playlist'
     end
   end
 end

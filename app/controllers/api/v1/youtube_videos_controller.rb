@@ -9,16 +9,16 @@ module Api
         encoded_genre = CGI.escape(genre)
         search_url = "https://www.googleapis.com/youtube/v3/search?part=snippet&q=#{encoded_genre}&type=video&key=#{api_key}&maxResults=10"
         search_response = HTTParty.get(search_url)
-
+      
         if search_response.success?
           youtube_videos_data = search_response.parsed_response["items"]
           newly_created_count = 0
-
+      
           youtube_videos_data.each do |item|
             youtube_id = item["id"]["videoId"]
             video_url = "https://www.googleapis.com/youtube/v3/videos?id=#{youtube_id}&part=contentDetails&key=#{api_key}"
             video_response = HTTParty.get(video_url)
-
+      
             if video_response.success?
               duration = video_response.parsed_response["items"].first["contentDetails"]["duration"]
               snippet = item["snippet"]
@@ -34,8 +34,8 @@ module Api
               end
             end
           end
-
-          render json: youtube_videos_data, status: :ok
+      
+          render json: { youtube_videos_data: youtube_videos_data, newly_created_count: newly_created_count }, status: :ok
         else
           render json: { error: 'Failed to fetch YouTube videos' }, status: :bad_request
         end
