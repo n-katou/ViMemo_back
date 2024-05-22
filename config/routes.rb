@@ -38,6 +38,7 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       get 'favorites', to: 'combined_videos#favorites', as: 'favorites_videos'
+      get 'favorites_count', to: 'combined_videos#index', as: 'favorites_videos_count'
       get 'mypage', to: 'users#mypage'
       resource :users, only: [:create, :show, :update] do
         collection do
@@ -66,6 +67,9 @@ Rails.application.routes.draw do
       post 'oauth/callback', to: 'google_oauths#callback', as: :oauth_callback_post_api
       get 'oauth/callback', to: 'google_oauths#callback', as: :oauth_callback_get_api
       get 'oauth/:provider', to: 'google_oauths#oauth', as: :auth_at_provider_api
+
+      # シャッフルプレイリストURLを生成するエンドポイントを追加
+      get 'generate_shuffle_playlist', to: 'users#generate_shuffle_playlist'
     end
   end
 end
