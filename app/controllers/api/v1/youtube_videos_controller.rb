@@ -8,17 +8,20 @@ module Api
         api_key = ENV['YOUTUBE_API_KEY']
         encoded_genre = CGI.escape(genre)
         search_url = "https://www.googleapis.com/youtube/v3/search?part=snippet&q=#{encoded_genre}&type=video&key=#{api_key}&maxResults=5"
+        
         search_response = HTTParty.get(search_url)
-      
+        Rails.logger.info("YouTube API search response: #{search_response.body}")
+
         if search_response.success?
           youtube_videos_data = search_response.parsed_response["items"]
           newly_created_count = 0
-      
+
           youtube_videos_data.each do |item|
             youtube_id = item["id"]["videoId"]
             video_url = "https://www.googleapis.com/youtube/v3/videos?id=#{youtube_id}&part=contentDetails&key=#{api_key}"
             video_response = HTTParty.get(video_url)
-      
+            Rails.logger.info("YouTube API video response: #{video_response.body}")
+
             if video_response.success?
               duration = video_response.parsed_response["items"].first["contentDetails"]["duration"]
               snippet = item["snippet"]
@@ -34,9 +37,10 @@ module Api
               end
             end
           end
-      
+
           render json: { youtube_videos_data: youtube_videos_data, newly_created_count: newly_created_count }, status: :ok
         else
+          Rails.logger.error("Failed to fetch YouTube videos: #{search_response.body}")
           render json: { error: 'Failed to fetch YouTube videos' }, status: :bad_request
         end
       end
