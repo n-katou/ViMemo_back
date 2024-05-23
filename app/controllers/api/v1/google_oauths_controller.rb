@@ -2,7 +2,7 @@ module Api
   module V1
     class GoogleOauthsController < ApplicationController
       skip_before_action :require_login
-      skip_before_action :verify_authenticity_token
+      # skip_before_action :verify_authenticity_token
 
       def oauth
         client_id = ENV['GOOGLE_CLIENT_ID']
