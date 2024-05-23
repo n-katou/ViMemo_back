@@ -1,7 +1,7 @@
 module Api
   module V1
     class YoutubeVideosController < ApiController
-      skip_before_action :authenticate_user!, only: [:index, :likes, :autocomplete]
+      skip_before_action :authenticate_user!, only: [:index, :likes, :autocomplete, :show]
 
       def fetch_videos_by_genre
         genre = params[:genre]
