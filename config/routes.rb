@@ -50,6 +50,9 @@ Rails.application.routes.draw do
       post 'login', to: 'user_sessions#create'
       delete 'logout', to: 'user_sessions#destroy'
       resources :youtube_videos, only: [:index, :show, :destroy] do
+        collection do
+          get 'autocomplete'
+        end
         member do
           get 'likes'
         end
