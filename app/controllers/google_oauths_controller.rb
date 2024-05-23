@@ -1,7 +1,7 @@
 class GoogleOauthsController < ApplicationController
   include JwtHandler
   skip_before_action :require_login
-  skip_before_action :verify_authenticity_token, only: [:callback]  # CSRF検証をcallbackのみスキップ
+  # skip_before_action :verify_authenticity_token, only: [:callback]  # CSRF検証をcallbackのみスキップ
 
   def oauth
     client_id = ENV['GOOGLE_CLIENT_ID']
