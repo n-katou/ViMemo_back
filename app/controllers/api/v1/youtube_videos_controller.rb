@@ -8,7 +8,7 @@ module Api
         genre = params[:genre]
         api_key = ENV['YOUTUBE_API_KEY']
         encoded_genre = CGI.escape(genre)
-        search_url = "https://www.googleapis.com/youtube/v3/search?part=snippet&q=#{encoded_genre}&type=video&key=#{api_key}&maxResults=5"
+        search_url = "https://www.googleapis.com/youtube/v3/search?part=snippet&q=#{encoded_genre}&type=video&key=#{api_key}&maxResults=15"
         
         search_response = HTTParty.get(search_url)
         Rails.logger.info("YouTube API search response: #{search_response.body}")
@@ -177,7 +177,7 @@ module Api
       end
 
       private
-      
+
       def optional_authenticate_user!
         if request.headers['Authorization'].present?
           authenticate_user!
