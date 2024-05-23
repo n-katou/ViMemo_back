@@ -1,7 +1,7 @@
 module Api
   module V1
     class YoutubeVideosController < ApiController
-      skip_before_action :authenticate_user!, only: [:index, :likes]
+      skip_before_action :authenticate_user!, only: [:index, :likes, :autocomplete]
 
       def fetch_videos_by_genre
         genre = params[:genre]
@@ -152,6 +152,23 @@ module Api
           { id: like.id, user_id: like.user_id, likeable_id: like.likeable_id, likeable_type: like.likeable_type }
         }
         render json: { likes_count: video.likes_count, likes: likes }, status: :ok
+      end
+
+      def autocomplete
+        # クエリが与えられている場合のみ処理する
+        if params[:query].present?
+          query = params[:query].downcase
+          @youtube_videos = YoutubeVideo.where("LOWER(title) LIKE ?", "%#{query}%").limit(10)
+        else
+          @youtube_videos = []
+        end
+
+        render json: @youtube_videos.map { |video|
+          {
+            id: video.id,
+            title: video.title
+          }
+        }, status: :ok
       end
     end
   end
