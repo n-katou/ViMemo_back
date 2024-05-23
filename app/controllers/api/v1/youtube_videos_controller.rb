@@ -2,12 +2,13 @@ module Api
   module V1
     class YoutubeVideosController < ApiController
       skip_before_action :authenticate_user!, only: [:index, :likes, :autocomplete, :show]
+      before_action :optional_authenticate_user!, only: [:show]
 
       def fetch_videos_by_genre
         genre = params[:genre]
         api_key = ENV['YOUTUBE_API_KEY']
         encoded_genre = CGI.escape(genre)
-        search_url = "https://www.googleapis.com/youtube/v3/search?part=snippet&q=#{encoded_genre}&type=video&key=#{api_key}&maxResults=5"
+        search_url = "https://www.googleapis.com/youtube/v3/search?part=snippet&q=#{encoded_genre}&type=video&key=#{api_key}&maxResults=15"
         
         search_response = HTTParty.get(search_url)
         Rails.logger.info("YouTube API search response: #{search_response.body}")
@@ -104,18 +105,18 @@ module Api
           pagination: pagination_metadata 
         }, status: :ok
       end
-
+      
       def show
         @youtube_video = YoutubeVideo.includes(:user, notes: :user, likes: :user).find(params[:id])
-
-        Rails.logger.debug "Current User in show action: #{current_user.inspect}" # デバッグメッセージを追加
-
+      
+        Rails.logger.debug "Current User in show action: #{current_user.inspect}"
+      
         @notes = if current_user
                    @youtube_video.notes.where('is_visible = ? OR user_id = ?', true, current_user.id)
                  else
                    @youtube_video.notes.where(is_visible: true)
                  end
-
+      
         render json: {
           youtube_video: {
             id: @youtube_video.id,
@@ -131,7 +132,7 @@ module Api
               name: @youtube_video.user.name,
               avatar: @youtube_video.user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
             },
-            likes: @youtube_video.likes.map { |like| { id: like.id, user_id: like.user_id, likeable_id: like.likeable_id, likeable_type: like.likeable_type } }  # いいね情報にidを追加
+            likes: @youtube_video.likes.map { |like| { id: like.id, user_id: like.user_id, likeable_id: like.likeable_id, likeable_type: like.likeable_type } }
           },
           notes: @notes.map { |note| {
             id: note.id,
@@ -145,7 +146,7 @@ module Api
               name: note.user.name,
               avatar: note.user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
             },
-            likes: note.likes.map { |like| { id: like.id, user_id: like.user_id, likeable_id: like.likeable_id, likeable_type: like.likeable_type } }  # Noteのいいね情報にidを追加
+            likes: note.likes.map { |like| { id: like.id, user_id: like.user_id, likeable_id: like.likeable_id, likeable_type: like.likeable_type } }
           } }
         }
       end
@@ -173,6 +174,14 @@ module Api
             title: video.title
           }
         }, status: :ok
+      end
+
+      private
+
+      def optional_authenticate_user!
+        if request.headers['Authorization'].present?
+          authenticate_user!
+        end
       end
     end
   end
