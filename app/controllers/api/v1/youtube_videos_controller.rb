@@ -108,9 +108,7 @@ module Api
       
       def show
         @youtube_video = YoutubeVideo.includes(:user, notes: :user, likes: :user).find(params[:id])
-      
-        Rails.logger.debug "Current User in show action: #{current_user.inspect}"
-      
+        
         @notes = if current_user
                    @youtube_video.notes.where('is_visible = ? OR user_id = ?', true, current_user.id)
                  else
@@ -145,6 +143,11 @@ module Api
               id: note.user.id,
               name: note.user.name,
               avatar: note.user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
+            },
+            youtube_video: {
+              id: @youtube_video.id,
+              youtube_id: @youtube_video.youtube_id,
+              title: @youtube_video.title
             },
             likes: note.likes.map { |like| { id: like.id, user_id: like.user_id, likeable_id: like.likeable_id, likeable_type: like.likeable_type } }
           } }
