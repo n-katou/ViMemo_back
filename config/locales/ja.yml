@@ -5,3 +5,13 @@ ja:
   defaults:
     flash_message:
       deleted: "%{item}を削除しました。"
+  activerecord:
+    errors:
+      models:
+        user:
+          attributes:
+            email:
+              taken: "このメールアドレスはすでに存在します"
+          taken: "このレコードはすでに存在します"
+      messages:
+        taken: "この値はすでに使用されています"
