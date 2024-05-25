@@ -27,7 +27,7 @@ Rails.application.configure do
     authentication: 'plain',
     enable_starttls_auto: true
   }
-  config.action_mailer.default_url_options = { host: 'vimemoback.fly.dev', protocol: 'https' }
+  config.action_mailer.default_url_options = { host: 'vimemo.vercel.app', protocol: 'https' }
   
   #開発環境用の設定
   # config.action_mailer.delivery_method = :letter_opener_web
@@ -97,4 +97,6 @@ Rails.application.configure do
 
   # Uncomment if you wish to allow Action Cable access from any origin.
   # config.action_cable.disable_request_forgery_protection = true
+
+  Rails.application.routes.default_url_options[:host] = ENV['NEXTAUTH_URL']
 end

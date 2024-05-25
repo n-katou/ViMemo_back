@@ -73,6 +73,7 @@ Rails.application.routes.draw do
 
       # シャッフルプレイリストURLを生成するエンドポイントを追加
       get 'generate_shuffle_playlist', to: 'users#generate_shuffle_playlist'
+      resources :password_resets, only: %i[new create edit update]
     end
   end
 end

@@ -22,7 +22,8 @@ class User < ApplicationRecord
 
   def deliver_reset_password_instructions!
     generate_reset_password_token!
-    UserMailer.reset_password_email(self).deliver_now
+    url = Rails.application.routes.url_helpers.edit_password_reset_url(reset_password_token, host: ENV['NEXTAUTH_URL'])
+    UserMailer.reset_password_email(self, url).deliver_now
   end
 
   def liked_videos
