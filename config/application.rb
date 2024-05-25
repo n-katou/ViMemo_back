@@ -17,6 +17,9 @@ module Back
     config.autoload_paths += %W(#{config.root}/lib)
     config.eager_load_paths += %W(#{config.root}/lib)
     config.jwt_lifetime = 4 * 3600
+
+    Rails.application.routes.default_url_options[:host] = ENV['NEXTAUTH_URL']
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
