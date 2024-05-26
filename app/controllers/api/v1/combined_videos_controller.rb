@@ -6,16 +6,20 @@ module Api
       def favorites
         @user = current_user
         @likes = @user.likes.includes(:likeable)
-
         liked_youtube_videos = @likes.where(likeable_type: "YoutubeVideo").map(&:likeable)
 
-        sort_key = params[:sort_key] || 'created_at'
-        sort_order = params[:sort_order] || 'desc'
+        @youtube_videos = case params[:sort]
+                          when 'likes_desc'
+                            liked_youtube_videos.sort_by(&:likes_count).reverse
+                          when 'notes_desc'
+                            liked_youtube_videos.sort_by(&:notes_count).reverse
+                          when 'created_at_desc'
+                            liked_youtube_videos.sort_by(&:created_at).reverse
+                          else
+                            liked_youtube_videos.sort_by(&:created_at).reverse # デフォルト
+                          end
 
-        liked_youtube_videos.sort_by! { |video| video.send(sort_key) }
-        liked_youtube_videos.reverse! if sort_order == 'desc'
-
-        @paginated_videos = Kaminari.paginate_array(liked_youtube_videos).page(params[:page]).per(params[:per_page] || 9)
+        @paginated_videos = Kaminari.paginate_array(@youtube_videos).page(params[:page]).per(params[:per_page] || 9)
 
         render json: {
           videos: @paginated_videos.map { |video|
