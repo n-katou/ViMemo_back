@@ -59,12 +59,22 @@ module Api
       def index
         Rails.logger.debug "Request received to list user notes"
         filter = params[:filter]
-        Rails.logger.debug "Listing notes with filter: #{filter}"
+        sort = params[:sort]
+        Rails.logger.debug "Listing notes with filter: #{filter} and sort: #{sort}"
+
+        order_option = case sort
+                       when 'created_at_asc'
+                         { created_at: :asc }
+                       when 'created_at_desc'
+                         { created_at: :desc }
+                       else
+                         { created_at: :desc }
+                       end
 
         if filter == 'my_notes'
-          @notes = current_user.notes.includes(:youtube_video).order(created_at: :desc).page(params[:page]).per(12)
+          @notes = current_user.notes.includes(:youtube_video).order(order_option).page(params[:page]).per(12)
         else
-          @notes = Note.where(is_visible: true).includes(:youtube_video).order(created_at: :desc).page(params[:page]).per(12)
+          @notes = Note.where(is_visible: true).includes(:youtube_video).order(order_option).page(params[:page]).per(12)
         end
 
         Rails.logger.debug "Notes found: #{@notes.pluck(:id)}"
