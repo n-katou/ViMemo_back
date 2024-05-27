@@ -67,6 +67,7 @@ module Api
                 is_visible: like.likeable.is_visible,
                 likes_count: like.likeable.likes_count,
                 youtube_video_id: like.likeable.youtube_video&.id, # ここで動画IDを返す
+                youtube_video_title: like.likeable.youtube_video&.title, # ここで動画タイトルを返す
                 user: {
                   id: like.likeable.user.id,
                   name: like.likeable.user.name,
