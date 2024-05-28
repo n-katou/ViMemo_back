@@ -9,6 +9,7 @@ Rails.application.configure do
   config.cache_classes = false
   config.hosts << "vimemo.fly.dev"
   config.hosts << "vimemo.vercel.app"
+  config.hosts << "vi-memo.com"
   config.hosts << "localhost"
   config.hosts << "front"
   config.hosts << "back"
@@ -27,7 +28,8 @@ Rails.application.configure do
     authentication: 'plain',
     enable_starttls_auto: true
   }
-  config.action_mailer.default_url_options = { host: 'vimemo.vercel.app', protocol: 'https' }
+  # config.action_mailer.default_url_options = { host: 'vimemo.vercel.app', protocol: 'https' }
+  config.action_mailer.default_url_options = { host: 'vi-memo.com', protocol: 'https' }
   
   #開発環境用の設定
   # config.action_mailer.delivery_method = :letter_opener_web

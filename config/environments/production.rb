@@ -4,6 +4,7 @@ Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
   config.hosts << "vimemo.fly.dev"
   config.hosts << "vimemo.vercel.app"
+  config.hosts << "vi-memo.com"
   
   config.require_master_key = true
 
