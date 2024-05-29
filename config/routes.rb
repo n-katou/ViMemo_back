@@ -44,6 +44,7 @@ Rails.application.routes.draw do
         collection do
           post :auth_create
           patch :update
+          get 'notes_with_videos', to: 'users#notes_with_videos'
         end
       end
       get 'login', to: 'user_sessions#new'

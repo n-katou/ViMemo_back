@@ -104,6 +104,35 @@ module Api
         end
       end
 
+      def notes_with_videos
+        sort_option = params[:sort] || 'created_at_desc'
+      
+        sort_column, sort_direction = if sort_option.match(/(.*)_(asc|desc)/)
+                                        [$1, $2]
+                                      else
+                                        ['created_at', 'desc']
+                                      end
+      
+        Rails.logger.debug "Sort Column: #{sort_column}, Sort Direction: #{sort_direction}"
+      
+        # デフォルトのソート順を設定
+        sort_column = 'created_at' unless %w[created_at].include?(sort_column)
+        sort_direction = 'desc' unless %w[asc desc].include?(sort_direction)
+      
+        notes = current_user.notes.includes(:youtube_video).order("#{sort_column} #{sort_direction}").page(params[:page]).per(12)
+        notes_with_videos = notes.map do |note|
+          {
+            id: note.id,
+            content: note.content,
+            video_timestamp: note.video_timestamp,
+            youtube_video_id: note.youtube_video_id,
+            created_at: note.created_at,
+            video_title: note.youtube_video.title
+          }
+        end
+        render json: { notes: notes_with_videos, total_pages: notes.total_pages }
+      end
+
       private
 
       def user_params
