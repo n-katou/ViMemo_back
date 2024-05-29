@@ -23,7 +23,7 @@ class UserImageUploader < CarrierWave::Uploader::Base
   process resize_to_limit: [500, 500]
 
   def default_url
-    "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
+    "#{ENV['S3_BASE_URL']}/default-avatar.jpg?#{Time.now.to_i}"
   end
 
   def extension_allowlist
