@@ -5,58 +5,66 @@ module Api
       before_action :optional_authenticate_user!, only: [:show]
 
       def fetch_videos_by_genre
-        genre = params[:genre]
-        api_key = ENV['YOUTUBE_API_KEY']
-        encoded_genre = CGI.escape(genre)
-        search_url = "https://www.googleapis.com/youtube/v3/search?part=snippet&q=#{encoded_genre}&type=video&key=#{api_key}&maxResults=15"
-        
-        search_response = HTTParty.get(search_url)
-        Rails.logger.info("YouTube API search response: #{search_response.body}")
-
-        if search_response.success?
-          youtube_videos_data = search_response.parsed_response["items"]
-          newly_created_count = 0
-
-          youtube_videos_data.each do |item|
-            youtube_id = item["id"]["videoId"]
-            video_url = "https://www.googleapis.com/youtube/v3/videos?id=#{youtube_id}&part=contentDetails&key=#{api_key}"
-            video_response = HTTParty.get(video_url)
-            Rails.logger.info("YouTube API video response: #{video_response.body}")
-
-            if video_response.success?
-              duration = video_response.parsed_response["items"].first["contentDetails"]["duration"]
-              snippet = item["snippet"]
-              video = YoutubeVideo.find_or_initialize_by(youtube_id: youtube_id)
-              if video.new_record?
-                video.title = snippet["title"]
-                video.description = snippet["description"]
-                video.published_at = snippet["publishedAt"]
-                video.duration = parse_duration(duration) # ISO 8601の持続時間を秒に変換
-                video.user_id = current_user.id 
-                video.save
-                newly_created_count += 1
+        Rails.logger.info("User #{current_user.id} is trying to fetch videos. Role: #{current_user.role}, Last fetch date: #{current_user.last_video_fetch_date}, Fetch count: #{current_user.video_fetch_count}")
+    
+        if current_user.can_fetch_videos? || current_user.admin?
+          genre = params[:genre]
+          api_key = ENV['YOUTUBE_API_KEY']
+          encoded_genre = CGI.escape(genre)
+          search_url = "https://www.googleapis.com/youtube/v3/search?part=snippet&q=#{encoded_genre}&type=video&key=#{api_key}&maxResults=10"
+          search_response = HTTParty.get(search_url)
+    
+          Rails.logger.info("YouTube API search response: #{search_response}")
+    
+          if search_response.success?
+            youtube_videos_data = search_response.parsed_response["items"]
+            newly_created_count = 0
+            fetched_videos = []
+    
+            youtube_videos_data.each do |item|
+              youtube_id = item["id"]["videoId"]
+              video_url = "https://www.googleapis.com/youtube/v3/videos?id=#{youtube_id}&part=contentDetails&key=#{api_key}"
+              video_response = HTTParty.get(video_url)
+    
+              if video_response.success?
+                duration = video_response.parsed_response["items"].first["contentDetails"]["duration"]
+                snippet = item["snippet"]
+                video = YoutubeVideo.find_or_initialize_by(youtube_id: youtube_id)
+                if video.new_record?
+                  video.title = snippet["title"]
+                  video.description = snippet["description"]
+                  video.published_at = snippet["publishedAt"]
+                  video.duration = parse_duration(duration) # ISO 8601の持続時間を秒に変換
+                  video.user_id = current_user.id
+                  video.save
+                  newly_created_count += 1
+                end
+                fetched_videos << {
+                  title: snippet["title"],
+                  description: snippet["description"],
+                  published_at: snippet["publishedAt"],
+                  duration: parse_duration(duration)
+                }
               end
             end
+    
+            if current_user.general?
+              Rails.logger.info("Recording video fetch for user #{current_user.id}")
+              current_user.record_video_fetch
+            end
+    
+            Rails.logger.info("User #{current_user.id} fetched videos successfully. New fetch count: #{current_user.video_fetch_count}, Last fetch date: #{current_user.last_video_fetch_date}")
+    
+            render json: { success: true, youtube_videos_data: fetched_videos, newly_created_count: newly_created_count, last_video_fetch_date: current_user.last_video_fetch_date, video_fetch_count: current_user.video_fetch_count }
+          else
+            render json: { success: false, message: 'ビデオの取得に失敗しました。' }, status: :unprocessable_entity
           end
-
-          render json: { youtube_videos_data: youtube_videos_data, newly_created_count: newly_created_count }, status: :ok
         else
-          Rails.logger.error("Failed to fetch YouTube videos: #{search_response.body}")
-          render json: { error: 'Failed to fetch YouTube videos' }, status: :bad_request
+          Rails.logger.warn("User #{current_user.id} exceeded fetch limit. Role: #{current_user.role}, Last fetch date: #{current_user.last_video_fetch_date}, Fetch count: #{current_user.video_fetch_count}")
+          render json: { success: false, message: 'ビデオは1日に1回しか取得できません。' }, status: :forbidden
         end
       end
-
-      def parse_duration(duration)
-        match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/)
-        return 0 unless match # matchがnilの場合は0を返す
-
-        hours = (match[1]&.chomp('H')&.to_i || 0) * 3600
-        minutes = (match[2]&.chomp('M')&.to_i || 0) * 60
-        seconds = (match[3]&.chomp('S')&.to_i || 0)
-
-        hours + minutes + seconds
-      end
-
+      
       def index
         @q = YoutubeVideo.ransack(params[:q])
         @youtube_videos = @q.result(distinct: true).includes(:user, notes: :user, likes: :user)
@@ -185,6 +193,17 @@ module Api
         if request.headers['Authorization'].present?
           authenticate_user!
         end
+      end
+
+      def parse_duration(duration)
+        match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/)
+        return 0 unless match # matchがnilの場合は0を返す
+
+        hours = (match[1]&.chomp('H')&.to_i || 0) * 3600
+        minutes = (match[2]&.chomp('M')&.to_i || 0) * 60
+        seconds = (match[3]&.chomp('S')&.to_i || 0)
+
+        hours + minutes + seconds
       end
     end
   end
