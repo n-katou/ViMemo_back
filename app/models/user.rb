@@ -1,5 +1,4 @@
 class User < ApplicationRecord
-  # before_create :generate_auth_token
   authenticates_with_sorcery!
   mount_uploader :avatar, UserImageUploader
 
@@ -29,16 +28,20 @@ class User < ApplicationRecord
   def liked_videos
     YoutubeVideo.joins(:likes).where(likes: { user_id: id })
   end
-
-  # def generate_auth_token
-  #   self.auth_token = SecureRandom.hex
-  # end
   
-  def self.find_or_create_by_uid(auth_hash)
-    find_or_create_by(uid: auth_hash[:uid]) do |user|
-      user.email = auth_hash[:info][:email]
-      user.name = auth_hash[:info][:name]
-      # 必要に応じて他の属性を設定
+  def can_fetch_videos?
+    Rails.logger.info("Checking if user can fetch videos. Role: #{self.role}, Last fetch date: #{self.last_video_fetch_date}, Fetch count: #{self.video_fetch_count}")
+    return true if admin?
+    last_video_fetch_date != Date.today || video_fetch_count < 1
+  end
+
+  def record_video_fetch
+    Rails.logger.info("Recording video fetch for user #{self.id}. Current fetch count: #{self.video_fetch_count}, Last fetch date: #{self.last_video_fetch_date}")
+    if last_video_fetch_date == Date.today
+      increment!(:video_fetch_count)
+    else
+      update(last_video_fetch_date: Date.today, video_fetch_count: 1)
     end
+    Rails.logger.info("Updated video fetch count for user #{self.id}. New fetch count: #{self.video_fetch_count}, New last fetch date: #{self.last_video_fetch_date}")
   end
 end
