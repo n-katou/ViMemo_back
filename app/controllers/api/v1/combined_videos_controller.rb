@@ -1,13 +1,16 @@
 module Api
   module V1
     class CombinedVideosController < ApiController
+      # すべてのアクションの前にユーザー認証を実行
       before_action :authenticate_user!
 
+      # ユーザーのいいね動画を取得するアクション
       def favorites
-        @user = current_user
-        @likes = @user.likes.includes(:likeable)
-        liked_youtube_videos = @likes.where(likeable_type: "YoutubeVideo").map(&:likeable)
+        @user = current_user # 現在のユーザーを取得
+        @likes = @user.likes.includes(:likeable) # ユーザーのいいねを取得し、likeableと一緒に読み込む
+        liked_youtube_videos = @likes.where(likeable_type: "YoutubeVideo").map(&:likeable) # YouTube動画に対するいいねを取得
 
+        # パラメータに基づいて動画をソート
         @youtube_videos = case params[:sort]
                           when 'likes_desc'
                             liked_youtube_videos.sort_by(&:likes_count).reverse
@@ -16,17 +19,18 @@ module Api
                           when 'created_at_desc'
                             liked_youtube_videos.sort_by(&:created_at).reverse
                           else
-                            liked_youtube_videos.sort_by(&:created_at).reverse # デフォルト
+                            liked_youtube_videos.sort_by(&:created_at).reverse # デフォルトは作成日の降順
                           end
 
+        # ページネーションを適用
         @paginated_videos = Kaminari.paginate_array(@youtube_videos).page(params[:page]).per(params[:per_page] || 9)
 
+        # JSON形式で応答
         render json: {
           videos: @paginated_videos.map { |video|
             {
               id: video.id,
               title: video.title,
-              description: video.description,
               published_at: video.published_at,
               youtube_id: video.youtube_id,
               duration: video.duration,
@@ -51,7 +55,9 @@ module Api
         }, status: :ok
       end
 
+      # お気に入り動画のカウントを取得
       def index
+        # 現在のユーザーが指定されたlikeable_typeおよびlikeable_idに対して行ったいいねを取得
         likes = current_user.likes.where(likeable_type: params[:likeable_type], likeable_id: params[:likeable_id])
         render json: likes
       end
