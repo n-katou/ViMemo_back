@@ -1,34 +1,34 @@
 module Api
   module V1
     class UsersController < ApiController
-      include JwtHandler  # JWT処理のモジュールをインクルード
-      before_action :authenticate_user!, except: [:create, :auth_create]
+      include JwtHandler
+      before_action :authenticate_user!, except: [:create, :auth_create]  # createとauth_createを除く全てのアクションで認証を要求
 
+      # 新しいユーザーを作成するアクション
       def create
-        @user = User.new(user_params)
+        @user = User.new(user_params)  # ユーザーのパラメータを使用して新しいユーザーオブジェクトを作成
         if @user.save
-          token = generate_jwt(@user.id)  
-          decoded_token = decode_jwt(token) # トークン生成のメソッド、適宜実装が必要
-          Rails.logger.info "Generated Token: #{token}"
+          token = generate_jwt(@user.id)  # ユーザーIDを基にJWTを生成
+          decoded_token = decode_jwt(token) # トークンをデコード（必要に応じて）
           render json: { success: true, token: token, user: @user.slice(:id, :email, :name) }, status: :created
         else
           render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
         end
       end
 
+      # 認証付きユーザーを作成またはログインするアクション
       def auth_create
-        user = User.find_by(email: user_params[:email])
-      
+        user = User.find_by(email: user_params[:email])  # メールアドレスでユーザーを検索
+
         if user
           if user.valid_password?(user_params[:password])
             token = generate_jwt(user.id)  # JWTを生成
-            Rails.logger.info "Generated Token: #{token}"
             render json: { success: true, token: token, user: user.slice(:id, :email, :name) }, status: :ok
           else
             render json: { error: "パスワードが間違っています" }, status: :unprocessable_entity
           end
         else
-          user = User.new(user_params)
+          user = User.new(user_params)  # ユーザーが存在しない場合は新しいユーザーを作成
           if user.save
             token = generate_jwt(user.id)  # JWTを生成
             render json: { success: true, token: token, user: user.slice(:id, :email, :name) }, status: :ok
@@ -38,10 +38,13 @@ module Api
         end
       end
 
+      # 現在のユーザーの情報を表示するアクション
+      # firebase_authログイン用
       def show
-        render json: current_user.as_json(only: [:id, :email, :name, :role]), status: :ok
+        render json: current_user.as_json(only: [:id, :email, :name, :role]), status: :ok  # 現在のユーザーの情報をJSON形式で返す
       end
 
+      # マイページ情報を取得するアクション
       def mypage
         user = current_user
         youtube_video_likes = user.likes.includes(:likeable).where(likeable_type: 'YoutubeVideo').order(created_at: :desc)
@@ -66,8 +69,8 @@ module Api
                 video_timestamp: like.likeable.video_timestamp,
                 is_visible: like.likeable.is_visible,
                 likes_count: like.likeable.likes_count,
-                youtube_video_id: like.likeable.youtube_video&.id, # ここで動画IDを返す
-                youtube_video_title: like.likeable.youtube_video&.title, # ここで動画タイトルを返す
+                youtube_video_id: like.likeable.youtube_video&.id,
+                youtube_video_title: like.likeable.youtube_video&.title,
                 user: {
                   id: like.likeable.user.id,
                   name: like.likeable.user.name,
@@ -82,11 +85,12 @@ module Api
           email: user.email,  # emailを追加
           name: user.name  # nameを追加
         }
-        Rails.logger.info "Response Data: #{response_data.to_json}"
+        Rails.logger.info "Response Data: #{response_data.to_json}"  # レスポンスデータをログに出力
       
         render json: response_data
       end
 
+      # シャッフルプレイリストURLを生成するアクション
       def generate_shuffle_playlist
         user = current_user
         youtube_video_likes = user.likes.includes(:likeable).where(likeable_type: 'YoutubeVideo').order(created_at: :desc)
@@ -96,14 +100,16 @@ module Api
         render json: { shuffled_youtube_playlist_url: shuffled_youtube_playlist_url }, status: :ok
       end
 
+      # ユーザー情報を更新するアクション
       def update
         if current_user.update(user_params)
-          render json: { success: true, user: current_user.slice(:id, :email, :name, :avatar_url, :role) }, status: :ok
+          render json: { success: true, user: current_user.slice(:id, :email, :name, :avatar_url, :role) }, status: :ok  # 更新成功時のレスポンス
         else
-          render json: { errors: current_user.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: current_user.errors.full_messages }, status: :unprocessable_entity  # 更新失敗時のレスポンス
         end
       end
 
+      # ノートと動画を取得するアクション
       def notes_with_videos
         sort_option = params[:sort] || 'created_at_desc'
       
@@ -135,6 +141,7 @@ module Api
 
       private
 
+      # ユーザーパラメータを許可するストロングパラメータ
       def user_params
         params.require(:user).permit(:name, :email, :password, :password_confirmation, :avatar)
       end
