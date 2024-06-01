@@ -1,14 +1,12 @@
 class User < ApplicationRecord
   authenticates_with_sorcery!
   mount_uploader :avatar, UserImageUploader
-
-  has_many :authentications, dependent: :destroy
+  
   has_many :likes
   has_many :youtube_videos, dependent: :destroy
   has_many :videos, dependent: :destroy
   has_many :notes, dependent: :destroy
 
-  accepts_nested_attributes_for :authentications
 
   enum role: { general: 0, admin: 1 }
 
