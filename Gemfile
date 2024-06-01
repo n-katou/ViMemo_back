@@ -57,7 +57,3 @@ gem 'fog-aws', '~> 3.0'
 
 gem 'rack-cors'
 gem 'jwt'
-
-gem 'google-id-token'
-gem 'firebase-admin-sdk'
-gem 'google-cloud-firestore', require: 'google/cloud/firestore'

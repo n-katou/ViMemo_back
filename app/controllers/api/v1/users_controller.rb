@@ -39,7 +39,7 @@ module Api
       end
 
       # 現在のユーザーの情報を表示するアクション
-      # firebase_authログイン用
+      # google_auth2ログイン用
       def show
         render json: current_user.as_json(only: [:id, :email, :name, :role]), status: :ok  # 現在のユーザーの情報をJSON形式で返す
       end
