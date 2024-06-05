@@ -68,7 +68,7 @@ module Api
       def index
         @q = YoutubeVideo.ransack(params[:q])
         @youtube_videos = @q.result(distinct: true).includes(:user, notes: :user, likes: :user)
-
+      
         @youtube_videos = case params[:sort]
                           when 'likes_desc'
                             @youtube_videos.order(likes_count: :desc)
@@ -79,16 +79,16 @@ module Api
                           else
                             @youtube_videos.order(created_at: :desc) # デフォルト
                           end
-
+      
         @youtube_videos = @youtube_videos.page(params[:page]).per(params[:per_page] || 9)
-
+      
         pagination_metadata = {
           current_page: @youtube_videos.current_page,
           total_pages: @youtube_videos.total_pages,
           next_page: @youtube_videos.next_page,
           prev_page: @youtube_videos.prev_page
         }
-
+      
         render json: { 
           videos: @youtube_videos.map { |video|
             {
@@ -107,13 +107,27 @@ module Api
               },
               likes: video.likes.map { |like| 
                 { id: like.id, user_id: like.user_id, likeable_id: like.likeable_id, likeable_type: like.likeable_type }
+              },
+              notes: video.notes.map { |note|
+                {
+                  id: note.id,
+                  content: note.content,
+                  created_at: note.created_at,
+                  video_timestamp: note.video_timestamp, 
+                  youtube_video_id: video.id,
+                  user: {
+                    id: note.user.id,
+                    name: note.user.name,
+                    avatar: note.user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
+                  }
+                }
               }
             }
           },
           pagination: pagination_metadata 
         }, status: :ok
       end
-      
+            
       def show
         @youtube_video = YoutubeVideo.includes(:user, notes: :user, likes: :user).find(params[:id])
         
