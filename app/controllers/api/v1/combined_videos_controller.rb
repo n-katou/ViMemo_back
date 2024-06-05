@@ -7,9 +7,9 @@ module Api
       # ユーザーのいいね動画を取得するアクション
       def favorites
         @user = current_user # 現在のユーザーを取得
-        @likes = @user.likes.includes(:likeable) # ユーザーのいいねを取得し、likeableと一緒に読み込む
+        @likes = @user.likes.includes(likeable: :notes) # ユーザーのいいねを取得し、likeableと一緒に読み込む
         liked_youtube_videos = @likes.where(likeable_type: "YoutubeVideo").map(&:likeable) # YouTube動画に対するいいねを取得
-
+      
         # パラメータに基づいて動画をソート
         @youtube_videos = case params[:sort]
                           when 'likes_desc'
@@ -21,10 +21,10 @@ module Api
                           else
                             liked_youtube_videos.sort_by(&:created_at).reverse # デフォルトは作成日の降順
                           end
-
+      
         # ページネーションを適用
         @paginated_videos = Kaminari.paginate_array(@youtube_videos).page(params[:page]).per(params[:per_page] || 9)
-
+      
         # JSON形式で応答
         render json: {
           videos: @paginated_videos.map { |video|
@@ -36,6 +36,20 @@ module Api
               duration: video.duration,
               likes_count: video.likes_count,
               notes_count: video.notes_count,
+              notes: video.notes.map { |note|
+                {
+                  id: note.id,
+                  content: note.content,
+                  video_timestamp: note.video_timestamp,
+                  youtube_video_id: video.id,
+                  created_at: note.created_at,
+                  user: {
+                    id: note.user.id,
+                    name: note.user.name,
+                    avatar: note.user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
+                  }
+                }
+              },
               user: {
                 id: video.user.id,
                 name: video.user.name,
@@ -53,7 +67,7 @@ module Api
             prev_page: @paginated_videos.prev_page
           }
         }, status: :ok
-      end
+      end      
 
       # お気に入り動画のカウントを取得
       def index
