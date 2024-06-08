@@ -121,11 +121,10 @@ module Api
       
         Rails.logger.debug "Sort Column: #{sort_column}, Sort Direction: #{sort_direction}"
       
-        # デフォルトのソート順を設定
         sort_column = 'created_at' unless %w[created_at].include?(sort_column)
         sort_direction = 'desc' unless %w[asc desc].include?(sort_direction)
       
-        notes = current_user.notes.includes(:youtube_video).order("#{sort_column} #{sort_direction}").page(params[:page]).per(12)
+        notes = current_user.notes.includes(:youtube_video).order("#{sort_column} #{sort_direction}")
         notes_with_videos = notes.map do |note|
           {
             id: note.id,
@@ -136,7 +135,7 @@ module Api
             video_title: note.youtube_video.title
           }
         end
-        render json: { notes: notes_with_videos, total_pages: notes.total_pages }
+        render json: { notes: notes_with_videos }
       end
 
       private
