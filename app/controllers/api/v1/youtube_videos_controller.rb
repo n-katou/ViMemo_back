@@ -130,11 +130,11 @@ module Api
             
       def show
         @youtube_video = YoutubeVideo.includes(:user, notes: :user, likes: :user).find(params[:id])
-        
+      
         @notes = if current_user
-                   @youtube_video.notes.where('is_visible = ? OR user_id = ?', true, current_user.id)
+                   @youtube_video.notes.where('is_visible = ? OR user_id = ?', true, current_user.id).order(:sort_order)
                  else
-                   @youtube_video.notes.where(is_visible: true)
+                   @youtube_video.notes.where(is_visible: true).order(:sort_order)
                  end
       
         render json: {
@@ -154,27 +154,31 @@ module Api
             },
             likes: @youtube_video.likes.map { |like| { id: like.id, user_id: like.user_id, likeable_id: like.likeable_id, likeable_type: like.likeable_type } }
           },
-          notes: @notes.map { |note| {
-            id: note.id,
-            content: note.content,
-            video_timestamp: note.video_timestamp,
-            is_visible: note.is_visible,
-            likes_count: note.likes_count,
-            created_at: note.created_at,
-            user: {
-              id: note.user.id,
-              name: note.user.name,
-              avatar: note.user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
-            },
-            youtube_video: {
-              id: @youtube_video.id,
-              youtube_id: @youtube_video.youtube_id,
-              title: @youtube_video.title
-            },
-            likes: note.likes.map { |like| { id: like.id, user_id: like.user_id, likeable_id: like.likeable_id, likeable_type: like.likeable_type } }
-          } }
+          notes: @notes.map do |note|
+            {
+              id: note.id,
+              content: note.content,
+              video_timestamp: note.video_timestamp,
+              is_visible: note.is_visible,
+              likes_count: note.likes_count,
+              sort_order: note.sort_order,
+              created_at: note.created_at,
+              user: {
+                id: note.user.id,
+                name: note.user.name,
+                avatar: note.user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
+              },
+              youtube_video: {
+                id: @youtube_video.id,
+                youtube_id: @youtube_video.youtube_id,
+                title: @youtube_video.title
+              },
+              likes: note.likes.map { |like| { id: like.id, user_id: like.user_id, likeable_id: like.likeable_id, likeable_type: like.likeable_type } }
+            }
+          end
         }
       end
+      
 
       def likes
         video = YoutubeVideo.find(params[:id])

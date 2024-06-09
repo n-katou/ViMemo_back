@@ -88,6 +88,27 @@ module Api
         }
       end
 
+      def save_sort_order
+        Rails.logger.debug "Request received to save sort order"
+
+        sorted_note_ids = params[:sorted_notes].map { |note| note[:id] }
+
+        sorted_note_ids.each_with_index do |note_id, index|
+          note = Note.find(note_id)
+          note.update!(sort_order: index)
+        end
+
+        Rails.logger.debug "Sort order saved successfully for notes: #{sorted_note_ids}"
+
+        render json: { message: "Sort order saved successfully." }, status: :ok
+      rescue ActiveRecord::RecordNotFound => e
+        Rails.logger.error "Note not found: #{e.message}"
+        render json: { error: "Note not found." }, status: :not_found
+      rescue => e
+        Rails.logger.error "Error saving sort order: #{e.message}"
+        render json: { error: "Error saving sort order." }, status: :unprocessable_entity
+      end
+
       private
 
       def set_video
