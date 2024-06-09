@@ -78,6 +78,9 @@ Rails.application.routes.draw do
         resources :likes, only: [:create, :destroy]
         # ノートリソース
         resources :notes, only: [:index, :create, :destroy, :update, :edit] do
+          collection do
+            post 'save_sort_order', to: 'notes#save_sort_order'
+          end
           # ノートのいいねリソース
           resources :likes, only: [:create, :destroy] do
             collection do
@@ -89,8 +92,8 @@ Rails.application.routes.draw do
       end
   
       # ノートリソース（個別）
-      resources :notes, only: [:index, :create, :update, :destroy]  # この行を追加
-  
+      resources :notes, only: [:destroy]
+
       # Google OAuth認証
       post 'oauth/callback', to: 'google_oauths#callback', as: :oauth_callback_post_api
       get 'oauth/callback', to: 'google_oauths#callback', as: :oauth_callback_get_api

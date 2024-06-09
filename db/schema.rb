@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_05_30_153752) do
+ActiveRecord::Schema[7.0].define(version: 2024_06_09_074626) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -34,6 +34,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_30_153752) do
     t.datetime "updated_at", null: false
     t.bigint "video_id"
     t.integer "likes_count", default: 0
+    t.integer "sort_order", default: 0, null: false
+    t.index ["sort_order"], name: "index_notes_on_sort_order"
     t.index ["user_id"], name: "index_notes_on_user_id"
     t.index ["video_id"], name: "index_notes_on_video_id"
     t.index ["youtube_video_id"], name: "index_notes_on_youtube_video_id"
