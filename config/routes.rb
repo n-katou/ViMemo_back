@@ -41,6 +41,9 @@ Rails.application.routes.draw do
       get 'favorites', to: 'combined_videos#favorites', as: 'favorites_videos'
       # current_userのいいね動画のカウントを取得
       get 'favorites_count', to: 'combined_videos#index', as: 'favorites_videos_count'
+      # いいね動画の並び替え順序を保存
+      post 'favorites/save_order', to: 'combined_videos#save_order'
+      
       # マイページ情報を取得
       get 'mypage', to: 'users#mypage'
   

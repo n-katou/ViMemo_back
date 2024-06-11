@@ -75,6 +75,22 @@ module Api
         likes = current_user.likes.where(likeable_type: params[:likeable_type], likeable_id: params[:likeable_id])
         render json: likes
       end
+
+      # 動画の順序を保存するアクション
+      def save_order
+        video_ids = params[:video_ids]
+        ActiveRecord::Base.transaction do
+          video_ids.each_with_index do |id, index|
+            video = current_user.youtube_videos.find(id)
+            video.update!(sort_order: index)
+          end
+        end
+        render json: { message: 'Order saved successfully' }, status: :ok
+      rescue => e
+        Rails.logger.error "Save order error: #{e.message}"
+        render json: { error: 'Failed to save order', message: e.message }, status: :unprocessable_entity
+      end
+      
     end
   end
 end
