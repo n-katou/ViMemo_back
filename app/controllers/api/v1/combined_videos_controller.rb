@@ -8,21 +8,10 @@ module Api
       def favorites
         @user = current_user
         @likes = @user.likes.includes(likeable: :notes)
-        liked_youtube_videos = @likes.where(likeable_type: "YoutubeVideo").map(&:likeable)
-      
-        @youtube_videos = case params[:sort]
-                          when 'likes_desc'
-                            liked_youtube_videos.sort_by(&:likes_count).reverse
-                          when 'notes_desc'
-                            liked_youtube_videos.sort_by(&:notes_count).reverse
-                          when 'created_at_desc'
-                            liked_youtube_videos.sort_by(&:created_at).reverse
-                          else
-                            liked_youtube_videos.sort_by(&:sort_order) # 並び替え順序に基づいてソート
-                          end
-      
-        @paginated_videos = Kaminari.paginate_array(@youtube_videos).page(params[:page]).per(params[:per_page] || 9)
-      
+        liked_youtube_videos = @likes.where(likeable_type: "YoutubeVideo").map(&:likeable).sort_by(&:sort_order) # 並び替え順序に基づいてソート
+        
+        @paginated_videos = Kaminari.paginate_array(liked_youtube_videos).page(params[:page]).per(params[:per_page] || 9)
+        
         render json: {
           videos: @paginated_videos.map { |video|
             {
@@ -66,6 +55,7 @@ module Api
           }
         }, status: :ok
       end
+      
       
 
       # お気に入り動画のカウントを取得
