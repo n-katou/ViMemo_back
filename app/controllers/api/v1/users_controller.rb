@@ -47,7 +47,7 @@ module Api
       # マイページ情報を取得するアクション
       def mypage
         user = current_user
-        youtube_video_likes = user.likes.includes(:likeable).where(likeable_type: 'YoutubeVideo').order(created_at: :desc)
+        youtube_video_likes = user.likes.includes(:likeable).where(likeable_type: 'YoutubeVideo').joins('INNER JOIN youtube_videos ON likes.likeable_id = youtube_videos.id').order('youtube_videos.sort_order ASC')
         youtube_video_ids = youtube_video_likes.map { |like| like.likeable.youtube_id }
         youtube_playlist_url = "https://www.youtube.com/embed?playlist=#{youtube_video_ids.join(',')}&loop=1"
       
@@ -85,11 +85,12 @@ module Api
           email: user.email,  # emailを追加
           name: user.name  # nameを追加
         }
+      
         Rails.logger.info "Response Data: #{response_data.to_json}"  # レスポンスデータをログに出力
       
         render json: response_data
       end
-
+      
       # シャッフルプレイリストURLを生成するアクション
       def generate_shuffle_playlist
         user = current_user

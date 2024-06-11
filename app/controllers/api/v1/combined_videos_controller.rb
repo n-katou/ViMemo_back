@@ -6,11 +6,10 @@ module Api
 
       # ユーザーのいいね動画を取得するアクション
       def favorites
-        @user = current_user # 現在のユーザーを取得
-        @likes = @user.likes.includes(likeable: :notes) # ユーザーのいいねを取得し、likeableと一緒に読み込む
-        liked_youtube_videos = @likes.where(likeable_type: "YoutubeVideo").map(&:likeable) # YouTube動画に対するいいねを取得
+        @user = current_user
+        @likes = @user.likes.includes(likeable: :notes)
+        liked_youtube_videos = @likes.where(likeable_type: "YoutubeVideo").map(&:likeable)
       
-        # パラメータに基づいて動画をソート
         @youtube_videos = case params[:sort]
                           when 'likes_desc'
                             liked_youtube_videos.sort_by(&:likes_count).reverse
@@ -19,13 +18,11 @@ module Api
                           when 'created_at_desc'
                             liked_youtube_videos.sort_by(&:created_at).reverse
                           else
-                            liked_youtube_videos.sort_by(&:created_at).reverse # デフォルトは作成日の降順
+                            liked_youtube_videos.sort_by(&:sort_order) # 並び替え順序に基づいてソート
                           end
       
-        # ページネーションを適用
         @paginated_videos = Kaminari.paginate_array(@youtube_videos).page(params[:page]).per(params[:per_page] || 9)
       
-        # JSON形式で応答
         render json: {
           videos: @paginated_videos.map { |video|
             {
@@ -36,6 +33,7 @@ module Api
               duration: video.duration,
               likes_count: video.likes_count,
               notes_count: video.notes_count,
+              sort_order: video.sort_order, # 並び替え順序を追加
               notes: video.notes.map { |note|
                 {
                   id: note.id,
@@ -67,7 +65,8 @@ module Api
             prev_page: @paginated_videos.prev_page
           }
         }, status: :ok
-      end      
+      end
+      
 
       # お気に入り動画のカウントを取得
       def index
@@ -75,6 +74,22 @@ module Api
         likes = current_user.likes.where(likeable_type: params[:likeable_type], likeable_id: params[:likeable_id])
         render json: likes
       end
+
+      # 動画の順序を保存するアクション
+      def save_order
+        video_ids = params[:video_ids]
+        Rails.logger.debug "Received video order: #{video_ids}" # 追加: 受信した動画IDの順序をログ出力
+        ActiveRecord::Base.transaction do
+          video_ids.each_with_index do |id, index|
+            video = current_user.youtube_videos.find(id)
+            video.update!(sort_order: index)
+          end
+        end
+        render json: { message: 'Order saved successfully' }, status: :ok
+      rescue => e
+        Rails.logger.error "Save order error: #{e.message}"
+        render json: { error: 'Failed to save order', message: e.message }, status: :unprocessable_entity
+      end      
     end
   end
 end
