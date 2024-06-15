@@ -72,8 +72,8 @@ module Api
         @youtube_videos = case params[:sort]
                           when 'likes_desc'
                             @youtube_videos.order(likes_count: :desc)
-                          when 'likes_desc'
-                            @youtube_videos.order(likes_count: :desc)
+                          when 'notes_desc'
+                            @youtube_videos.order(notes_count: :desc)
                           when 'published_at_desc'
                             @youtube_videos.order(published_at: :desc)
                           when 'created_at_desc'
