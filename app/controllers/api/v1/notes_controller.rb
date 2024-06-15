@@ -15,9 +15,9 @@ module Api
           seconds = params[:video_timestamp_seconds].to_i
           @note.video_timestamp = format("%02d:%02d", minutes, seconds)
 
-          # 一番上に表示するために最小のsort_orderを設定
-          min_sort_order = @video.notes.minimum(:sort_order) || 0
-          @note.sort_order = min_sort_order - 1
+          # 一番下に表示するために最大のsort_orderを設定
+          max_sort_order = @video.notes.maximum(:sort_order) || 0
+          @note.sort_order = max_sort_order + 1
 
           if @note.save
             Rails.logger.debug "Note saved successfully: #{@note}"
