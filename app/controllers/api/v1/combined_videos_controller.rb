@@ -7,8 +7,11 @@ module Api
       # ユーザーのいいね動画を取得するアクション
       def favorites
         @user = current_user
-        @likes = @user.likes.includes(likeable: :notes)
-        liked_youtube_videos = @likes.where(likeable_type: "YoutubeVideo").map(&:likeable).sort_by(&:sort_order) # 並び替え順序に基づいてソート
+        @likes = @user.likes.where(likeable_type: "YoutubeVideo")
+        
+        # 動画IDを取得して、関連する動画を一括で取得
+        video_ids = @likes.map(&:likeable_id)
+        liked_youtube_videos = YoutubeVideo.where(id: video_ids).includes(:user, :likes).sort_by(&:sort_order)
         
         @paginated_videos = Kaminari.paginate_array(liked_youtube_videos).page(params[:page]).per(params[:per_page] || 9)
         
@@ -23,7 +26,7 @@ module Api
               likes_count: video.likes_count,
               notes_count: video.notes_count,
               sort_order: video.sort_order, # 並び替え順序を追加
-              notes: video.notes.map { |note|
+              notes: video.notes.includes(:user).map { |note| # includes(:user)を追加
                 {
                   id: note.id,
                   content: note.content,
@@ -57,7 +60,6 @@ module Api
       end
       
       
-
       # お気に入り動画のカウントを取得
       def index
         # 現在のユーザーが指定されたlikeable_typeおよびlikeable_idに対して行ったいいねを取得
