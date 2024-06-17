@@ -67,7 +67,7 @@ module Api
       
       def index
         @q = YoutubeVideo.ransack(params[:q])
-        @youtube_videos = @q.result(distinct: true).includes(:user, notes: :user, likes: :user)
+        @youtube_videos = @q.result(distinct: true).includes(:user, notes: :user, likes: [])
       
         @youtube_videos = case params[:sort]
                           when 'likes_desc'
@@ -131,12 +131,12 @@ module Api
       end
             
       def show
-        @youtube_video = YoutubeVideo.includes(:user, notes: :user, likes: :user).find(params[:id])
+        @youtube_video = YoutubeVideo.includes(:user, :likes).find(params[:id])
       
         @notes = if current_user
-                   @youtube_video.notes.where('is_visible = ? OR user_id = ?', true, current_user.id).order(:sort_order)
+                   @youtube_video.notes.where('is_visible = ? OR user_id = ?', true, current_user.id).includes(:user, :likes).order(:sort_order)
                  else
-                   @youtube_video.notes.where(is_visible: true).order(:sort_order)
+                   @youtube_video.notes.where(is_visible: true).includes(:user, :likes).order(:sort_order)
                  end
       
         render json: {
@@ -154,7 +154,9 @@ module Api
               name: @youtube_video.user.name,
               avatar: @youtube_video.user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
             },
-            likes: @youtube_video.likes.map { |like| { id: like.id, user_id: like.user_id, likeable_id: like.likeable_id, likeable_type: like.likeable_type } }
+            likes: @youtube_video.likes.map { |like| 
+              { id: like.id, user_id: like.user_id, likeable_id: like.likeable_id, likeable_type: like.likeable_type }
+            }
           },
           notes: @notes.map do |note|
             {
@@ -175,7 +177,9 @@ module Api
                 youtube_id: @youtube_video.youtube_id,
                 title: @youtube_video.title
               },
-              likes: note.likes.map { |like| { id: like.id, user_id: like.user_id, likeable_id: like.likeable_id, likeable_type: like.likeable_type } }
+              likes: note.likes.map { |like| 
+                { id: like.id, user_id: like.user_id, likeable_id: like.likeable_id, likeable_type: like.likeable_type }
+              }
             }
           end
         }
