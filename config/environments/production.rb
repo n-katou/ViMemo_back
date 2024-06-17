@@ -2,24 +2,18 @@ require "active_support/core_ext/integer/time"
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
-  config.hosts << "vimemo.fly.dev"
-  config.hosts << "vimemo.vercel.app"
-  config.hosts << "vi-memo.com"
   
+  # config/settings/production.ymlからホストを設定
+  Settings.hosts.each do |host|
+    config.hosts << host
+  end
+
   config.require_master_key = true
 
   config.action_mailer.delivery_method = :smtp
-  config.action_mailer.smtp_settings = {
-    address: 'smtp.gmail.com',
-    port: 587,
-    domain: 'gmail.com',
-    user_name: ENV['EMAIL_USER_NAME'],
-    password: ENV['EMAIL_PASSWORD'],
-    authentication: 'plain',
-    enable_starttls_auto: true
-  }
+  config.action_mailer.smtp_settings = Settings.smtp_settings.to_h
 
-  config.action_mailer.default_url_options = { host: 'vimemo.fly.dev', protocol: 'https' }
+  config.action_mailer.default_url_options = Settings.default_url_options.to_h
 
   # Code is not reloaded between requests.
   config.cache_classes = true
@@ -57,8 +51,7 @@ Rails.application.configure do
   # config.action_dispatch.x_sendfile_header = "X-Accel-Redirect" # for NGINX
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
-  # config.active_storage.service = :local
-  config.active_storage.service = :amazon
+  config.active_storage.service = Settings.storage_service.to_sym
 
   # Mount Action Cable outside main process or domain.
   # config.action_cable.mount_path = nil
