@@ -59,7 +59,6 @@ module Api
         }, status: :ok
       end
       
-      
       # お気に入り動画のカウントを取得
       def index
         # 現在のユーザーが指定されたlikeable_typeおよびlikeable_idに対して行ったいいねを取得
@@ -71,14 +70,29 @@ module Api
       def save_order
         video_ids = params[:video_ids]
         Rails.logger.debug "Received video order: #{video_ids}" # 追加: 受信した動画IDの順序をログ出力
+        
+        # トランザクションを使用してデータベース操作を一貫性のあるものにする
         ActiveRecord::Base.transaction do
           video_ids.each_with_index do |id, index|
-            video = current_user.youtube_videos.find(id)
+            # 現在のユーザーが「いいね」したYoutubeVideoを取得
+            like = current_user.likes.find_by(likeable_type: "YoutubeVideo", likeable_id: id)
+            video = like&.likeable
+
+            unless video
+              # 動画が見つからなかった場合、エラーメッセージをログに記録し、例外を発生させる
+              Rails.logger.error "Video not found: #{id} for user #{current_user.id}"
+              raise ActiveRecord::RecordNotFound, "Couldn't find YoutubeVideo with 'id'=#{id} [WHERE user_id=#{current_user.id}]"
+            end
+
+            # 動画の並び順を更新
             video.update!(sort_order: index)
           end
         end
+
+        # 成功メッセージを返す
         render json: { message: 'Order saved successfully' }, status: :ok
       rescue => e
+        # エラーメッセージをログに記録し、エラーレスポンスを返す
         Rails.logger.error "Save order error: #{e.message}"
         render json: { error: 'Failed to save order', message: e.message }, status: :unprocessable_entity
       end      
