@@ -31,7 +31,7 @@ module Api
       # YouTube動画の一覧を表示するアクション
       def index
         @q = YoutubeVideo.ransack(params[:q])
-        @youtube_videos = fetch_sorted_videos(@q.result(distinct: true))
+        @youtube_videos = fetch_sorted_videos(@q.result(distinct: true).includes(:user, :likes, notes: [:user, :likes]))
         @youtube_videos = @youtube_videos.page(params[:page]).per(params[:per_page] || 9)
         
         render json: {
@@ -42,7 +42,7 @@ module Api
 
       # 特定のYouTube動画を表示するアクション
       def show
-        @youtube_video = YoutubeVideo.includes(:user, :likes).find(params[:id])
+        @youtube_video = YoutubeVideo.includes(:user, :likes, notes: [:user, :likes]).find(params[:id])
         @notes = fetch_notes(@youtube_video)
         
         render json: {
