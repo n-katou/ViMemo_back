@@ -55,7 +55,7 @@ Rails.application.routes.draw do
           # ユーザー情報の更新
           patch :update
           # 動画と一緒にユーザーノートを取得
-          get 'notes_with_videos', to: 'users#notes_with_videos'
+          get 'my_notes', to: 'users#my_notes'
         end
       end
   
