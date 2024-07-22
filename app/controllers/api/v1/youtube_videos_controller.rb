@@ -31,11 +31,39 @@ module Api
       # YouTube動画の一覧を表示するアクション
       def index
         @q = YoutubeVideo.ransack(params[:q])
-        @youtube_videos = fetch_sorted_videos(@q.result(distinct: true).includes(:user, :likes, notes: [:user, :likes]))
+        @youtube_videos = fetch_sorted_videos(@q.result(distinct: true).includes(:likes, notes: [:user]))
         @youtube_videos = @youtube_videos.page(params[:page]).per(params[:per_page] || 9)
-        
-        render json: {
-          videos: @youtube_videos.map { |video| video_data(video) },
+
+        render json: { 
+          videos: @youtube_videos.map { |video|
+            {
+              id: video.id,
+              title: video.title,
+              description: video.description,
+              published_at: video.published_at,
+              youtube_id: video.youtube_id,
+              duration: video.duration,
+              likes_count: video.likes_count,
+              notes_count: video.notes_count,
+              likes: video.likes.map { |like| 
+                { id: like.id, user_id: like.user_id, likeable_id: like.likeable_id, likeable_type: like.likeable_type }
+              },
+              notes: video.notes.map { |note|
+                {
+                  id: note.id,
+                  content: note.content,
+                  created_at: note.created_at,
+                  video_timestamp: note.video_timestamp, 
+                  youtube_video_id: video.id,
+                  user: {
+                    id: note.user.id,
+                    name: note.user.name,
+                    avatar: note.user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
+                  }
+                }
+              }
+            }
+          },
           pagination: pagination_metadata(@youtube_videos)
         }, status: :ok
       end
@@ -44,7 +72,7 @@ module Api
       def show
         @youtube_video = YoutubeVideo.includes(:user, :likes, notes: [:user, :likes]).find(params[:id])
         @notes = fetch_notes(@youtube_video)
-        
+
         render json: {
           youtube_video: video_data(@youtube_video),
           notes: @notes.map { |note| note_data(note) }
