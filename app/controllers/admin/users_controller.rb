@@ -2,7 +2,7 @@ class Admin::UsersController < Admin::BaseController
   before_action :set_user, only: %i[edit update show destroy]
 
   def index
-    @q = Video.ransack(params[:q])
+    @q = YoutubeVideo.ransack(params[:q])
     @videos = @q.result(distinct: true).order(created_at: :desc).page(params[:page])
     @users = User.all.order(id: :asc).page(params[:page]).per(10)
   end
