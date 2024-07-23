@@ -1,87 +1,19 @@
+# app/controllers/api/v1/notes_controller.rb
 module Api
   module V1
     class NotesController < ApiController
-      before_action :set_video, only: [:create]
-      before_action :set_note, only: [:update, :destroy]
-      before_action :authorize_user!, only: [:update, :destroy]
-
-      # POST /api/notes
-      def create
-        Rails.logger.debug "Creating note for video ID: #{@video&.id}, by user ID: #{current_user&.id}"
-        if @video
-          @note = @video.notes.build(note_params)
-          @note.user_id = current_user.id
-          minutes = params[:video_timestamp_minutes].to_i
-          seconds = params[:video_timestamp_seconds].to_i
-          @note.video_timestamp = format("%02d:%02d", minutes, seconds)
-
-          # 一番下に表示するために最大のsort_orderを設定
-          max_sort_order = @video.notes.maximum(:sort_order) || 0
-          @note.sort_order = max_sort_order + 1
-
-          if @note.save
-            Rails.logger.debug "Note saved successfully: #{@note}"
-            render json: @note.as_json(include: { user: { only: [:id, :name, :avatar] } }), status: :created
-          else
-            Rails.logger.error "Note save failed: #{@note.errors.full_messages}"
-            render json: @note.errors, status: :unprocessable_entity
-          end
-        else
-          Rails.logger.error "Video not found for given ID."
-          render json: { error: "Video not found." }, status: :not_found
-        end
-      end
-
-      # DELETE /api/notes/:id
-      def destroy
-        Rails.logger.debug "Deleting note ID: #{@note&.id}"
-        if @note.destroy
-          Rails.logger.debug "Note destroyed successfully."
-          render json: { message: "Note destroyed successfully." }, status: :ok
-        else
-          Rails.logger.error "Note destruction failed: #{@note.errors.full_messages}"
-          render json: @note.errors, status: :unprocessable_entity
-        end
-      end
-
-      # PATCH/PUT /api/notes/:id
-      def update
-        minutes = params[:video_timestamp_minutes].to_i
-        seconds = params[:video_timestamp_seconds].to_i
-        @note.video_timestamp = format("%02d:%02d", minutes, seconds)
-
-        if @note.update(note_params)
-          Rails.logger.debug "Note updated successfully: #{@note}"
-          render json: @note.as_json(include: { user: { only: [:id, :name, :avatar] } }), status: :ok
-        else
-          Rails.logger.error "Note update failed: #{@note.errors.full_messages}"
-          render json: @note.errors, status: :unprocessable_entity
-        end
-      end
+      include Notes::NotesHelper
 
       # GET /api/v1/notes
       def index
-        Rails.logger.debug "Request received to list user notes"
         filter = params[:filter]
         sort = params[:sort]
-        Rails.logger.debug "Listing notes with filter: #{filter} and sort: #{sort}"
-
-        order_option = case sort
-                       when 'created_at_asc'
-                         { created_at: :asc }
-                       when 'created_at_desc'
-                         { created_at: :desc }
-                       else
-                         { created_at: :desc }
-                       end
-
-        if filter == 'my_notes'
-          @notes = current_user.notes.includes(:youtube_video).order(order_option).page(params[:page]).per(12)
-        else
-          @notes = Note.where(is_visible: true).includes(:youtube_video).order(order_option).page(params[:page]).per(12)
-        end
-
-        Rails.logger.debug "Notes found: #{@notes.pluck(:id)}"
+        order_option = order_option(sort)
+        @notes = if filter == 'my_notes'
+                   current_user.notes.includes(:youtube_video).order(order_option).page(params[:page]).per(12)
+                 else
+                   Note.where(is_visible: true).includes(:youtube_video).order(order_option).page(params[:page]).per(12)
+                 end
         render json: {
           notes: @notes.as_json(include: {
             user: { only: [:id, :name, :avatar] },
@@ -92,48 +24,56 @@ module Api
         }
       end
 
-      def save_sort_order
-        Rails.logger.debug "Request received to save sort order"
+      # POST /api/notes
+      def create
+        if @video
+          @note = @video.notes.build(note_params)
+          @note.user_id = current_user.id
+          @note.video_timestamp = format_video_timestamp(params[:video_timestamp_minutes].to_i, params[:video_timestamp_seconds].to_i)
 
-        sorted_note_ids = params[:sorted_notes].map { |note| note[:id] }
+          # 一番下に表示するために最大のsort_orderを設定
+          max_sort_order = @video.notes.maximum(:sort_order) || 0
+          @note.sort_order = max_sort_order + 1
 
-        sorted_note_ids.each_with_index do |note_id, index|
-          note = Note.find(note_id)
-          note.update!(sort_order: index)
+          if @note.save
+            render json: @note.as_json(include: { user: { only: [:id, :name, :avatar] } }), status: :created
+          else
+            render json: @note.errors, status: :unprocessable_entity
+          end
+        else
+          render json: { error: "Video not found." }, status: :not_found
         end
+      end
 
-        Rails.logger.debug "Sort order saved successfully for notes: #{sorted_note_ids}"
+      # PATCH/PUT /api/notes/:id
+      def update
+        @note.video_timestamp = format_video_timestamp(params[:video_timestamp_minutes].to_i, params[:video_timestamp_seconds].to_i)
+        
+        if @note.update(note_params)
+          render json: @note.as_json(include: { user: { only: [:id, :name, :avatar] } }), status: :ok
+        else
+          render json: @note.errors, status: :unprocessable_entity
+        end
+      end
+      
+      # DELETE /api/notes/:id
+      def destroy
+        if @note.destroy
+          render json: { message: "Note destroyed successfully." }, status: :ok
+        else
+          render json: @note.errors, status: :unprocessable_entity
+        end
+      end
 
+      # POST /api/notes/save_sort_order
+      def save_sort_order
+        sorted_note_ids = params[:sorted_notes].map { |note| note[:id] }
+        save_sorted_order(sorted_note_ids)
         render json: { message: "Sort order saved successfully." }, status: :ok
       rescue ActiveRecord::RecordNotFound => e
-        Rails.logger.error "Note not found: #{e.message}"
         render json: { error: "Note not found." }, status: :not_found
       rescue => e
-        Rails.logger.error "Error saving sort order: #{e.message}"
         render json: { error: "Error saving sort order." }, status: :unprocessable_entity
-      end
-
-      private
-
-      def set_video
-        @video = YoutubeVideo.find_by(id: params[:youtube_video_id])
-        Rails.logger.debug "Video set for note operations: #{@video&.id}"
-      end
-
-      def set_note
-        @note = Note.find(params[:id])
-        Rails.logger.debug "Note set for operations: #{@note&.id}"
-      end
-
-      def authorize_user!
-        unless @note.user_id == current_user.id
-          Rails.logger.error "Unauthorized access attempt by user ID: #{current_user&.id}"
-          render json: { error: 'Not Authorized' }, status: :unauthorized
-        end
-      end
-
-      def note_params
-        params.require(:note).permit(:content, :video_timestamp, :is_visible)
       end
     end
   end
