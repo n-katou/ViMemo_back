@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+
+  #backend用
   root 'tops#index'
   get 'tops/agreement', to: 'tops#agreement', as: 'agreement'
   get 'tops/privacy', to: 'tops#privacy', as: 'privacy'
@@ -35,75 +37,60 @@ Rails.application.routes.draw do
     resources :videos, only: %i[index show]
   end
 
+  
+  # frontend用
   namespace :api do
     namespace :v1 do
-      # current_userのいいね動画を取得
-      get 'favorites', to: 'combined_videos#favorites', as: 'favorites_videos'
-      # current_userのいいね動画のカウントを取得
-      get 'favorites_count', to: 'combined_videos#index', as: 'favorites_videos_count'
-      # いいね動画の並び替え順序を保存
-      post 'favorites/save_order', to: 'combined_videos#save_order'
-      
-      # マイページ情報を取得
+  
+      # マイページ関連
       get 'mypage', to: 'users#mypage'
+      get 'generate_shuffle_playlist', to: 'users#generate_shuffle_playlist'
   
       # ユーザーリソース
       resource :users, only: [:create, :show, :update] do
         collection do
-          # 認証付きユーザー作成
           post :auth_create
-          # ユーザー情報の更新
           patch :update
-          # 動画と一緒にユーザーノートを取得
-          get 'notes_with_videos', to: 'users#notes_with_videos'
+          get 'my_notes', to: 'users#my_notes'
         end
       end
   
-      # ユーザーログイン
+      # ユーザーログイン・ログアウト
       get 'login', to: 'user_sessions#new'
       post 'login', to: 'user_sessions#create'
-      # ユーザーログアウト
       delete 'logout', to: 'user_sessions#destroy'
+  
+      # いいね動画関連
+      get 'favorites', to: 'favorites_videos#index'
+      get 'favorites_count', to: 'favorites_videos#favorites_count'
+      post 'favorites/save_order', to: 'favorites_videos#save_order'
   
       # YouTube動画リソース
       resources :youtube_videos, only: [:index, :show, :destroy] do
         collection do
-          # オートコンプリート機能
           get 'autocomplete'
-          # ジャンルごとに動画を取得
           get 'fetch_videos_by_genre'
         end
         member do
-          # 動画のいいね一覧を取得
           get 'likes'
         end
-        # いいねリソース
         resources :likes, only: [:create, :destroy]
-        # ノートリソース
         resources :notes, only: [:index, :create, :destroy, :update, :edit] do
           collection do
             post 'save_sort_order', to: 'notes#save_sort_order'
           end
-          # ノートのいいねリソース
           resources :likes, only: [:create, :destroy] do
             collection do
-              # 現在のユーザーのいいねを取得
               get 'current_user_like', to: 'likes#current_user_like'
             end
           end
         end
       end
   
-      # ノートリソース（個別）
-      resources :notes, only: [:destroy]
-
       # Google OAuth認証
       post 'oauth/callback', to: 'google_oauths#callback', as: :oauth_callback_post_api
       get 'oauth/callback', to: 'google_oauths#callback', as: :oauth_callback_get_api
       get 'oauth/:provider', to: 'google_oauths#oauth', as: :auth_at_provider_api
-  
-      # シャッフルプレイリストURLを生成するエンドポイント
-      get 'generate_shuffle_playlist', to: 'users#generate_shuffle_playlist'
   
       # パスワードリセットリソース
       resources :password_resets, only: %i[new create edit update]

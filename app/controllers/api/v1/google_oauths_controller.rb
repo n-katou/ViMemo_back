@@ -2,8 +2,9 @@ module Api
   module V1
     class GoogleOauthsController < ApplicationController
       skip_before_action :require_login
-      # skip_before_action :verify_authenticity_token
 
+      # GET /api/v1/google_oauths/oauth
+      # Google OAuth認証のためのURLを生成し、リダイレクトまたはJSONで返すアクション
       def oauth
         client_id = ENV['GOOGLE_CLIENT_ID']
         redirect_uri = ENV['GOOGLE_REDIRECT_URI_BACKEND']

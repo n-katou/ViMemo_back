@@ -9,7 +9,7 @@ class GoogleOauthService
     @redirect_uri = is_frontend ? ENV['GOOGLE_REDIRECT_URI_FRONTEND'] : ENV['GOOGLE_REDIRECT_URI_BACKEND']
   end
 
-
+  # Google OAuth認証を実行し、ユーザー情報を取得または作成するメソッド
   def authenticate
     begin
       access_token = fetch_access_token
@@ -28,6 +28,7 @@ class GoogleOauthService
 
   private
 
+  # アクセストークンをGoogle OAuth 2.0エンドポイントから取得するメソッド
   def fetch_access_token
     uri = URI("https://oauth2.googleapis.com/token")
     response = Net::HTTP.post_form(uri, {
@@ -45,6 +46,7 @@ class GoogleOauthService
     result["access_token"]
   end
 
+  # Googleからユーザー情報を取得するメソッド
   def fetch_user_info(access_token)
     uri = URI("https://www.googleapis.com/oauth2/v2/userinfo")
     request = Net::HTTP::Get.new(uri)
@@ -56,6 +58,7 @@ class GoogleOauthService
     result
   end
 
+  # ユーザー情報をデータベースに保存するか、既存のユーザーを取得するメソッド
   def find_or_create_user(user_info)
     user = User.find_or_create_by(email: user_info['email']) do |user|
       user.name = user_info['name']
