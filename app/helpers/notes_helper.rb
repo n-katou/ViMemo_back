@@ -1,3 +1,4 @@
+#backend用
 module NotesHelper
   def edit_path_for(note)
     if note.youtube_video_id.present?
