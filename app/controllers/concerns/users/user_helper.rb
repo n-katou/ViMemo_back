@@ -18,17 +18,21 @@ module Users
         youtube_playlist_url = "https://www.youtube.com/embed?playlist=#{youtube_video_ids.join(',')}&loop=1"  # プレイリストURLを生成
 
         # ユーザーがいいねしたノートの情報を取得し、作成日時の降順に並べる
-        note_likes = user.likes.includes(likeable: { user: {}, youtube_video: {} }).where(likeable_type: 'Note').order(created_at: :desc)
+        note_likes = user.likes.where(likeable_type: 'Note').order(created_at: :desc)
+        note_ids = note_likes.pluck(:likeable_id)
+        notes = Note.where(id: note_ids).includes(:user, :youtube_video).index_by(&:id)
 
         # レスポンスデータを構築
         {
           youtube_video_likes: youtube_video_likes,
-          note_likes: note_likes.map { |like| 
+          note_likes: note_likes.map { |like|
+            note = notes[like.likeable_id]
             {
               id: like.id,
               likeable_id: like.likeable_id,
               likeable_type: like.likeable_type,
               user_id: like.user_id,
+              likeable: note_data(note)
             }
           },
           youtube_playlist_url: youtube_playlist_url,  # プレイリストURLを追加
@@ -54,7 +58,10 @@ module Users
         sort_direction = 'desc' unless %w[asc desc].include?(sort_direction)
 
         # ノートと関連するYouTube動画をソートして取得
-        notes = user.notes.includes(:youtube_video).order("#{sort_column} #{sort_direction}")
+        notes = user.notes.order("#{sort_column} #{sort_direction}")
+        youtube_video_ids = notes.pluck(:youtube_video_id).uniq
+        youtube_videos = YoutubeVideo.where(id: youtube_video_ids).index_by(&:id)
+
         # ノートと関連するYouTube動画の情報をマッピングして返す
         notes_with_videos = notes.map do |note|
           {
@@ -63,10 +70,29 @@ module Users
             video_timestamp: note.video_timestamp,
             youtube_video_id: note.youtube_video_id,
             created_at: note.created_at,
-            video_title: note.youtube_video.title
+            video_title: youtube_videos[note.youtube_video_id]&.title
           }
         end
         { notes: notes_with_videos }
+      end
+
+      # ノートデータを構築するヘルパーメソッド
+      def note_data(note)
+        return nil unless note
+        {
+          id: note.id,
+          content: note.content,
+          video_timestamp: note.video_timestamp,
+          is_visible: note.is_visible,
+          likes_count: note.likes_count,
+          youtube_video_id: note.youtube_video_id,
+          youtube_video_title: note.youtube_video&.title,
+          user: {
+            id: note.user.id,
+            name: note.user.name,
+            avatar_url: note.user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
+          }
+        }
       end
     end
   end
