@@ -37,6 +37,7 @@ Rails.application.routes.draw do
     resources :videos, only: %i[index show]
   end
 
+  
   # frontend用
   namespace :api do
     namespace :v1 do
@@ -60,8 +61,8 @@ Rails.application.routes.draw do
       delete 'logout', to: 'user_sessions#destroy'
   
       # いいね動画関連
-      get 'favorites', to: 'favorites_videos#favorites', as: 'favorites_videos'
-      get 'favorites_count', to: 'favorites_videos#index', as: 'favorites_videos_count'
+      get 'favorites', to: 'favorites_videos#index'
+      get 'favorites_count', to: 'favorites_videos#favorites_count'
       post 'favorites/save_order', to: 'favorites_videos#save_order'
   
       # YouTube動画リソース

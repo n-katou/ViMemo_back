@@ -4,8 +4,9 @@ module Api
       # すべてのアクションの前にユーザー認証を実行
       before_action :authenticate_user!
 
+      # GET /api/v1/favorites
       # ユーザーのいいね動画を取得するアクション
-      def favorites
+      def index
         @user = current_user
         @likes = @user.likes.where(likeable_type: "YoutubeVideo")
         
@@ -59,13 +60,15 @@ module Api
         }, status: :ok
       end
       
-      # お気に入り動画のカウントを取得
-      def index
+      # GET /api/v1/favorites_count
+      # お気に入り動画のカウントを取得するアクション
+      def favorites_count
         # 現在のユーザーが指定されたlikeable_typeおよびlikeable_idに対して行ったいいねを取得
         likes = current_user.likes.where(likeable_type: params[:likeable_type], likeable_id: params[:likeable_id])
         render json: likes
       end
 
+      # POST /api/v1/favorites/save_order
       # 動画の順序を保存するアクション
       def save_order
         video_ids = params[:video_ids]
