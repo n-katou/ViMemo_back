@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+
+  #backend用
   root 'tops#index'
   get 'tops/agreement', to: 'tops#agreement', as: 'agreement'
   get 'tops/privacy', to: 'tops#privacy', as: 'privacy'
@@ -34,6 +36,8 @@ Rails.application.routes.draw do
     resources :users, only: %i[index edit update show destroy]
     resources :videos, only: %i[index show]
   end
+
+  # frontend用
 
   namespace :api do
     namespace :v1 do

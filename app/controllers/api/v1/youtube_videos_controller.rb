@@ -9,6 +9,7 @@ module Api
       skip_before_action :authenticate_user!, only: [:index, :likes, :autocomplete, :show]
       before_action :optional_authenticate_user!, only: [:show]
 
+      # GET /api/v1/youtube_videos/fetch_videos_by_genre
       # ジャンル別にYouTube動画を取得するアクション
       def fetch_videos_by_genre
         if user_can_fetch_videos?
@@ -28,6 +29,7 @@ module Api
         end
       end
 
+      # GET /api/v1/youtube_videos
       # YouTube動画の一覧を表示するアクション
       def index
         @q = YoutubeVideo.ransack(params[:q])
@@ -68,6 +70,7 @@ module Api
         }, status: :ok
       end
 
+      # GET /api/v1/youtube_videos/:id
       # 特定のYouTube動画を表示するアクション
       def show
         @youtube_video = YoutubeVideo.includes(:user, :likes, notes: [:user, :likes]).find(params[:id])
@@ -79,12 +82,14 @@ module Api
         }
       end
 
+      # GET /api/v1/youtube_videos/:id/likes
       # 特定のYouTube動画のいいねを表示するアクション
       def likes
         video = YoutubeVideo.find(params[:id])
         render json: { likes_count: video.likes_count, likes: video.likes.map { |like| like_data(like) } }, status: :ok
       end
 
+      # GET /api/v1/youtube_videos/autocomplete
       # 自動補完のためのアクション
       def autocomplete
         @youtube_videos = params[:query].present? ? search_videos(params[:query]) : []

@@ -5,6 +5,7 @@ module Api
       include Users::UserHelper
       before_action :authenticate_user!, except: [:create, :auth_create]
 
+      # POST /api/v1/users
       # 新しいユーザーを作成するアクション
       def create
         @user = User.new(user_params)  # ユーザーのパラメータを使用して新しいユーザーオブジェクトを作成
@@ -15,6 +16,7 @@ module Api
         end
       end
 
+      # POST /api/v1/users/auth_create
       # 認証付きユーザーを作成またはログインするアクション
       def auth_create
         user = User.find_by(email: user_params[:email])  # メールアドレスでユーザーを検索
@@ -35,11 +37,13 @@ module Api
         end
       end
 
+      # GET /api/v1/users/show
       # 現在のユーザーの情報を表示するアクション
       def show
         render json: current_user.as_json(only: [:id, :email, :name, :role]), status: :ok 
       end
 
+      # GET /api/v1/users/mypage
       # マイページ情報を取得するアクション
       def mypage
         user = current_user
@@ -47,6 +51,7 @@ module Api
         render json: response_data
       end
 
+      # GET /api/v1/users/generate_shuffle_playlist
       # シャッフルプレイリストURLを生成するアクション
       def generate_shuffle_playlist
         user = current_user
@@ -57,6 +62,7 @@ module Api
         render json: { shuffled_youtube_playlist_url: shuffled_youtube_playlist_url }, status: :ok
       end
 
+      # PATCH/PUT /api/v1/users/update
       # ユーザー情報を更新するアクション
       def update
         if current_user.update(user_params)
@@ -66,6 +72,7 @@ module Api
         end
       end
 
+      # GET /api/v1/users/my_notes
       # ノートと動画を取得するアクション
       def my_notes
         user = current_user
@@ -76,7 +83,6 @@ module Api
 
       private
 
-      # ユーザーパラメータを許可するストロングパラメータ
       def user_params
         params.require(:user).permit(:name, :email, :password, :password_confirmation, :avatar)
       end

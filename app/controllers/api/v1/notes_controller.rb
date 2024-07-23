@@ -5,6 +5,7 @@ module Api
       include Notes::NotesHelper
 
       # GET /api/v1/notes
+      # ユーザーのノートをフィルタリングおよびソートして一覧表示するアクション
       def index
         filter = params[:filter]
         sort = params[:sort]
@@ -25,6 +26,7 @@ module Api
       end
 
       # POST /api/notes
+      # 新しいノートを作成するアクション
       def create
         if @video
           @note = @video.notes.build(note_params)
@@ -46,9 +48,10 @@ module Api
       end
 
       # PATCH/PUT /api/notes/:id
+      # 既存のノートを更新するアクション
       def update
         @note.video_timestamp = format_video_timestamp(params[:video_timestamp_minutes].to_i, params[:video_timestamp_seconds].to_i)
-        
+
         if @note.update(note_params)
           render json: @note.as_json(include: { user: { only: [:id, :name, :avatar] } }), status: :ok
         else
@@ -57,6 +60,7 @@ module Api
       end
       
       # DELETE /api/notes/:id
+      # 指定されたノートを削除するアクション
       def destroy
         if @note.destroy
           render json: { message: "Note destroyed successfully." }, status: :ok
@@ -66,6 +70,7 @@ module Api
       end
 
       # POST /api/notes/save_sort_order
+      # ノートのソート順を保存するアクション
       def save_sort_order
         sorted_note_ids = params[:sorted_notes].map { |note| note[:id] }
         save_sorted_order(sorted_note_ids)

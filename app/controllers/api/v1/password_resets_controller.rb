@@ -3,6 +3,8 @@ module Api
     class PasswordResetsController < ApiController
       skip_before_action :authenticate_user!, only: [:create, :edit, :update]
 
+      # POST /api/v1/password_resets
+      # 指定されたメールアドレスにパスワードリセットの案内を送信するアクション
       def create
         @user = User.find_by(email: params[:email])
         if @user
@@ -13,6 +15,8 @@ module Api
         end
       end
 
+      # GET /api/v1/password_resets/:id/edit
+      # パスワードリセットのトークンを検証するアクション
       def edit
         @token = params[:id]
         @user = User.load_from_reset_password_token(@token)
@@ -23,6 +27,8 @@ module Api
         end
       end
 
+      # PATCH/PUT /api/v1/password_resets/:id
+      # パスワードをリセットするアクション
       def update
         @token = params[:id]
         @user = User.load_from_reset_password_token(@token)

@@ -5,6 +5,8 @@ module Api
       skip_before_action :require_login, only: [:create, :destroy]
       skip_before_action :verify_authenticity_token
       layout false 
+
+      # POST /api/v1/user_sessions
       # ユーザーログイン処理
       def create
         user = login(params[:email], params[:password])
@@ -24,6 +26,7 @@ module Api
         end
       end
 
+      # DELETE /api/v1/user_sessions/:id
       # ユーザーログアウト処理
       def destroy
         if current_user.update(auth_token: nil)  # 現在のユーザーのauth_tokenをクリア
