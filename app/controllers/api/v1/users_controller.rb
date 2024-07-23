@@ -1,7 +1,6 @@
 module Api
   module V1
     class UsersController < ApiController
-      include JwtHandler
       include Users::UserHelper
       before_action :authenticate_user!, except: [:create, :auth_create]
 

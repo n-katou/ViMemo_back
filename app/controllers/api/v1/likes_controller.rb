@@ -4,6 +4,8 @@ module Api
       before_action :authenticate_user!
       before_action :find_likeable, only: [:create, :destroy, :current_user_like]
 
+      # GET /api/v1/likes/current_user_like
+      # 現在のユーザーのいいねを取得するアクション
       def current_user_like
         @like = @likeable.likes.find_by(user: current_user)
         if @like
@@ -13,6 +15,8 @@ module Api
         end
       end
 
+      # POST /api/v1/likes
+      # アイテムに対していいねを作成するアクション
       def create
         existing_like = @likeable.likes.find_by(user: current_user)
         if existing_like
@@ -27,10 +31,10 @@ module Api
         end
       end
 
+      # DELETE /api/v1/likes/:id
+      # アイテムに対するいいねを削除するアクション
       def destroy
-        Rails.logger.debug "Destroy params: #{params.inspect}" if Rails.env.development?
         @like = @likeable.likes.find_by(id: params[:id], user: current_user)
-        Rails.logger.debug "Found like: #{@like.inspect}" if Rails.env.development?
         if @like
           @like.destroy
           render json: { success: true, likes_count: @likeable.likes.count }, status: :ok
@@ -41,6 +45,7 @@ module Api
       
       private
 
+      # リクエストされたアイテムを見つけるメソッド
       def find_likeable
         unless params[:likeable_type] && params[:likeable_id]
           render json: { success: false, error: 'Invalid parameters.' }, status: :unprocessable_entity
@@ -49,7 +54,6 @@ module Api
       
         klass = params[:likeable_type].safe_constantize
         @likeable = klass.find_by(id: params[:likeable_id])
-        Rails.logger.debug "Found likeable: #{@likeable.inspect}" if Rails.env.development?
         unless @likeable
           render json: { success: false, error: 'Invalid operation.' }, status: :not_found
         end
