@@ -10,7 +10,7 @@ module Users
         { success: true, token: token, user: user.slice(:id, :email, :name) }  # JWTとユーザー情報を返す
       end
 
-      # ユーザーのYouTube動画のいいね情報とノート情報を生成し、レスポンスデータとして返すメソッド
+      # ユーザーのYouTube動画のいいね情報とノート情報を生成し、レスポンスデータとして返すメソッド（dashborad,favorite_notes,favorite_videos用）
       def generate_response_data(user)
         # ユーザーがいいねしたYouTube動画の情報を取得し、ソート順に並べる
         youtube_video_likes = user.likes.includes(:likeable).where(likeable_type: 'YoutubeVideo').joins('INNER JOIN youtube_videos ON likes.likeable_id = youtube_videos.id').order('youtube_videos.sort_order ASC')
@@ -43,7 +43,26 @@ module Users
         }
       end
 
-      # ユーザーのノートと関連するYouTube動画の情報を取得し、ソートして返すメソッド
+      # ノートデータを構築するヘルパーメソッド
+      def note_data(note)
+        return nil unless note
+        {
+          id: note.id,
+          content: note.content,
+          video_timestamp: note.video_timestamp,
+          is_visible: note.is_visible,
+          likes_count: note.likes_count,
+          youtube_video_id: note.youtube_video_id,
+          youtube_video_title: note.youtube_video&.title,
+          user: {
+            id: note.user.id,
+            name: note.user.name,
+            avatar_url: note.user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
+          }
+        }
+      end
+
+      # ユーザーのノートと関連するYouTube動画の情報を取得し、ソートして返すメソッド（my_note用）
       def notes_with_videos(user, sort_option)
         # ソートオプションを解析して、ソートするカラムと方向を決定
         sort_column, sort_direction = if sort_option.match(/(.*)_(asc|desc)/)
@@ -74,25 +93,6 @@ module Users
           }
         end
         { notes: notes_with_videos }
-      end
-
-      # ノートデータを構築するヘルパーメソッド
-      def note_data(note)
-        return nil unless note
-        {
-          id: note.id,
-          content: note.content,
-          video_timestamp: note.video_timestamp,
-          is_visible: note.is_visible,
-          likes_count: note.likes_count,
-          youtube_video_id: note.youtube_video_id,
-          youtube_video_title: note.youtube_video&.title,
-          user: {
-            id: note.user.id,
-            name: note.user.name,
-            avatar_url: note.user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
-          }
-        }
       end
     end
   end
