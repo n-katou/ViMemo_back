@@ -1,6 +1,6 @@
 module Api
   module V1
-    class CombinedVideosController < ApiController
+    class FavoritesVideosController < ApiController
       # すべてのアクションの前にユーザー認証を実行
       before_action :authenticate_user!
 
