@@ -36,7 +36,25 @@ gem "tzinfo-data", platforms: %i[mingw mswin x64_mingw jruby]
 # ブートストラップ高速化
 gem "bootsnap", require: false
 
-# ユーザー認証
+group :development, :test do
+  gem "debug", platforms: %i[ mri mingw x64_mingw ]
+  gem 'rspec-rails', '~> 5.0.0'
+  gem 'factory_bot_rails'
+end
+
+group :development do
+  gem "web-console"
+  # gem 'bullet'
+end
+
+group :test do
+  gem "capybara"
+  gem "selenium-webdriver"
+
+end
+
+gem "dockerfile-rails", ">= 1.6", :group => :development
+
 gem 'sorcery', "0.16.3"
 
 # ファイルアップロード
