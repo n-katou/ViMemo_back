@@ -16,7 +16,7 @@ module Users
         youtube_video_likes = user.likes
           .where(likeable_type: 'YoutubeVideo')
           .joins("INNER JOIN youtube_videos ON likes.likeable_id = youtube_videos.id")
-          .order('likes.created_at DESC')
+          .order('youtube_videos.sort_order ASC') # sort_order に基づいて並び替え
       
         # likeableが正しく取得できているか確認
         youtube_videos = youtube_video_likes.map do |like|
@@ -43,9 +43,6 @@ module Users
         else
           nil
         end
-      
-        # ログをレスポンスデータの構築前に出力
-        Rails.logger.info "Generated Youtube Video Data: #{youtube_videos.inspect}"
       
         # レスポンスデータを構築
         {

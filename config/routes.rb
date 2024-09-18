@@ -45,6 +45,7 @@ Rails.application.routes.draw do
       # マイページ関連
       get 'mypage', to: 'users#mypage'
       get 'generate_shuffle_playlist', to: 'users#generate_shuffle_playlist'
+      post 'update_playlist_order', to: 'users#update_playlist_order'
   
       # ユーザーリソース
       resource :users, only: [:create, :show, :update] do

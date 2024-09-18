@@ -73,7 +73,7 @@ module Api
       
         render json: { shuffled_youtube_playlist_url: shuffled_youtube_playlist_url, youtube_videos: shuffled_youtube_videos }, status: :ok
       end
-      
+
       # PATCH/PUT /api/v1/users/update
       # ユーザー情報を更新するアクション
       def update
@@ -93,6 +93,31 @@ module Api
         render json: response_data
       end
 
+      def update_playlist_order
+        ActiveRecord::Base.transaction do
+          params[:order].each do |item|
+            # ビデオを見つけるために `id` と `user_id` を使用
+            video = YoutubeVideo.find_by(id: item[:id], user_id: current_user.id)
+            
+            if video
+              # `sort_order` を更新
+              video.update!(sort_order: item[:order])
+            else
+              # ビデオが見つからない場合のエラーハンドリング
+              raise ActiveRecord::RecordNotFound, "Video with id #{item[:id]} not found for current user"
+            end
+          end
+        end
+        
+        render json: { message: 'Playlist order updated successfully' }, status: :ok
+      rescue ActiveRecord::RecordInvalid => e
+        render json: { message: 'Error updating playlist order', error: e.record.errors.full_messages }, status: :unprocessable_entity
+      rescue ActiveRecord::RecordNotFound => e
+        render json: { message: e.message }, status: :not_found
+      rescue => e
+        render json: { message: 'Error updating playlist order', error: e.message }, status: :unprocessable_entity
+      end
+      
       private
 
       def user_params
