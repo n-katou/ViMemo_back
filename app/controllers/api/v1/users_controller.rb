@@ -54,13 +54,26 @@ module Api
       # シャッフルプレイリストURLを生成するアクション
       def generate_shuffle_playlist
         user = current_user
-        youtube_video_likes = user.likes.includes(:likeable).where(likeable_type: 'YoutubeVideo').order(created_at: :desc)
-        shuffled_youtube_video_ids = youtube_video_likes.map { |like| like.likeable.youtube_id }.shuffle
-        shuffled_youtube_playlist_url = "https://www.youtube.com/embed?playlist=#{shuffled_youtube_video_ids.join(',')}&loop=1"
-
-        render json: { shuffled_youtube_playlist_url: shuffled_youtube_playlist_url }, status: :ok
+        youtube_video_likes = user.likes.includes(likeable: :youtube_video).where(likeable_type: 'YoutubeVideo').order(created_at: :desc)
+      
+        # 各likeable（YoutubeVideo）のtitleやidなどを返す
+        youtube_videos = youtube_video_likes.map do |like|
+          video = like.likeable
+          {
+            id: video.id,
+            title: video.title,
+            youtube_id: video.youtube_id,
+            created_at: like.created_at
+          }
+        end
+      
+        shuffled_youtube_videos = youtube_videos.shuffle
+      
+        shuffled_youtube_playlist_url = "https://www.youtube.com/embed?playlist=#{shuffled_youtube_videos.map { |v| v[:youtube_id] }.join(',')}&loop=1"
+      
+        render json: { shuffled_youtube_playlist_url: shuffled_youtube_playlist_url, youtube_videos: shuffled_youtube_videos }, status: :ok
       end
-
+      
       # PATCH/PUT /api/v1/users/update
       # ユーザー情報を更新するアクション
       def update
