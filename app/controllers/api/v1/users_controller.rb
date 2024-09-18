@@ -2,6 +2,8 @@ module Api
   module V1
     class UsersController < ApiController
       include Users::UserHelper
+      include FavoritesVideos::FavoritesHelper
+
       before_action :authenticate_user!, except: [:create, :auth_create]
 
       # POST /api/v1/users
@@ -94,28 +96,18 @@ module Api
       end
 
       def update_playlist_order
-        ActiveRecord::Base.transaction do
-          params[:order].each do |item|
-            # ビデオを見つけるために `id` と `user_id` を使用
-            video = YoutubeVideo.find_by(id: item[:id], user_id: current_user.id)
-            
-            if video
-              # `sort_order` を更新
-              video.update!(sort_order: item[:order])
-            else
-              # ビデオが見つからない場合のエラーハンドリング
-              raise ActiveRecord::RecordNotFound, "Video with id #{item[:id]} not found for current user"
-            end
-          end
+        video_ids = params[:video_ids]  # video_ids を取得
+        unless video_ids.present?
+          render json: { message: 'No video_ids provided' }, status: :bad_request
+          return
         end
-        
-        render json: { message: 'Playlist order updated successfully' }, status: :ok
-      rescue ActiveRecord::RecordInvalid => e
-        render json: { message: 'Error updating playlist order', error: e.record.errors.full_messages }, status: :unprocessable_entity
-      rescue ActiveRecord::RecordNotFound => e
-        render json: { message: e.message }, status: :not_found
-      rescue => e
-        render json: { message: 'Error updating playlist order', error: e.message }, status: :unprocessable_entity
+      
+        begin
+          save_video_order(current_user, video_ids)
+          render json: { message: 'Playlist order updated successfully' }, status: :ok
+        rescue => e
+          render json: { message: 'Error updating playlist order', error: e.message }, status: :unprocessable_entity
+        end
       end
       
       private

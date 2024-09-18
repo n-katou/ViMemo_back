@@ -16,35 +16,34 @@ module Users
         youtube_video_likes = user.likes
           .where(likeable_type: 'YoutubeVideo')
           .joins("INNER JOIN youtube_videos ON likes.likeable_id = youtube_videos.id")
-          .order('youtube_videos.sort_order ASC') # sort_order に基づいて並び替え
+          .select("likes.id, likes.likeable_id, youtube_videos.title, youtube_videos.youtube_id, youtube_videos.sort_order, likes.created_at")
+          .order('youtube_videos.sort_order ASC')
       
-        # likeableが正しく取得できているか確認
-        youtube_videos = youtube_video_likes.map do |like|
-          video = YoutubeVideo.find_by(id: like.likeable_id) # 明示的に動画をロード
-      
-          # likeable（動画）が存在しない場合はログにエラーメッセージを出力
-          if video.nil?
-            Rails.logger.error "Likeable (YoutubeVideo) is missing for likeable_id: #{like.likeable_id}"
-            next
+        # sort_order が nil の場合はログに出力して確認
+        youtube_video_likes.each do |like|
+          video = YoutubeVideo.find(like.likeable_id)
+          if video.sort_order.nil?
+            Rails.logger.info "Video ID #{video.id} has no sort_order!"
           end
+        end
       
+        youtube_videos = youtube_video_likes.map do |like|
           {
             id: like.id,
             likeable_id: like.likeable_id,
-            title: video.title,         # タイトルが存在する場合に設定
-            youtube_id: video.youtube_id, # YouTubeの動画IDを設定
-            created_at: like.created_at  # いいねした日時を設定
+            title: like.title,           # 結合した動画のタイトル
+            youtube_id: like.youtube_id,  # YouTubeの動画ID
+            sort_order: like.sort_order,  # プレイリスト順序
+            created_at: like.created_at   # いいねした日時
           }
-        end.compact # nilを除外する
+        end
       
-        # プレイリストURLを生成
         youtube_playlist_url = if youtube_videos.any?
           "https://www.youtube.com/embed?playlist=#{youtube_videos.map { |v| v[:youtube_id] }.join(',')}&loop=1"
         else
           nil
         end
       
-        # レスポンスデータを構築
         {
           youtube_video_likes: youtube_videos,
           youtube_playlist_url: youtube_playlist_url,
@@ -54,6 +53,7 @@ module Users
           name: user.name
         }
       end
+      
       
       # ノートデータを構築するヘルパーメソッド
       def note_data(note)
