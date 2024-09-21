@@ -17,24 +17,16 @@ module Users
           .where(likeable_type: 'YoutubeVideo')
           .joins("INNER JOIN youtube_videos ON likes.likeable_id = youtube_videos.id")
           .select("likes.id, likes.likeable_id, youtube_videos.title, youtube_videos.youtube_id, youtube_videos.sort_order, likes.created_at")
-          .order('youtube_videos.sort_order ASC')
+          .order('youtube_videos.sort_order ASC')  # sort_orderで並び替え
       
-        # sort_order が nil の場合はログに出力して確認
-        youtube_video_likes.each do |like|
-          video = YoutubeVideo.find(like.likeable_id)
-          if video.sort_order.nil?
-            Rails.logger.info "Video ID #{video.id} has no sort_order!"
-          end
-        end
-      
+        # プレイリストを返す
         youtube_videos = youtube_video_likes.map do |like|
           {
-            id: like.id,
-            likeable_id: like.likeable_id,
-            title: like.title,           # 結合した動画のタイトル
-            youtube_id: like.youtube_id,  # YouTubeの動画ID
-            sort_order: like.sort_order,  # プレイリスト順序
-            created_at: like.created_at   # いいねした日時
+            id: like.likeable_id,
+            title: like.title,
+            youtube_id: like.youtube_id,
+            sort_order: like.sort_order,
+            created_at: like.created_at
           }
         end
       
@@ -53,6 +45,7 @@ module Users
           name: user.name
         }
       end
+      
       
       
       # ノートデータを構築するヘルパーメソッド

@@ -102,13 +102,27 @@ module Api
           return
         end
       
-        begin
-          save_video_order(current_user, video_ids)
-          render json: { message: 'Playlist order updated successfully' }, status: :ok
-        rescue => e
-          render json: { message: 'Error updating playlist order', error: e.message }, status: :unprocessable_entity
+        # トランザクションを使用して順序を更新
+        ActiveRecord::Base.transaction do
+          video_ids.each_with_index do |id, index|
+            # ユーザーがいいねした動画を取得
+            like = current_user.likes.find_by(likeable_id: id, likeable_type: 'YoutubeVideo')
+            
+            if like
+              video = YoutubeVideo.find(like.likeable_id)
+              video.update!(sort_order: index)  # 新しい順序を更新
+            else
+              Rails.logger.debug "No like found for video_id #{id} for user #{current_user.id}"
+            end
+          end
         end
+      
+        render json: { message: 'Playlist order updated successfully' }, status: :ok
+      rescue => e
+        Rails.logger.error "Error updating playlist order: #{e.message}"
+        render json: { message: 'Error updating playlist order', error: e.message }, status: :unprocessable_entity
       end
+
       
       private
 
