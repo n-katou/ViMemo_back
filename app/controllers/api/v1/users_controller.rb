@@ -2,6 +2,8 @@ module Api
   module V1
     class UsersController < ApiController
       include Users::UserHelper
+      include FavoritesVideos::FavoritesHelper
+
       before_action :authenticate_user!, except: [:create, :auth_create]
 
       # POST /api/v1/users
@@ -54,11 +56,24 @@ module Api
       # シャッフルプレイリストURLを生成するアクション
       def generate_shuffle_playlist
         user = current_user
-        youtube_video_likes = user.likes.includes(:likeable).where(likeable_type: 'YoutubeVideo').order(created_at: :desc)
-        shuffled_youtube_video_ids = youtube_video_likes.map { |like| like.likeable.youtube_id }.shuffle
-        shuffled_youtube_playlist_url = "https://www.youtube.com/embed?playlist=#{shuffled_youtube_video_ids.join(',')}&loop=1"
-
-        render json: { shuffled_youtube_playlist_url: shuffled_youtube_playlist_url }, status: :ok
+        youtube_video_likes = user.likes.includes(likeable: :youtube_video).where(likeable_type: 'YoutubeVideo').order(created_at: :desc)
+      
+        # 各likeable（YoutubeVideo）のtitleやidなどを返す
+        youtube_videos = youtube_video_likes.map do |like|
+          video = like.likeable
+          {
+            id: video.id,
+            title: video.title,
+            youtube_id: video.youtube_id,
+            created_at: like.created_at
+          }
+        end
+      
+        shuffled_youtube_videos = youtube_videos.shuffle
+      
+        shuffled_youtube_playlist_url = "https://www.youtube.com/embed?playlist=#{shuffled_youtube_videos.map { |v| v[:youtube_id] }.join(',')}&loop=1"
+      
+        render json: { shuffled_youtube_playlist_url: shuffled_youtube_playlist_url, youtube_videos: shuffled_youtube_videos }, status: :ok
       end
 
       # PATCH/PUT /api/v1/users/update
@@ -80,6 +95,35 @@ module Api
         render json: response_data
       end
 
+      def update_playlist_order
+        video_ids = params[:video_ids]  # video_ids を取得
+        unless video_ids.present?
+          render json: { message: 'No video_ids provided' }, status: :bad_request
+          return
+        end
+      
+        # トランザクションを使用して順序を更新
+        ActiveRecord::Base.transaction do
+          video_ids.each_with_index do |id, index|
+            # ユーザーがいいねした動画を取得
+            like = current_user.likes.find_by(likeable_id: id, likeable_type: 'YoutubeVideo')
+            
+            if like
+              video = YoutubeVideo.find(like.likeable_id)
+              video.update!(sort_order: index)  # 新しい順序を更新
+            else
+              Rails.logger.debug "No like found for video_id #{id} for user #{current_user.id}"
+            end
+          end
+        end
+      
+        render json: { message: 'Playlist order updated successfully' }, status: :ok
+      rescue => e
+        Rails.logger.error "Error updating playlist order: #{e.message}"
+        render json: { message: 'Error updating playlist order', error: e.message }, status: :unprocessable_entity
+      end
+
+      
       private
 
       def user_params

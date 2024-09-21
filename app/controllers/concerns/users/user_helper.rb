@@ -12,37 +12,42 @@ module Users
 
       # ユーザーのYouTube動画のいいね情報とノート情報を生成し、レスポンスデータとして返すメソッド（dashborad,favorite_notes,favorite_videos用）
       def generate_response_data(user)
-        # ユーザーがいいねしたYouTube動画の情報を取得し、ソート順に並べる
-        youtube_video_likes = user.likes.includes(:likeable).where(likeable_type: 'YoutubeVideo').joins('INNER JOIN youtube_videos ON likes.likeable_id = youtube_videos.id').order('youtube_videos.sort_order ASC')
-        youtube_video_ids = youtube_video_likes.map { |like| like.likeable.youtube_id }  # いいねした動画のIDを抽出
-        youtube_playlist_url = "https://www.youtube.com/embed?playlist=#{youtube_video_ids.join(',')}&loop=1"  # プレイリストURLを生成
-
-        # ユーザーがいいねしたノートの情報を取得し、作成日時の降順に並べる
-        note_likes = user.likes.where(likeable_type: 'Note').order(created_at: :desc)
-        note_ids = note_likes.pluck(:likeable_id)
-        notes = Note.where(id: note_ids).includes(:user, :youtube_video).index_by(&:id)
-
-        # レスポンスデータを構築
+        # ユーザーがいいねしたYouTube動画の情報を取得
+        youtube_video_likes = user.likes
+          .where(likeable_type: 'YoutubeVideo')
+          .joins("INNER JOIN youtube_videos ON likes.likeable_id = youtube_videos.id")
+          .select("likes.id, likes.likeable_id, youtube_videos.title, youtube_videos.youtube_id, youtube_videos.sort_order, likes.created_at")
+          .order('youtube_videos.sort_order ASC')  # sort_orderで並び替え
+      
+        # プレイリストを返す
+        youtube_videos = youtube_video_likes.map do |like|
+          {
+            id: like.likeable_id,
+            title: like.title,
+            youtube_id: like.youtube_id,
+            sort_order: like.sort_order,
+            created_at: like.created_at
+          }
+        end
+      
+        youtube_playlist_url = if youtube_videos.any?
+          "https://www.youtube.com/embed?playlist=#{youtube_videos.map { |v| v[:youtube_id] }.join(',')}&loop=1"
+        else
+          nil
+        end
+      
         {
-          youtube_video_likes: youtube_video_likes,
-          note_likes: note_likes.map { |like|
-            note = notes[like.likeable_id]
-            {
-              id: like.id,
-              likeable_id: like.likeable_id,
-              likeable_type: like.likeable_type,
-              user_id: like.user_id,
-              likeable: note_data(note)
-            }
-          },
-          youtube_playlist_url: youtube_playlist_url,  # プレイリストURLを追加
-          avatar_url: user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg",  # ユーザーのアバターURLを追加
-          role: user.role,  # ユーザーのロールを追加
-          email: user.email,  # ユーザーのメールアドレスを追加
-          name: user.name  # ユーザーの名前を追加
+          youtube_video_likes: youtube_videos,
+          youtube_playlist_url: youtube_playlist_url,
+          avatar_url: user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg",
+          role: user.role,
+          email: user.email,
+          name: user.name
         }
       end
-
+      
+      
+      
       # ノートデータを構築するヘルパーメソッド
       def note_data(note)
         return nil unless note
