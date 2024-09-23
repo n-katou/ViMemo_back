@@ -44,6 +44,7 @@ Rails.application.routes.draw do
   
       # マイページ関連
       get 'mypage', to: 'users#mypage'
+      get 'like_note', to: 'users#like_note'
       get 'generate_shuffle_playlist', to: 'users#generate_shuffle_playlist'
       post 'update_playlist_order', to: 'users#update_playlist_order'
   
