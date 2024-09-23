@@ -123,6 +123,13 @@ module Api
         render json: { message: 'Error updating playlist order', error: e.message }, status: :unprocessable_entity
       end
 
+      # GET /api/v1/users/like_note
+      def like_note
+        user = current_user
+        response_data = generate_response_data_note(user)
+        render json: response_data
+      end
+
       
       private
 
