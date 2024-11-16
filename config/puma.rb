@@ -15,9 +15,8 @@ max_threads_count = ENV.fetch("RAILS_MAX_THREADS", 5).to_i
 min_threads_count = ENV.fetch("RAILS_MIN_THREADS", 1).to_i
 threads min_threads_count, max_threads_count
 
-workers ENV.fetch("WEB_CONCURRENCY", 1).to_i  # 1ワーカーに制限
+workers ENV.fetch("WEB_CONCURRENCY", 0).to_i  # 1ワーカーに制限
 
-preload_app!
 #新規で追記(fly.io crash対策)
 
 # Specifies the `worker_timeout` threshold that Puma will use to wait before
@@ -28,7 +27,8 @@ worker_timeout 3600 if ENV.fetch("RAILS_ENV", "development") == "development"
 # Specifies the `port` that Puma will listen on to receive requests; default is 3000.
 #
 port ENV.fetch("PORT") { 3000 }
-bind "tcp://0.0.0.0:3000" 
+# bind "tcp://0.0.0.0:3000" 
+
 # port ENV.fetch("PORT") { 8080 }
 # bind "tcp://0.0.0.0:#{ENV.fetch("PORT") { 8080 }}"
 
