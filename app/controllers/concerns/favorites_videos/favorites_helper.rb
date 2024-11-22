@@ -28,14 +28,16 @@ module FavoritesVideos
                   user: {
                     id: note.user.id,
                     name: note.user.name,
-                    avatar: note.user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
+                    # avatar: note.user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
+                    avatar: note.user.avatar.url || "/default-avatar.jpg"
                   }
                 }
               },
               user: {
                 id: video.user.id,
                 name: video.user.name,
-                avatar: video.user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
+                # avatar: video.user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
+                avatar: video.user.avatar.url || "/default-avatar.jpg"
               },
               likes: video.likes.map { |like|
                 { id: like.id, user_id: like.user_id, likeable_id: like.likeable_id, likeable_type: like.likeable_type }
