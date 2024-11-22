@@ -35,7 +35,8 @@ module YoutubeVideos
         {
           id: user.id,
           name: user.name,
-          avatar: user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
+          # avatar: user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
+          avatar: user.avatar.url || "/default-avatar.jpg",
         }
       end
 

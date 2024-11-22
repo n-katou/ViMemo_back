@@ -39,7 +39,8 @@ module Users
         {
           youtube_video_likes: youtube_videos,
           youtube_playlist_url: youtube_playlist_url,
-          avatar_url: user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg",
+          # avatar_url: user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg",
+          avatar_url: user.avatar.url || "/default-avatar.jpg",
           role: user.role,
           email: user.email,
           name: user.name
@@ -72,7 +73,8 @@ module Users
             }
           },
           youtube_playlist_url: youtube_playlist_url,  # プレイリストURLを追加
-          avatar_url: user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg",  # ユーザーのアバターURLを追加
+          # avatar_url: user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg",  # ユーザーのアバターURLを追加
+          avatar_url: user.avatar.url || "/default-avatar.jpg",
           role: user.role,  # ユーザーのロールを追加
           email: user.email,  # ユーザーのメールアドレスを追加
           name: user.name  # ユーザーの名前を追加
@@ -93,7 +95,8 @@ module Users
           user: {
             id: note.user.id,
             name: note.user.name,
-            avatar_url: note.user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
+            # avatar_url: note.user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
+            avatar_url: note.user.avatar.url || "/default-avatar.jpg",
           }
         }
       end

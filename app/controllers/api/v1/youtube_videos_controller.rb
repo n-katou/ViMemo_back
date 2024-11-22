@@ -60,7 +60,8 @@ module Api
                   user: {
                     id: note.user.id,
                     name: note.user.name,
-                    avatar: note.user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
+                    # avatar: note.user.avatar.url || "#{ENV['S3_BASE_URL']}/default-avatar.jpg"
+                    avatar: note.user.avatar.url || "/default-avatar.jpg"
                   }
                 }
               }
