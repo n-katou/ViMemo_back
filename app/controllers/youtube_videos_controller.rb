@@ -6,7 +6,7 @@ class YoutubeVideosController < ApplicationController
     genre = params[:genre]
     api_key = ENV['YOUTUBE_API_KEY']
     encoded_genre = CGI.escape(genre)
-    search_url = "https://www.googleapis.com/youtube/v3/search?part=snippet&q=#{encoded_genre}&type=video&key=#{api_key}&maxResults=10"
+    search_url = "https://www.googleapis.com/youtube/v3/search?part=snippet&q=#{encoded_genre}&type=video&key=#{api_key}&maxResults=9"
     search_response = HTTParty.get(search_url)
   
     if search_response.success?
